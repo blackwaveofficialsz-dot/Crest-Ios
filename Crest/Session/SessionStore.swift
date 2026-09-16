@@ -9,6 +9,11 @@ final class SessionStore: ObservableObject {
     @Published private(set) var tenantID: String?
     @Published private(set) var role = ""
     @Published private(set) var hasPassword = false
+    @Published private(set) var workspaceType: WorkspaceType = .personal
+    @Published private(set) var activeWorkspaceID = "personal"
+    @Published private(set) var workspaces: [WorkspaceSummary] = []
+    @Published private(set) var isLoadingWorkspaces = false
+    @Published private(set) var isSwitchingWorkspace = false
 
     private let api = APIClient()
     private let keychain = KeychainStore(service: "com.blackwave.crest")
@@ -26,6 +31,7 @@ final class SessionStore: ObservableObject {
         do {
             let response = try await api.login(phone: phone, password: password)
             try startSession(with: response)
+            try? await loadWorkspaces()
         } catch {
             clearLocalSession()
             throw error
@@ -36,6 +42,7 @@ final class SessionStore: ObservableObject {
         do {
             let response = try await api.loginWithCode(verificationToken: verificationToken)
             try startSession(with: response)
+            try? await loadWorkspaces()
         } catch {
             clearLocalSession()
             throw error
@@ -46,6 +53,7 @@ final class SessionStore: ObservableObject {
         do {
             let response = try await api.registerPersonal(verificationToken: verificationToken)
             try startSession(with: response)
+            try? await loadWorkspaces()
         } catch {
             clearLocalSession()
             throw error
@@ -69,14 +77,49 @@ final class SessionStore: ObservableObject {
             clearLocalSession()
             return
         }
-        if !(await refreshStoredSession()) {
+        if await refreshStoredSession() {
+            try? await loadWorkspaces()
+        } else {
             accessToken = nil
             username = ""
             tenantID = nil
             role = ""
             hasPassword = false
+            workspaceType = .personal
+            activeWorkspaceID = "personal"
+            workspaces = []
             isSignedIn = false
         }
+    }
+
+    func loadWorkspaces() async throws {
+        guard !isLoadingWorkspaces else { return }
+        isLoadingWorkspaces = true
+        defer { isLoadingWorkspaces = false }
+
+        let response = try await withAuthenticatedSession { token in
+            try await api.listWorkspaces(accessToken: token)
+        }
+        workspaces = response.items
+    }
+
+    func switchWorkspace(to workspaceID: String) async throws {
+        guard workspaceID != activeWorkspaceID, !isSwitchingWorkspace else { return }
+        isSwitchingWorkspace = true
+        defer { isSwitchingWorkspace = false }
+
+        let response = try await withAuthenticatedSession { token in
+            guard let refreshToken = keychain.readRefreshToken() else {
+                throw APIError.invalidSession
+            }
+            return try await api.switchWorkspace(
+                workspaceID: workspaceID,
+                refreshToken: refreshToken,
+                accessToken: token
+            )
+        }
+        try startSession(with: response)
+        try? await loadWorkspaces()
     }
 
     func signOut() {
@@ -140,6 +183,8 @@ final class SessionStore: ObservableObject {
         tenantID = response.tenantID
         role = response.role
         hasPassword = response.hasPassword
+        workspaceType = response.workspaceType
+        activeWorkspaceID = response.activeWorkspaceID
         isSignedIn = true
     }
 
@@ -186,6 +231,11 @@ final class SessionStore: ObservableObject {
         tenantID = nil
         role = ""
         hasPassword = false
+        workspaceType = .personal
+        activeWorkspaceID = "personal"
+        workspaces = []
+        isLoadingWorkspaces = false
+        isSwitchingWorkspace = false
         isSignedIn = false
     }
 

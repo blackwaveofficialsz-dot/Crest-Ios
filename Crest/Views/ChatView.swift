@@ -17,6 +17,7 @@ struct ChatView: View {
     @State private var activeTitle = "新对话"
     @State private var history: [ChatSessionSummary] = []
     @State private var isLoadingHistory = false
+    @State private var loadingHistoryWorkspaceID: String?
     @State private var isLoadingConversation = false
     @State private var isSidebarOpen = false
     @State private var sidebarDragTranslation: CGFloat = 0
@@ -69,7 +70,8 @@ struct ChatView: View {
                 dismissButton: .default(Text("好"))
             )
         }
-        .task {
+        .task(id: session.activeWorkspaceID) {
+            resetForWorkspaceChange()
             await loadHistory()
         }
         .onDisappear {
@@ -77,10 +79,8 @@ struct ChatView: View {
             cancelPendingStreamText()
         }
         .sheet(isPresented: $isSettingsPresented) {
-            AppSettingsSheet(
-                username: session.username,
-                onSignOut: session.signOut
-            )
+            AppSettingsSheet()
+                .environmentObject(session)
             .presentationDetents([.fraction(0.78), .large])
             .presentationDragIndicator(.hidden)
             .presentationCornerRadius(45)
@@ -235,6 +235,7 @@ struct ChatView: View {
 
         let requestSessionID = activeSessionID ?? UUID().uuidString
         let assistantID = UUID().uuidString
+        let workspaceID = session.activeWorkspaceID
         activeSessionID = requestSessionID
 
         withAnimation(.easeOut(duration: 0.2)) {
@@ -258,10 +259,12 @@ struct ChatView: View {
                         accessToken: token
                     ) { event in
                         await MainActor.run {
+                            guard workspaceID == session.activeWorkspaceID else { return }
                             apply(event, to: assistantID)
                         }
                     }
                 }
+                guard workspaceID == session.activeWorkspaceID else { return }
                 finishStreamingMessage(assistantID)
                 await loadHistory()
             } catch is CancellationError {
@@ -385,19 +388,32 @@ struct ChatView: View {
 
     /// 加载侧边栏历史，并同步当前会话可能被服务端更新的标题。
     private func loadHistory() async {
-        guard !isLoadingHistory else { return }
+        let workspaceID = session.activeWorkspaceID
+        guard loadingHistoryWorkspaceID != workspaceID else { return }
+        loadingHistoryWorkspaceID = workspaceID
         isLoadingHistory = true
-        defer { isLoadingHistory = false }
+        defer {
+            if loadingHistoryWorkspaceID == workspaceID {
+                loadingHistoryWorkspaceID = nil
+                isLoadingHistory = false
+            }
+        }
 
         do {
-            history = try await session.withAuthenticatedSession { token in
+            let loadedHistory = try await session.withAuthenticatedSession { token in
                 try await api.listChatSessions(accessToken: token)
             }
+            try Task.checkCancellation()
+            guard workspaceID == session.activeWorkspaceID else { return }
+            history = loadedHistory
             if let activeSessionID,
                let activeSession = history.first(where: { $0.sessionID == activeSessionID }) {
                 activeTitle = activeSession.title
             }
+        } catch is CancellationError {
+            return
         } catch {
+            guard workspaceID == session.activeWorkspaceID else { return }
             presentedAlert = ChatAlert(
                 title: "历史记录加载失败",
                 message: error.localizedDescription
@@ -413,6 +429,7 @@ struct ChatView: View {
         isSearchPresented = false
         closeSidebar()
         dismissInputFocus()
+        let workspaceID = session.activeWorkspaceID
 
         chatTask = Task {
             do {
@@ -427,6 +444,7 @@ struct ChatView: View {
                     )
                 }
                 try Task.checkCancellation()
+                guard workspaceID == session.activeWorkspaceID else { return }
                 activeSessionID = detail.sessionID
                 activeTitle = detail.title
                 messages = detail.messages.compactMap(ChatMessage.init(historyMessage:))
@@ -441,6 +459,24 @@ struct ChatView: View {
                 )
             }
         }
+    }
+
+    private func resetForWorkspaceChange() {
+        chatTask?.cancel()
+        cancelPendingStreamText()
+        dismissInputFocus()
+        messages = []
+        draft = ""
+        history = []
+        loadingHistoryWorkspaceID = nil
+        isLoadingHistory = false
+        isWaitingForService = false
+        isLoadingConversation = false
+        streamingMessageID = nil
+        activeSessionID = nil
+        activeTitle = "新对话"
+        isSearchPresented = false
+        closeSidebar()
     }
 
     /// 将网络层流式事件合并进当前页面状态。

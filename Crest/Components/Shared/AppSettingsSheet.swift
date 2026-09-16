@@ -4,13 +4,12 @@ import SwiftUI
 struct AppSettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.systemColorScheme) private var systemColorScheme
+    @EnvironmentObject private var session: SessionStore
     @AppStorage(AppTheme.storageKey) private var selectedTheme = AppTheme.dark.rawValue
-
-    let username: String
-    let onSignOut: () -> Void
+    @State private var workspaceError: String?
 
     private var displayName: String {
-        username.isEmpty ? "Crest 用户" : username
+        session.username.isEmpty ? "Crest 用户" : session.username
     }
 
     private var initials: String {
@@ -70,6 +69,33 @@ struct AppSettingsSheet: View {
                         )
                     }
 
+                    settingsSection(title: "工作空间") {
+                        if session.workspaces.isEmpty && session.isLoadingWorkspaces {
+                            ProgressView()
+                                .tint(AppColors.secondaryText)
+                                .frame(maxWidth: .infinity, minHeight: 58)
+                        } else {
+                            ForEach(Array(session.workspaces.enumerated()), id: \.element.id) { index, workspace in
+                                if index > 0 {
+                                    Divider()
+                                        .overlay(AppColors.border)
+                                        .padding(.leading, 58)
+                                }
+
+                                Button {
+                                    switchWorkspace(to: workspace.workspaceID)
+                                } label: {
+                                    workspaceRow(workspace)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(
+                                    workspace.workspaceID == session.activeWorkspaceID
+                                        || session.isSwitchingWorkspace
+                                )
+                            }
+                        }
+                    }
+
                     settingsSection(title: "主题") {
                         Menu {
                             Picker("外观", selection: $selectedTheme) {
@@ -96,7 +122,7 @@ struct AppSettingsSheet: View {
 
             Button {
                 dismiss()
-                onSignOut()
+                session.signOut()
             } label: {
                 Label("退出登录", systemImage: "rectangle.portrait.and.arrow.right")
                     .font(.body.weight(.medium))
@@ -117,6 +143,24 @@ struct AppSettingsSheet: View {
         .background(AppColors.background.ignoresSafeArea())
         .preferredColorScheme(resolvedColorScheme)
         .tint(.blue)
+        .task {
+            do {
+                try await session.loadWorkspaces()
+            } catch {
+                workspaceError = error.localizedDescription
+            }
+        }
+        .alert(
+            "工作空间切换失败",
+            isPresented: Binding(
+                get: { workspaceError != nil },
+                set: { if !$0 { workspaceError = nil } }
+            )
+        ) {
+            Button("好", role: .cancel) {}
+        } message: {
+            Text(workspaceError ?? "请稍后重试")
+        }
     }
 
     /// 统一设置分区标题、间距和圆角容器。
@@ -172,5 +216,50 @@ struct AppSettingsSheet: View {
         .frame(minHeight: 58)
         .padding(.horizontal, 16)
         .contentShape(Rectangle())
+    }
+
+    private func workspaceRow(_ workspace: WorkspaceSummary) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: workspace.workspaceType == .personal ? "person.crop.circle" : "building.2")
+                .font(.system(size: 19, weight: .medium))
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(workspace.name)
+                    .foregroundStyle(AppColors.primaryText)
+                    .lineLimit(1)
+
+                Text(workspace.workspaceType == .personal ? "个人账号" : workspace.role)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 12)
+
+            if session.isSwitchingWorkspace
+                && workspace.workspaceID != session.activeWorkspaceID {
+                ProgressView()
+                    .controlSize(.small)
+                    .tint(AppColors.secondaryText)
+            } else if workspace.workspaceID == session.activeWorkspaceID {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(Color.accentColor)
+            }
+        }
+        .font(.body)
+        .frame(minHeight: 62)
+        .padding(.horizontal, 16)
+        .contentShape(Rectangle())
+    }
+
+    private func switchWorkspace(to workspaceID: String) {
+        Task {
+            do {
+                try await session.switchWorkspace(to: workspaceID)
+            } catch {
+                workspaceError = error.localizedDescription
+            }
+        }
     }
 }

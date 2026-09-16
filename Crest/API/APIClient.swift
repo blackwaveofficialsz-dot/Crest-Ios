@@ -8,6 +8,8 @@ struct LoginResponse: Decodable {
     let userID: String
     let role: String
     let hasPassword: Bool
+    let workspaceType: WorkspaceType
+    let activeWorkspaceID: String
     let refreshToken: String?
 
     enum CodingKeys: String, CodingKey {
@@ -17,6 +19,55 @@ struct LoginResponse: Decodable {
         case userID = "user_id"
         case role
         case hasPassword = "has_password"
+        case workspaceType = "workspace_type"
+        case activeWorkspaceID = "active_workspace_id"
+        case refreshToken = "refresh_token"
+    }
+}
+
+enum WorkspaceType: String, Decodable {
+    case personal
+    case tenant
+}
+
+struct WorkspaceSummary: Decodable, Identifiable {
+    let workspaceID: String
+    let workspaceType: WorkspaceType
+    let name: String
+    let tenantID: String?
+    let role: String
+    let isActive: Bool
+
+    var id: String { workspaceID }
+
+    enum CodingKeys: String, CodingKey {
+        case workspaceID = "workspace_id"
+        case workspaceType = "workspace_type"
+        case name
+        case tenantID = "tenant_id"
+        case role
+        case isActive = "is_active"
+    }
+}
+
+struct WorkspaceListResponse: Decodable {
+    let activeWorkspaceID: String
+    let items: [WorkspaceSummary]
+
+    enum CodingKeys: String, CodingKey {
+        case activeWorkspaceID = "active_workspace_id"
+        case items
+    }
+}
+
+private struct WorkspaceSwitchRequest: Encodable {
+    let workspaceID: String
+    let clientType = "mobile"
+    let refreshToken: String
+
+    enum CodingKeys: String, CodingKey {
+        case workspaceID = "workspace_id"
+        case clientType = "client_type"
         case refreshToken = "refresh_token"
     }
 }
@@ -199,7 +250,23 @@ enum APIError: LocalizedError {
 
 /// 认证接口客户端，统一处理地址、JSON 编解码和 HTTP 错误。
 struct APIClient {
-    let baseURL = URL(string: "https://blackwave.org.cn/yuanji")!
+    let baseURL: URL
+
+    init(baseURL: URL = Self.defaultBaseURL) {
+        self.baseURL = baseURL
+    }
+
+    private static var defaultBaseURL: URL {
+#if DEBUG
+        if let value = ProcessInfo.processInfo.environment["CREST_API_BASE_URL"],
+           let overrideURL = URL(string: value) {
+            return overrideURL
+        }
+        return URL(string: "http://127.0.0.1:8010")!
+#else
+        return URL(string: "https://blackwave.org.cn/yuanji")!
+#endif
+    }
 
     func phoneRegistrationStatus(
         _ request: PhoneRegistrationStatusRequest
@@ -294,6 +361,40 @@ struct APIClient {
             "/api/v1/auth/refresh",
             body: MobileSessionRequest(refreshToken: refreshToken),
             fallbackError: "登录状态刷新失败"
+        )
+    }
+
+    func listWorkspaces(accessToken: String) async throws -> WorkspaceListResponse {
+        var request = URLRequest(url: baseURL.appending(path: "/api/v1/auth/workspaces"))
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let message = readErrorMessage(from: data) ?? "工作空间加载失败（\(http.statusCode)）"
+            if http.statusCode == 401 {
+                throw APIError.unauthorized(message)
+            }
+            throw APIError.server(message)
+        }
+        return try JSONDecoder().decode(WorkspaceListResponse.self, from: data)
+    }
+
+    func switchWorkspace(
+        workspaceID: String,
+        refreshToken: String,
+        accessToken: String
+    ) async throws -> LoginResponse {
+        try await post(
+            "/api/v1/auth/workspaces/switch",
+            body: WorkspaceSwitchRequest(
+                workspaceID: workspaceID,
+                refreshToken: refreshToken
+            ),
+            fallbackError: "工作空间切换失败",
+            accessToken: accessToken
         )
     }
 
