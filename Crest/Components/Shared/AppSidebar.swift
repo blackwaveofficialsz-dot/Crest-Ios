@@ -11,6 +11,9 @@ struct AppSidebar: View {
     let onNewConversation: () -> Void
     let onOpenSearch: () -> Void
     let onSelectSession: (ChatSessionSummary) -> Void
+    let onPinSession: (ChatSessionSummary) -> Void
+    let onRenameSession: (ChatSessionSummary) -> Void
+    let onDeleteSession: (ChatSessionSummary) -> Void
     let onRefresh: () -> Void
     let onOpenSettings: () -> Void
 
@@ -39,7 +42,10 @@ struct AppSidebar: View {
                 }
                 .ignoresSafeArea()
 
-                sidebarContent(bottomInset: geometry.safeAreaInsets.bottom)
+                sidebarContent(
+                    bottomInset: geometry.safeAreaInsets.bottom,
+                    width: width
+                )
                     .frame(width: width)
                     .ignoresSafeArea(edges: .bottom)
                     .offset(x: horizontalOffset)
@@ -49,7 +55,7 @@ struct AppSidebar: View {
         .accessibilityHidden(!isPresented)
     }
 
-    private func sidebarContent(bottomInset: CGFloat) -> some View {
+    private func sidebarContent(bottomInset: CGFloat, width: CGFloat) -> some View {
         ScrollView {
             VStack(spacing: 0) {
                 Button(action: onNewConversation) {
@@ -77,16 +83,6 @@ struct AppSidebar: View {
                     .frame(height: 52)
                 }
                 .buttonStyle(.plain)
-
-                HStack(spacing: 12) {
-                    Image(systemName: "square.grid.2x2")
-                        .frame(width: 22)
-                    Text("库")
-                    Spacer()
-                }
-                .foregroundStyle(AppColors.secondaryText)
-                .padding(.horizontal, 18)
-                .frame(height: 48)
 
                 Divider()
                     .overlay(AppColors.border)
@@ -126,20 +122,35 @@ struct AppSidebar: View {
                                 Button {
                                     onSelectSession(item)
                                 } label: {
-                                    Text(item.title)
-                                        .font(.body)
-                                        .lineLimit(1)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.horizontal, 12)
-                                        .frame(height: 48)
-                                        .background(
-                                            item.sessionID == activeSessionID
-                                                ? AppColors.surface
-                                                : .clear,
-                                            in: RoundedRectangle(cornerRadius: 7)
-                                        )
+                                    sessionRow(item)
                                 }
                                 .buttonStyle(.plain)
+                                .contentShape(
+                                    .contextMenuPreview,
+                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                )
+                                .contextMenu {
+                                    Button {
+                                        onPinSession(item)
+                                    } label: {
+                                        Label("固定", systemImage: "pin")
+                                    }
+
+                                    Button {
+                                        onRenameSession(item)
+                                    } label: {
+                                        Label("重命名", systemImage: "pencil")
+                                    }
+
+                                    Button(role: .destructive) {
+                                        onDeleteSession(item)
+                                    } label: {
+                                        Label("删除", systemImage: "trash")
+                                    }
+                                } preview: {
+                                    sessionRow(item, isContextMenuPreview: true)
+                                        .frame(width: max(0, width - 20))
+                                }
                             }
                         }
                         .padding(.horizontal, 10)
@@ -163,6 +174,27 @@ struct AppSidebar: View {
         .overlay(alignment: .bottom) {
             accountBar(bottomInset: bottomInset)
         }
+    }
+
+    private func sessionRow(
+        _ item: ChatSessionSummary,
+        isContextMenuPreview: Bool = false
+    ) -> some View {
+        Text(item.title)
+            .font(.body)
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 18)
+            .frame(height: 48)
+            .background(
+                isContextMenuPreview || item.sessionID == activeSessionID
+                    ? AppColors.surface
+                    : .clear,
+                in: RoundedRectangle(
+                    cornerRadius: isContextMenuPreview ? 24 : 7,
+                    style: .continuous
+                )
+            )
     }
 
     private var headerBar: some View {

@@ -156,6 +156,9 @@ struct ChatView: View {
             onNewConversation: startNewConversation,
             onOpenSearch: openSearch,
             onSelectSession: openConversation,
+            onPinSession: pinConversation,
+            onRenameSession: renameConversation,
+            onDeleteSession: deleteConversation,
             onRefresh: {
                 Task { await loadHistory() }
             },
@@ -374,6 +377,11 @@ struct ChatView: View {
         closeSidebar()
         isSettingsPresented = true
     }
+
+    // Conversation-management API hooks reserved for the next integration step.
+    private func pinConversation(_: ChatSessionSummary) {}
+    private func renameConversation(_: ChatSessionSummary) {}
+    private func deleteConversation(_: ChatSessionSummary) {}
 
     /// 加载侧边栏历史，并同步当前会话可能被服务端更新的标题。
     private func loadHistory() async {
