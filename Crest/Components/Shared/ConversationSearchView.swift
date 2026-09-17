@@ -97,7 +97,7 @@ struct ConversationSearchView: View {
                                     item.sessionID == activeSessionID
                                         ? AppColors.surface
                                         : .clear,
-                                    in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    in: RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 )
                         }
                         .buttonStyle(.plain)

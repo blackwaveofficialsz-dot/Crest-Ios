@@ -103,6 +103,16 @@ final class SessionStore: ObservableObject {
         workspaces = response.items
     }
 
+    func joinTenant(code: String) async throws -> JoinTenantResponse {
+        let response = try await withAuthenticatedSession { token in
+            try await api.joinTenant(tenantCode: code, accessToken: token)
+        }
+        if response.status == "approved" {
+            try? await loadWorkspaces()
+        }
+        return response
+    }
+
     func switchWorkspace(to workspaceID: String) async throws {
         guard workspaceID != activeWorkspaceID, !isSwitchingWorkspace else { return }
         isSwitchingWorkspace = true

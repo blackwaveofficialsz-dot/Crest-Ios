@@ -16,7 +16,6 @@
 		000000000000000000000116 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000016 /* ChatView.swift */; };
 		000000000000000000000117 /* ChatAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000017 /* ChatAPI.swift */; };
 		000000000000000000000118 /* ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000018 /* ChatModels.swift */; };
-		000000000000000000000119 /* ChatComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000019 /* ChatComponents.swift */; };
 		00000000000000000000011A /* AppSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000001A /* AppSidebar.swift */; };
 		00000000000000000000011B /* LoginComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000001B /* LoginComponents.swift */; };
 		00000000000000000000011C /* AnimatedLoginBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000001C /* AnimatedLoginBackground.swift */; };
@@ -25,6 +24,16 @@
 		00000000000000000000011F /* BackdropBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000001F /* BackdropBlur.swift */; };
 		000000000000000000000122 /* ConversationSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000022 /* ConversationSearchView.swift */; };
 		000000000000000000000123 /* MarkdownMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000023 /* MarkdownMessageView.swift */; };
+		000000000000000000000124 /* SystemGlassButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000024 /* SystemGlassButtonStyle.swift */; };
+		000000000000000000000125 /* SidebarOpenButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000025 /* SidebarOpenButton.swift */; };
+		000000000000000000000126 /* ChatHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000026 /* ChatHeader.swift */; };
+		000000000000000000000127 /* ChatEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000027 /* ChatEmptyState.swift */; };
+		000000000000000000000128 /* ChatComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000028 /* ChatComposer.swift */; };
+		000000000000000000000129 /* ChatMessageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000029 /* ChatMessageList.swift */; };
+		00000000000000000000012A /* ChatBackdrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000002A /* ChatBackdrop.swift */; };
+		00000000000000000000012B /* InitialPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000002B /* InitialPasswordView.swift */; };
+		00000000000000000000012C /* JoinTeamSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000002C /* JoinTeamSheet.swift */; };
+		00000000000000000000012D /* MarkdownBlockParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000002D /* MarkdownBlockParser.swift */; };
 		000000000000000000000120 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000020 /* Assets.xcassets */; };
 		000000000000000000000121 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000021 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -40,7 +49,6 @@
 		000000000000000000000016 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		000000000000000000000017 /* ChatAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAPI.swift; sourceTree = "<group>"; };
 		000000000000000000000018 /* ChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModels.swift; sourceTree = "<group>"; };
-		000000000000000000000019 /* ChatComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatComponents.swift; sourceTree = "<group>"; };
 		00000000000000000000001A /* AppSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSidebar.swift; sourceTree = "<group>"; };
 		00000000000000000000001B /* LoginComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginComponents.swift; sourceTree = "<group>"; };
 		00000000000000000000001C /* AnimatedLoginBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedLoginBackground.swift; sourceTree = "<group>"; };
@@ -51,6 +59,16 @@
 		000000000000000000000021 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Content/Preview Assets.xcassets"; sourceTree = "<group>"; };
 		000000000000000000000022 /* ConversationSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchView.swift; sourceTree = "<group>"; };
 		000000000000000000000023 /* MarkdownMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMessageView.swift; sourceTree = "<group>"; };
+		000000000000000000000024 /* SystemGlassButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemGlassButtonStyle.swift; sourceTree = "<group>"; };
+		000000000000000000000025 /* SidebarOpenButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarOpenButton.swift; sourceTree = "<group>"; };
+		000000000000000000000026 /* ChatHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHeader.swift; sourceTree = "<group>"; };
+		000000000000000000000027 /* ChatEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmptyState.swift; sourceTree = "<group>"; };
+		000000000000000000000028 /* ChatComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatComposer.swift; sourceTree = "<group>"; };
+		000000000000000000000029 /* ChatMessageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageList.swift; sourceTree = "<group>"; };
+		00000000000000000000002A /* ChatBackdrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBackdrop.swift; sourceTree = "<group>"; };
+		00000000000000000000002B /* InitialPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialPasswordView.swift; sourceTree = "<group>"; };
+		00000000000000000000002C /* JoinTeamSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinTeamSheet.swift; sourceTree = "<group>"; };
+		00000000000000000000002D /* MarkdownBlockParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownBlockParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +173,7 @@
 			children = (
 				00000000000000000000001B /* LoginComponents.swift */,
 				00000000000000000000001C /* AnimatedLoginBackground.swift */,
+				00000000000000000000002B /* InitialPasswordView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -162,8 +181,13 @@
 		000000000000000000000009 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				000000000000000000000019 /* ChatComponents.swift */,
+				000000000000000000000026 /* ChatHeader.swift */,
+				000000000000000000000027 /* ChatEmptyState.swift */,
+				000000000000000000000028 /* ChatComposer.swift */,
+				000000000000000000000029 /* ChatMessageList.swift */,
+				00000000000000000000002A /* ChatBackdrop.swift */,
 				000000000000000000000023 /* MarkdownMessageView.swift */,
+				00000000000000000000002D /* MarkdownBlockParser.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -173,8 +197,11 @@
 			children = (
 				00000000000000000000001A /* AppSidebar.swift */,
 				00000000000000000000001D /* AppSettingsSheet.swift */,
+				00000000000000000000002C /* JoinTeamSheet.swift */,
 				00000000000000000000001F /* BackdropBlur.swift */,
 				000000000000000000000022 /* ConversationSearchView.swift */,
+				000000000000000000000025 /* SidebarOpenButton.swift */,
+				000000000000000000000024 /* SystemGlassButtonStyle.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -259,7 +286,6 @@
 				000000000000000000000116 /* ChatView.swift in Sources */,
 				000000000000000000000117 /* ChatAPI.swift in Sources */,
 				000000000000000000000118 /* ChatModels.swift in Sources */,
-				000000000000000000000119 /* ChatComponents.swift in Sources */,
 				00000000000000000000011A /* AppSidebar.swift in Sources */,
 				00000000000000000000011B /* LoginComponents.swift in Sources */,
 				00000000000000000000011C /* AnimatedLoginBackground.swift in Sources */,
@@ -268,6 +294,16 @@
 				00000000000000000000011F /* BackdropBlur.swift in Sources */,
 				000000000000000000000122 /* ConversationSearchView.swift in Sources */,
 				000000000000000000000123 /* MarkdownMessageView.swift in Sources */,
+				000000000000000000000124 /* SystemGlassButtonStyle.swift in Sources */,
+				000000000000000000000125 /* SidebarOpenButton.swift in Sources */,
+				000000000000000000000126 /* ChatHeader.swift in Sources */,
+				000000000000000000000127 /* ChatEmptyState.swift in Sources */,
+				000000000000000000000128 /* ChatComposer.swift in Sources */,
+				000000000000000000000129 /* ChatMessageList.swift in Sources */,
+				00000000000000000000012A /* ChatBackdrop.swift in Sources */,
+				00000000000000000000012B /* InitialPasswordView.swift in Sources */,
+				00000000000000000000012C /* JoinTeamSheet.swift in Sources */,
+				00000000000000000000012D /* MarkdownBlockParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,7 +432,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGNING_REQUIRED = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = RZA2NW5788;
 				DEVELOPMENT_ASSET_PATHS = "\"Crest/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
@@ -430,7 +466,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGNING_REQUIRED = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = RZA2NW5788;
 				DEVELOPMENT_ASSET_PATHS = "\"Crest/Preview Content\"";
 				ENABLE_PREVIEWS = YES;

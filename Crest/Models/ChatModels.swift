@@ -32,6 +32,20 @@ struct ChatAlert: Identifiable {
     let id = UUID()
     let title: String
     let message: String
+    let deletionTarget: ChatSessionSummary?
+    let renameTarget: ChatSessionSummary?
+
+    init(
+        title: String,
+        message: String,
+        deletionTarget: ChatSessionSummary? = nil,
+        renameTarget: ChatSessionSummary? = nil
+    ) {
+        self.title = title
+        self.message = message
+        self.deletionTarget = deletionTarget
+        self.renameTarget = renameTarget
+    }
 }
 
 /// 空白对话页中的快捷问题。

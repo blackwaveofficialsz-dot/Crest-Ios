@@ -7,6 +7,7 @@ struct AppSettingsSheet: View {
     @EnvironmentObject private var session: SessionStore
     @AppStorage(AppTheme.storageKey) private var selectedTheme = AppTheme.dark.rawValue
     @State private var workspaceError: String?
+    @State private var isShowingJoinTeam = false
 
     private var displayName: String {
         session.username.isEmpty ? "Crest 用户" : session.username
@@ -94,6 +95,23 @@ struct AppSettingsSheet: View {
                                 )
                             }
                         }
+
+                        if !session.workspaces.isEmpty {
+                            Divider()
+                                .overlay(AppColors.border)
+                                .padding(.leading, 58)
+                        }
+
+                        Button {
+                            isShowingJoinTeam = true
+                        } label: {
+                            settingsRow(
+                                icon: "person.badge.plus",
+                                title: "加入新团队",
+                                showsChevron: true
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
 
                     settingsSection(title: "主题") {
@@ -143,6 +161,12 @@ struct AppSettingsSheet: View {
         .background(AppColors.background.ignoresSafeArea())
         .preferredColorScheme(resolvedColorScheme)
         .tint(.blue)
+        .sheet(isPresented: $isShowingJoinTeam) {
+            JoinTeamSheet()
+                .environmentObject(session)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
         .task {
             do {
                 try await session.loadWorkspaces()

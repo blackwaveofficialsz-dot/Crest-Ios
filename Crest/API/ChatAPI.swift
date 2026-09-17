@@ -4,6 +4,7 @@ import Foundation
 struct ChatSessionSummary: Decodable, Identifiable {
     let sessionID: String
     let title: String
+    let isPinned: Bool
     let createdAt: String
     let updatedAt: String
 
@@ -12,8 +13,18 @@ struct ChatSessionSummary: Decodable, Identifiable {
     enum CodingKeys: String, CodingKey {
         case sessionID = "session_id"
         case title
+        case isPinned = "is_pinned"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionID = try container.decode(String.self, forKey: .sessionID)
+        title = try container.decode(String.self, forKey: .title)
+        isPinned = try container.decodeIfPresent(Bool.self, forKey: .isPinned) ?? false
+        createdAt = try container.decode(String.self, forKey: .createdAt)
+        updatedAt = try container.decode(String.self, forKey: .updatedAt)
     }
 }
 
@@ -63,6 +74,16 @@ private struct ChatRequest: Encodable {
     }
 }
 
+private struct ChatSessionUpdateRequest: Encodable {
+    let title: String?
+    let isPinned: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case isPinned = "is_pinned"
+    }
+}
+
 /// 聊天、历史记录和流式响应接口。
 extension APIClient {
     func listChatSessions(accessToken: String) async throws -> [ChatSessionSummary] {
@@ -84,6 +105,63 @@ extension APIClient {
             accessToken: accessToken,
             fallbackError: "对话加载失败"
         )
+    }
+
+    func deleteChatSession(
+        sessionID: String,
+        accessToken: String
+    ) async throws {
+        var request = URLRequest(
+            url: baseURL
+                .appending(path: "api/v1/sessions")
+                .appending(path: sessionID)
+        )
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let message = readErrorMessage(from: data) ?? "对话删除失败（\(http.statusCode)）"
+            if http.statusCode == 401 {
+                throw APIError.unauthorized(message)
+            }
+            throw APIError.server(message)
+        }
+    }
+
+    func updateChatSession(
+        sessionID: String,
+        title: String? = nil,
+        isPinned: Bool? = nil,
+        accessToken: String
+    ) async throws -> ChatSessionSummary {
+        var request = URLRequest(
+            url: baseURL
+                .appending(path: "api/v1/sessions")
+                .appending(path: sessionID)
+        )
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.httpBody = try JSONEncoder().encode(
+            ChatSessionUpdateRequest(title: title, isPinned: isPinned)
+        )
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let message = readErrorMessage(from: data) ?? "对话更新失败（\(http.statusCode)）"
+            if http.statusCode == 401 {
+                throw APIError.unauthorized(message)
+            }
+            throw APIError.server(message)
+        }
+        return try JSONDecoder().decode(ChatSessionSummary.self, from: data)
     }
 
     func streamChat(

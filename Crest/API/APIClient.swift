@@ -72,6 +72,19 @@ private struct WorkspaceSwitchRequest: Encodable {
     }
 }
 
+private struct JoinTenantRequest: Encodable {
+    let tenantCode: String
+
+    enum CodingKeys: String, CodingKey {
+        case tenantCode = "tenant_code"
+    }
+}
+
+struct JoinTenantResponse: Decodable {
+    let status: String
+    let message: String
+}
+
 /// 短信验证码用途，原始值必须与后端接口约定一致。
 enum PhoneVerificationPurpose: String, Encodable {
     case login
@@ -380,6 +393,18 @@ struct APIClient {
             throw APIError.server(message)
         }
         return try JSONDecoder().decode(WorkspaceListResponse.self, from: data)
+    }
+
+    func joinTenant(
+        tenantCode: String,
+        accessToken: String
+    ) async throws -> JoinTenantResponse {
+        try await post(
+            "/api/v1/auth/join-tenant",
+            body: JoinTenantRequest(tenantCode: tenantCode),
+            fallbackError: "加入团队失败",
+            accessToken: accessToken
+        )
     }
 
     func switchWorkspace(

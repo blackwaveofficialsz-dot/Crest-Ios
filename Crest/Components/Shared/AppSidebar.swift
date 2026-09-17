@@ -59,15 +59,17 @@ struct AppSidebar: View {
         ScrollView {
             VStack(spacing: 0) {
                 Button(action: onNewConversation) {
-                    Label("发起新对话", systemImage: "square.and.pencil")
-                        .font(.body.weight(.medium))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .frame(height: 54)
-                        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
+                    HStack(spacing: 12) {
+                        Image(systemName: "square.and.pencil")
+                        Text("发起新对话")
+                            .fontWeight(.medium)
+                        Spacer()
+                    }
+                    .font(.body)
+                    .padding(.horizontal, 16)
+                    .frame(height: 40)
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 14)
 
                 Button {
                     onOpenSearch()
@@ -133,7 +135,10 @@ struct AppSidebar: View {
                                     Button {
                                         onPinSession(item)
                                     } label: {
-                                        Label("固定", systemImage: "pin")
+                                        Label(
+                                            item.isPinned ? "取消固定" : "固定",
+                                            systemImage: item.isPinned ? "pin.slash" : "pin"
+                                        )
                                     }
 
                                     Button {
@@ -180,18 +185,32 @@ struct AppSidebar: View {
         _ item: ChatSessionSummary,
         isContextMenuPreview: Bool = false
     ) -> some View {
-        Text(item.title)
-            .font(.body)
-            .lineLimit(1)
+        let isActive = item.sessionID == activeSessionID
+
+        return HStack(spacing: 8) {
+            Text(item.title)
+                .font(.body.weight(isActive ? .medium : .regular))
+                .lineLimit(1)
+
+            Spacer(minLength: 0)
+
+            if item.isPinned {
+                Image(systemName: "pin.fill")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(AppColors.secondaryText)
+            }
+        }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 18)
             .frame(height: 48)
             .background(
-                isContextMenuPreview || item.sessionID == activeSessionID
+                isContextMenuPreview
                     ? AppColors.surface
-                    : .clear,
+                    : isActive
+                        ? AppColors.primaryText.opacity(0.03)
+                        : .clear,
                 in: RoundedRectangle(
-                    cornerRadius: isContextMenuPreview ? 24 : 7,
+                    cornerRadius:  24,
                     style: .continuous
                 )
             )
@@ -272,50 +291,6 @@ struct AppSidebar: View {
     private func close() {
         withAnimation(.easeIn(duration: 0.21)) {
             isPresented = false
-        }
-    }
-}
-
-/// 聊天和搜索页面共用的系统侧边栏按钮。
-struct SidebarOpenButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: "line.3.horizontal")
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(AppColors.primaryText)
-                .frame(width: 22, height: 22)
-        }
-        .frame(width: 44, height: 44)
-        .accessibilityLabel("打开侧边栏")
-        .systemGlassCircleButton()
-    }
-}
-
-extension View {
-    /// iOS 26 使用原生玻璃按钮，旧系统回退到原生描边圆形按钮。
-    @ViewBuilder
-    func systemGlassCircleButton() -> some View {
-        if #available(iOS 26.0, *) {
-            buttonStyle(.glass)
-                .buttonBorderShape(.circle)
-        } else {
-            buttonStyle(.bordered)
-                .buttonBorderShape(.circle)
-                .tint(AppColors.primaryText)
-        }
-    }
-
-    /// 保留强调色填充的系统玻璃圆形按钮。
-    @ViewBuilder
-    func systemGlassProminentCircleButton() -> some View {
-        if #available(iOS 26.0, *) {
-            buttonStyle(.glassProminent)
-                .buttonBorderShape(.circle)
-        } else {
-            buttonStyle(.borderedProminent)
-                .buttonBorderShape(.circle)
         }
     }
 }

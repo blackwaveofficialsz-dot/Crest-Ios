@@ -25,9 +25,12 @@ struct ChatView: View {
     @State private var isSettingsPresented = false
     @State private var isSettingPassword = false
     @State private var presentedAlert: ChatAlert?
+    @State private var renameDraft = ""
     @State private var chatTask: Task<Void, Never>?
     @State private var pendingStreamText = ""
     @State private var streamFlushTask: Task<Void, Never>?
+    @State private var isCopyToastPresented = false
+    @State private var copyToastTask: Task<Void, Never>?
 
     private let sidebarEdgeWidth: CGFloat = 32
     private let sidebarDistanceThreshold: CGFloat = 0.34
@@ -62,13 +65,43 @@ struct ChatView: View {
             .simultaneousGesture(sidebarDragGesture(drawerWidth: geometry.size.width))
         }
         .animation(.easeInOut(duration: 0.28), value: isSearchPresented)
+        .overlay(alignment: .top) {
+            if isCopyToastPresented {
+                CopyConfirmationToast()
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .allowsHitTesting(false)
+            }
+        }
         .sensoryFeedback(.impact(weight: .light), trigger: isSidebarOpen)
-        .alert(item: $presentedAlert) { alert in
-            Alert(
-                title: Text(alert.title),
-                message: Text(alert.message),
-                dismissButton: .default(Text("好"))
-            )
+        .alert(
+            presentedAlert?.title ?? "",
+            isPresented: Binding(
+                get: { presentedAlert != nil },
+                set: { if !$0 { presentedAlert = nil } }
+            ),
+            presenting: presentedAlert
+        ) { alert in
+            if let item = alert.renameTarget {
+                TextField("对话名称", text: $renameDraft)
+                Button("取消", role: .cancel) {}
+                Button("保存") {
+                    performRenameConversation(item)
+                }
+                .disabled(
+                    renameDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        || renameDraft.trimmingCharacters(in: .whitespacesAndNewlines) == item.title
+                )
+            } else if let item = alert.deletionTarget {
+                Button("取消", role: .cancel) {}
+                Button("确认", role: .destructive) {
+                    performDeleteConversation(item)
+                }
+            } else {
+                Button("好") {}
+            }
+        } message: { alert in
+            Text(alert.message)
         }
         .task(id: session.activeWorkspaceID) {
             resetForWorkspaceChange()
@@ -77,6 +110,7 @@ struct ChatView: View {
         .onDisappear {
             chatTask?.cancel()
             cancelPendingStreamText()
+            copyToastTask?.cancel()
         }
         .sheet(isPresented: $isSettingsPresented) {
             AppSettingsSheet()
@@ -197,7 +231,10 @@ struct ChatView: View {
                     ChatMessageList(
                         messages: messages,
                         streamingMessageID: streamingMessageID,
-                        streamStatus: streamStatus
+                        streamStatus: streamStatus,
+                        canRetry: !isWaitingForService,
+                        onCopy: showCopyConfirmation,
+                        onRetry: retryResponse
                     )
                 }
             }
@@ -228,9 +265,43 @@ struct ChatView: View {
             && !isWaitingForService
     }
 
+    private func showCopyConfirmation() {
+        copyToastTask?.cancel()
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
+            isCopyToastPresented = true
+        }
+        copyToastTask = Task { @MainActor in
+            do {
+                try await Task.sleep(for: .seconds(3))
+            } catch {
+                return
+            }
+            withAnimation(.easeOut(duration: 0.2)) {
+                isCopyToastPresented = false
+            }
+        }
+    }
+
     /// 先插入空的助手消息占位，再把流式片段持续追加到同一条消息。
     private func sendMessage() {
         let content = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        sendMessage(content, clearsDraft: true)
+    }
+
+    /// 当前接口没有“重新生成”能力，重试时按一次新消息重新发送原问题。
+    private func retryResponse(_ assistantMessage: ChatMessage) {
+        guard !isWaitingForService,
+              let assistantIndex = messages.firstIndex(where: { $0.id == assistantMessage.id }),
+              let userMessage = messages[..<assistantIndex].reversed().first(where: { message in
+                  if case .user = message.role { return true }
+                  return false
+              }) else { return }
+
+        sendMessage(userMessage.content, clearsDraft: false)
+    }
+
+    private func sendMessage(_ rawContent: String, clearsDraft: Bool) {
+        let content = rawContent.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty, !isWaitingForService else { return }
 
         let requestSessionID = activeSessionID ?? UUID().uuidString
@@ -241,7 +312,9 @@ struct ChatView: View {
         withAnimation(.easeOut(duration: 0.2)) {
             messages.append(ChatMessage(role: .user, content: content))
             messages.append(ChatMessage(id: assistantID, role: .assistant, content: ""))
-            draft = ""
+            if clearsDraft {
+                draft = ""
+            }
             isWaitingForService = true
             streamingMessageID = assistantID
             streamStatus = "正在连接"
@@ -381,10 +454,127 @@ struct ChatView: View {
         isSettingsPresented = true
     }
 
-    // Conversation-management API hooks reserved for the next integration step.
-    private func pinConversation(_: ChatSessionSummary) {}
-    private func renameConversation(_: ChatSessionSummary) {}
-    private func deleteConversation(_: ChatSessionSummary) {}
+    private func pinConversation(_ item: ChatSessionSummary) {
+        let workspaceID = session.activeWorkspaceID
+        Task {
+            do {
+                let updated = try await session.withAuthenticatedSession { token in
+                    try await api.updateChatSession(
+                        sessionID: item.sessionID,
+                        isPinned: !item.isPinned,
+                        accessToken: token
+                    )
+                }
+                guard workspaceID == session.activeWorkspaceID else { return }
+                replaceHistoryItem(updated)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard workspaceID == session.activeWorkspaceID else { return }
+                presentedAlert = ChatAlert(
+                    title: item.isPinned ? "取消固定失败" : "固定失败",
+                    message: error.localizedDescription
+                )
+            }
+        }
+    }
+
+    private func renameConversation(_ item: ChatSessionSummary) {
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(250))
+            renameDraft = item.title
+            presentedAlert = ChatAlert(
+                title: "重命名对话",
+                message: "输入新的对话名称",
+                renameTarget: item
+            )
+        }
+    }
+
+    private func performRenameConversation(_ item: ChatSessionSummary) {
+        let title = renameDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !title.isEmpty, title != item.title else { return }
+        let workspaceID = session.activeWorkspaceID
+
+        Task {
+            do {
+                let updated = try await session.withAuthenticatedSession { token in
+                    try await api.updateChatSession(
+                        sessionID: item.sessionID,
+                        title: title,
+                        accessToken: token
+                    )
+                }
+                guard workspaceID == session.activeWorkspaceID else { return }
+                replaceHistoryItem(updated)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard workspaceID == session.activeWorkspaceID else { return }
+                presentedAlert = ChatAlert(
+                    title: "重命名失败",
+                    message: error.localizedDescription
+                )
+            }
+        }
+    }
+
+    private func replaceHistoryItem(_ updated: ChatSessionSummary) {
+        guard let index = history.firstIndex(where: { $0.sessionID == updated.sessionID }) else {
+            return
+        }
+        history[index] = updated
+        history.sort {
+            if $0.isPinned != $1.isPinned {
+                return $0.isPinned
+            }
+            return $0.updatedAt > $1.updatedAt
+        }
+        if activeSessionID == updated.sessionID {
+            activeTitle = updated.title
+        }
+    }
+
+    private func deleteConversation(_ item: ChatSessionSummary) {
+        Task { @MainActor in
+            // 等待系统长按菜单完成收起，避免 Alert 的展示请求被菜单吞掉。
+            try? await Task.sleep(for: .milliseconds(250))
+            presentedAlert = ChatAlert(
+                title: "要删除对话吗？",
+                message: "这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。",
+                deletionTarget: item
+            )
+        }
+    }
+
+    private func performDeleteConversation(_ item: ChatSessionSummary) {
+        let workspaceID = session.activeWorkspaceID
+
+        Task {
+            do {
+                try await session.withAuthenticatedSession { token in
+                    try await api.deleteChatSession(
+                        sessionID: item.sessionID,
+                        accessToken: token
+                    )
+                }
+                guard workspaceID == session.activeWorkspaceID else { return }
+
+                history.removeAll { $0.sessionID == item.sessionID }
+                if activeSessionID == item.sessionID {
+                    startNewConversation()
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                guard workspaceID == session.activeWorkspaceID else { return }
+                presentedAlert = ChatAlert(
+                    title: "删除失败",
+                    message: error.localizedDescription
+                )
+            }
+        }
+    }
 
     /// 加载侧边栏历史，并同步当前会话可能被服务端更新的标题。
     private func loadHistory() async {
@@ -564,6 +754,23 @@ struct ChatView: View {
 
     private var sidebarSnapBackAnimation: Animation {
         .spring(response: 0.24, dampingFraction: 0.86, blendDuration: 0)
+    }
+}
+
+private struct CopyConfirmationToast: View {
+    var body: some View {
+        Label("已复制到剪贴板", systemImage: "checkmark.circle.fill")
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(AppColors.primaryText)
+            .padding(.horizontal, 16)
+            .frame(height: 44)
+            .background(AppColors.surface, in: Capsule())
+            .overlay {
+                Capsule()
+                    .stroke(AppColors.border, lineWidth: 1)
+            }
+            .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
+            .accessibilityLabel("已复制到剪贴板")
     }
 }
 
