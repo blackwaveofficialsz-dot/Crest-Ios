@@ -198,6 +198,42 @@ struct InitialPasswordResponse: Decodable {
     }
 }
 
+struct AccountProfileResponse: Decodable {
+    let userID: String
+    let username: String
+    let displayName: String
+    let hasAvatar: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case userID = "user_id"
+        case username
+        case displayName = "display_name"
+        case hasAvatar = "has_avatar"
+    }
+}
+
+private struct AccountProfileUpdateRequest: Encodable {
+    let displayName: String
+
+    enum CodingKeys: String, CodingKey {
+        case displayName = "display_name"
+    }
+}
+
+private struct ChangePasswordRequest: Encodable {
+    let oldPassword: String
+    let newPassword: String
+
+    enum CodingKeys: String, CodingKey {
+        case oldPassword = "old_password"
+        case newPassword = "new_password"
+    }
+}
+
+struct ChangePasswordResponse: Decodable {
+    let message: String
+}
+
 struct ResetPasswordRequest: Encodable {
     let verificationToken: String
     let newPassword: String
@@ -369,6 +405,77 @@ struct APIClient {
         )
     }
 
+    func accountProfile(accessToken: String) async throws -> AccountProfileResponse {
+        try await authenticatedJSONRequest(
+            "/api/v1/auth/profile",
+            accessToken: accessToken,
+            fallbackError: "个人资料加载失败"
+        )
+    }
+
+    func updateDisplayName(
+        _ displayName: String,
+        accessToken: String
+    ) async throws -> AccountProfileResponse {
+        try await authenticatedJSONRequest(
+            "/api/v1/auth/profile",
+            method: "PATCH",
+            body: JSONEncoder().encode(AccountProfileUpdateRequest(displayName: displayName)),
+            accessToken: accessToken,
+            fallbackError: "昵称修改失败"
+        )
+    }
+
+    func accountAvatar(accessToken: String) async throws -> Data? {
+        var request = URLRequest(url: baseURL.appending(path: "/api/v1/auth/profile/avatar"))
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        if http.statusCode == 404 { return nil }
+        guard (200..<300).contains(http.statusCode) else {
+            throw apiError(from: data, response: http, fallbackError: "头像加载失败")
+        }
+        return data
+    }
+
+    func uploadAccountAvatar(
+        _ imageData: Data,
+        accessToken: String
+    ) async throws -> AccountProfileResponse {
+        let boundary = "CrestBoundary-\(UUID().uuidString)"
+        var body = Data()
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"avatar.jpg\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+
+        return try await authenticatedJSONRequest(
+            "/api/v1/auth/profile/avatar",
+            method: "PUT",
+            body: body,
+            contentType: "multipart/form-data; boundary=\(boundary)",
+            accessToken: accessToken,
+            fallbackError: "头像上传失败"
+        )
+    }
+
+    func changePassword(
+        oldPassword: String,
+        newPassword: String,
+        accessToken: String
+    ) async throws -> ChangePasswordResponse {
+        try await post(
+            "/api/v1/auth/change-password",
+            body: ChangePasswordRequest(oldPassword: oldPassword, newPassword: newPassword),
+            fallbackError: "密码修改失败",
+            accessToken: accessToken
+        )
+    }
+
     func refreshSession(refreshToken: String) async throws -> LoginResponse {
         try await post(
             "/api/v1/auth/refresh",
@@ -474,6 +581,42 @@ struct APIClient {
             throw APIError.server(message)
         }
         return try JSONDecoder().decode(ResponseBody.self, from: data)
+    }
+
+    private func authenticatedJSONRequest<ResponseBody: Decodable>(
+        _ path: String,
+        method: String = "GET",
+        body: Data? = nil,
+        contentType: String = "application/json",
+        accessToken: String,
+        fallbackError: String
+    ) async throws -> ResponseBody {
+        var request = URLRequest(url: baseURL.appending(path: path))
+        request.httpMethod = method
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.httpBody = body
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            throw apiError(from: data, response: http, fallbackError: fallbackError)
+        }
+        return try JSONDecoder().decode(ResponseBody.self, from: data)
+    }
+
+    private func apiError(
+        from data: Data,
+        response: HTTPURLResponse,
+        fallbackError: String
+    ) -> APIError {
+        let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(response.statusCode)）"
+        if response.statusCode == 401 {
+            return .unauthorized(message)
+        }
+        return .server(message)
     }
 
     func readErrorMessage(from data: Data) -> String? {

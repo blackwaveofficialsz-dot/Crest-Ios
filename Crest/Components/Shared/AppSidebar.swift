@@ -1,10 +1,12 @@
 import SwiftUI
+import UIKit
 
 /// 可在多个业务页面复用的全屏会话侧边栏。
 struct AppSidebar: View {
     @Binding var isPresented: Bool
     let dragTranslation: CGFloat
     let username: String
+    let avatarData: Data?
     let sessions: [ChatSessionSummary]
     let activeSessionID: String?
     let isLoading: Bool
@@ -247,9 +249,19 @@ struct AppSidebar: View {
                 onOpenSettings()
             } label: {
                 HStack(spacing: 12) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 34))
-                        .foregroundStyle(AppColors.secondaryText)
+                    Group {
+                        if let avatarData, let image = UIImage(data: avatarData) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+                    }
+                    .frame(width: 34, height: 34)
+                    .clipShape(Circle())
 
                     Text(username.isEmpty ? "账户" : username)
                         .font(.body.weight(.medium))

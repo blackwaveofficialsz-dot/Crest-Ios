@@ -6,6 +6,8 @@ final class SessionStore: ObservableObject {
     @Published private(set) var isSignedIn = false
     @Published private(set) var isRestoringSession: Bool
     @Published private(set) var username = ""
+    @Published private(set) var displayName = ""
+    @Published private(set) var avatarData: Data?
     @Published private(set) var tenantID: String?
     @Published private(set) var role = ""
     @Published private(set) var hasPassword = false
@@ -27,11 +29,15 @@ final class SessionStore: ObservableObject {
         isRestoringSession = keychain.readRefreshToken() != nil
     }
 
+    var accountDisplayName: String {
+        displayName.isEmpty ? (username.isEmpty ? "Crest 用户" : username) : displayName
+    }
+
     func signIn(phone: String, password: String) async throws {
         do {
             let response = try await api.login(phone: phone, password: password)
             try startSession(with: response)
-            try? await loadWorkspaces()
+            await loadAccountData()
         } catch {
             clearLocalSession()
             throw error
@@ -42,7 +48,7 @@ final class SessionStore: ObservableObject {
         do {
             let response = try await api.loginWithCode(verificationToken: verificationToken)
             try startSession(with: response)
-            try? await loadWorkspaces()
+            await loadAccountData()
         } catch {
             clearLocalSession()
             throw error
@@ -53,7 +59,7 @@ final class SessionStore: ObservableObject {
         do {
             let response = try await api.registerPersonal(verificationToken: verificationToken)
             try startSession(with: response)
-            try? await loadWorkspaces()
+            await loadAccountData()
         } catch {
             clearLocalSession()
             throw error
@@ -67,6 +73,43 @@ final class SessionStore: ObservableObject {
         hasPassword = response.hasPassword
     }
 
+    func loadAccountProfile() async throws {
+        let profile = try await withAuthenticatedSession { token in
+            try await api.accountProfile(accessToken: token)
+        }
+        username = profile.username
+        displayName = profile.displayName
+        avatarData = profile.hasAvatar
+            ? try await withAuthenticatedSession { token in
+                try await api.accountAvatar(accessToken: token)
+            }
+            : nil
+    }
+
+    func updateDisplayName(_ newDisplayName: String) async throws {
+        let profile = try await withAuthenticatedSession { token in
+            try await api.updateDisplayName(newDisplayName, accessToken: token)
+        }
+        displayName = profile.displayName
+    }
+
+    func updateAvatar(_ imageData: Data) async throws {
+        _ = try await withAuthenticatedSession { token in
+            try await api.uploadAccountAvatar(imageData, accessToken: token)
+        }
+        avatarData = imageData
+    }
+
+    func changePassword(oldPassword: String, newPassword: String) async throws {
+        _ = try await withAuthenticatedSession { token in
+            try await api.changePassword(
+                oldPassword: oldPassword,
+                newPassword: newPassword,
+                accessToken: token
+            )
+        }
+    }
+
     /// 应用启动时使用 Keychain 中的刷新令牌恢复会话，仅尝试一次。
     func restoreSession() async {
         guard !didAttemptRestore else { return }
@@ -78,10 +121,12 @@ final class SessionStore: ObservableObject {
             return
         }
         if await refreshStoredSession() {
-            try? await loadWorkspaces()
+            await loadAccountData()
         } else {
             accessToken = nil
             username = ""
+            displayName = ""
+            avatarData = nil
             tenantID = nil
             role = ""
             hasPassword = false
@@ -129,7 +174,7 @@ final class SessionStore: ObservableObject {
             )
         }
         try startSession(with: response)
-        try? await loadWorkspaces()
+        await loadAccountData()
     }
 
     func signOut() {
@@ -198,6 +243,11 @@ final class SessionStore: ObservableObject {
         isSignedIn = true
     }
 
+    private func loadAccountData() async {
+        try? await loadWorkspaces()
+        try? await loadAccountProfile()
+    }
+
     private func refreshStoredSession() async -> Bool {
         let epoch = sessionEpoch
         do {
@@ -238,6 +288,8 @@ final class SessionStore: ObservableObject {
         accessToken = nil
         keychain.deleteSessionTokens()
         username = ""
+        displayName = ""
+        avatarData = nil
         tenantID = nil
         role = ""
         hasPassword = false

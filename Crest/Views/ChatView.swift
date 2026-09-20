@@ -183,7 +183,8 @@ struct ChatView: View {
         AppSidebar(
             isPresented: $isSidebarOpen,
             dragTranslation: sidebarDragTranslation,
-            username: session.username,
+            username: session.accountDisplayName,
+            avatarData: session.avatarData,
             sessions: history,
             activeSessionID: activeSessionID,
             isLoading: isLoadingHistory,
