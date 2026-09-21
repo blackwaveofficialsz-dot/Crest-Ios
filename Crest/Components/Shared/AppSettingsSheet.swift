@@ -356,12 +356,197 @@ private struct AccountAvatarView: View {
     }
 }
 
+private struct AvatarCropSelection: Identifiable {
+    let id = UUID()
+    let image: UIImage
+}
+
+private struct AvatarCropView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let image: UIImage
+    let onConfirm: (Data) -> Void
+
+    @State private var zoom: CGFloat = 1
+    @State private var offset = CGSize.zero
+    @GestureState private var gestureZoom: CGFloat = 1
+    @GestureState private var gestureOffset = CGSize.zero
+    @State private var errorMessage: String?
+
+    private let maximumZoom: CGFloat = 4
+
+    var body: some View {
+        NavigationStack {
+            GeometryReader { proxy in
+                let cropSize = min(proxy.size.width - 32, proxy.size.height - 128)
+                let visibleZoom = min(max(zoom * gestureZoom, 1), maximumZoom)
+                let visibleOffset = clampedOffset(
+                    CGSize(
+                        width: offset.width + gestureOffset.width,
+                        height: offset.height + gestureOffset.height
+                    ),
+                    cropSize: cropSize,
+                    zoom: visibleZoom
+                )
+
+                VStack(spacing: 28) {
+                    Spacer(minLength: 0)
+
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: cropSize, height: cropSize)
+                        .scaleEffect(visibleZoom)
+                        .offset(visibleOffset)
+                        .frame(width: cropSize, height: cropSize)
+                        .clipShape(Circle())
+                        .overlay {
+                            Circle()
+                                .stroke(.white.opacity(0.9), lineWidth: 1)
+                        }
+                        .contentShape(Circle())
+                        .simultaneousGesture(dragGesture(cropSize: cropSize))
+                        .simultaneousGesture(zoomGesture(cropSize: cropSize))
+
+                    HStack(spacing: 14) {
+                        Image(systemName: "minus.magnifyingglass")
+                        Slider(
+                            value: Binding(
+                                get: { zoom },
+                                set: { newZoom in
+                                    zoom = newZoom
+                                    offset = clampedOffset(offset, cropSize: cropSize, zoom: newZoom)
+                                }
+                            ),
+                            in: 1...maximumZoom
+                        )
+                        Image(systemName: "plus.magnifyingglass")
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 24)
+
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("取消") { dismiss() }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("使用") {
+                            guard let data = croppedJPEGData(
+                                cropSize: cropSize,
+                                zoom: visibleZoom,
+                                offset: visibleOffset
+                            ) else {
+                                errorMessage = "无法处理所选图片"
+                                return
+                            }
+                            dismiss()
+                            onConfirm(data)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("调整头像")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color.black)
+            .preferredColorScheme(.dark)
+            .alert(
+                "头像处理失败",
+                isPresented: Binding(
+                    get: { errorMessage != nil },
+                    set: { if !$0 { errorMessage = nil } }
+                )
+            ) {
+                Button("好", role: .cancel) {}
+            } message: {
+                Text(errorMessage ?? "请重新选择图片")
+            }
+        }
+    }
+
+    private func dragGesture(cropSize: CGFloat) -> some Gesture {
+        DragGesture()
+            .updating($gestureOffset) { value, state, _ in
+                state = value.translation
+            }
+            .onEnded { value in
+                offset = clampedOffset(
+                    CGSize(
+                        width: offset.width + value.translation.width,
+                        height: offset.height + value.translation.height
+                    ),
+                    cropSize: cropSize,
+                    zoom: zoom
+                )
+            }
+    }
+
+    private func zoomGesture(cropSize: CGFloat) -> some Gesture {
+        MagnificationGesture()
+            .updating($gestureZoom) { value, state, _ in
+                state = value
+            }
+            .onEnded { value in
+                let newZoom = min(max(zoom * value, 1), maximumZoom)
+                zoom = newZoom
+                offset = clampedOffset(offset, cropSize: cropSize, zoom: newZoom)
+            }
+    }
+
+    private func clampedOffset(_ proposed: CGSize, cropSize: CGFloat, zoom: CGFloat) -> CGSize {
+        let scale = max(cropSize / image.size.width, cropSize / image.size.height)
+        let width = image.size.width * scale * zoom
+        let height = image.size.height * scale * zoom
+        let horizontalLimit = max(0, (width - cropSize) / 2)
+        let verticalLimit = max(0, (height - cropSize) / 2)
+
+        return CGSize(
+            width: min(max(proposed.width, -horizontalLimit), horizontalLimit),
+            height: min(max(proposed.height, -verticalLimit), verticalLimit)
+        )
+    }
+
+    private func croppedJPEGData(cropSize: CGFloat, zoom: CGFloat, offset: CGSize) -> Data? {
+        let outputSize = CGSize(width: 512, height: 512)
+        let imageScale = max(cropSize / image.size.width, cropSize / image.size.height) * zoom
+        let outputScale = outputSize.width / cropSize
+        let drawSize = CGSize(
+            width: image.size.width * imageScale * outputScale,
+            height: image.size.height * imageScale * outputScale
+        )
+        let drawOrigin = CGPoint(
+            x: (outputSize.width - drawSize.width) / 2 + offset.width * outputScale,
+            y: (outputSize.height - drawSize.height) / 2 + offset.height * outputScale
+        )
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        let renderer = UIGraphicsImageRenderer(size: outputSize, format: format)
+        let croppedImage = renderer.image { context in
+            UIColor.black.setFill()
+            context.fill(CGRect(origin: .zero, size: outputSize))
+            image.draw(in: CGRect(origin: drawOrigin, size: drawSize))
+        }
+
+        for quality in [0.82, 0.68, 0.52] {
+            if let data = croppedImage.jpegData(compressionQuality: quality), data.count <= 1024 * 1024 {
+                return data
+            }
+        }
+        return nil
+    }
+}
+
 private struct AccountProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var session: SessionStore
 
     @State private var displayName = ""
     @State private var selectedPhoto: PhotosPickerItem?
+    @State private var cropSelection: AvatarCropSelection?
     @State private var isSaving = false
     @State private var isUploadingAvatar = false
     @State private var errorMessage: String?
@@ -419,12 +604,20 @@ private struct AccountProfileView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(.primary)
+                    }
+                    .accessibilityLabel("取消")
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button {
                         Task { await saveDisplayName() }
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(.blue)
                     }
+                    .accessibilityLabel("保存")
                     .disabled(!canSave)
                 }
             }
@@ -433,7 +626,12 @@ private struct AccountProfileView: View {
             }
             .onChange(of: selectedPhoto) { _, item in
                 guard let item else { return }
-                Task { await uploadAvatar(from: item) }
+                Task { await prepareAvatarCrop(from: item) }
+            }
+            .fullScreenCover(item: $cropSelection) { selection in
+                AvatarCropView(image: selection.image) { avatarData in
+                    Task { await uploadAvatar(avatarData) }
+                }
             }
             .alert(
                 "个人资料修改失败",
@@ -462,7 +660,7 @@ private struct AccountProfileView: View {
         }
     }
 
-    private func uploadAvatar(from item: PhotosPickerItem) async {
+    private func prepareAvatarCrop(from item: PhotosPickerItem) async {
         isUploadingAvatar = true
         defer {
             isUploadingAvatar = false
@@ -472,37 +670,26 @@ private struct AccountProfileView: View {
         do {
             guard
                 let originalData = try await item.loadTransferable(type: Data.self),
-                let image = UIImage(data: originalData),
-                let avatarData = resizedJPEGData(from: image)
+                let image = UIImage(data: originalData)
             else {
                 errorMessage = "无法读取所选图片"
                 return
             }
-            try await session.updateAvatar(avatarData)
+            cropSelection = AvatarCropSelection(image: image)
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 
-    private func resizedJPEGData(from image: UIImage) -> Data? {
-        let targetSize = CGSize(width: 512, height: 512)
-        let scale = max(targetSize.width / image.size.width, targetSize.height / image.size.height)
-        let drawSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
-        let origin = CGPoint(
-            x: (targetSize.width - drawSize.width) / 2,
-            y: (targetSize.height - drawSize.height) / 2
-        )
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
-        let resized = renderer.image { _ in
-            image.draw(in: CGRect(origin: origin, size: drawSize))
-        }
+    private func uploadAvatar(_ avatarData: Data) async {
+        isUploadingAvatar = true
+        defer { isUploadingAvatar = false }
 
-        for quality in [0.82, 0.68, 0.52] {
-            if let data = resized.jpegData(compressionQuality: quality), data.count <= 1024 * 1024 {
-                return data
-            }
+        do {
+            try await session.updateAvatar(avatarData)
+        } catch {
+            errorMessage = error.localizedDescription
         }
-        return nil
     }
 }
 
@@ -562,12 +749,20 @@ private struct ChangePasswordView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(.primary)
+                    }
+                    .accessibilityLabel("取消")
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
+                    Button {
                         Task { await submit() }
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(.blue)
                     }
+                    .accessibilityLabel("完成")
                     .disabled(!canSubmit)
                 }
             }
