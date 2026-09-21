@@ -9,12 +9,15 @@ struct ChatMessageList: View {
     let canRetry: Bool
     let onCopy: () -> Void
     let onRetry: (ChatMessage) -> Void
+    let playback: ChatTextPlayback
 
     var body: some View {
         LazyVStack(spacing: 22) {
             ForEach(messages) { message in
                 MessageRow(
                     message: message,
+                    displayText: message.id == playback.messageID ? playback.visibleText : message.content,
+                    isPlaying: message.id == playback.messageID && playback.hasPendingText,
                     loadingLabel: message.id == streamingMessageID ? streamStatus : nil,
                     canRetry: canRetry,
                     onCopy: onCopy,
@@ -29,6 +32,8 @@ struct ChatMessageList: View {
 
 private struct MessageRow: View {
     let message: ChatMessage
+    let displayText: String
+    let isPlaying: Bool
     let loadingLabel: String?
     let canRetry: Bool
     let onCopy: () -> Void
@@ -64,14 +69,14 @@ private struct MessageRow: View {
                     .padding(.top, 5)
                 } else {
                     MarkdownMessageView(
-                        content: message.content,
-                        isStreaming: loadingLabel != nil
+                        content: displayText,
+                        isStreaming: loadingLabel != nil || isPlaying
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-                   loadingLabel == nil {
+                   loadingLabel == nil, !isPlaying {
                     AssistantMessageActions(
                         content: message.content,
                         canRetry: canRetry,

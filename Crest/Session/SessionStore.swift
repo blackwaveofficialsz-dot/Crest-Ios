@@ -26,6 +26,8 @@ final class SessionStore: ObservableObject {
     private var didAttemptRestore = false
     private var sessionEpoch = 0
 
+    private static let lastWorkspaceKeyPrefix = "com.blackwave.crest.lastWorkspace."
+
     init() {
         isRestoringSession = keychain.readRefreshToken() != nil
     }
@@ -176,6 +178,7 @@ final class SessionStore: ObservableObject {
             )
         }
         try startSession(with: response)
+        rememberActiveWorkspace()
         await loadAccountData()
     }
 
@@ -248,8 +251,44 @@ final class SessionStore: ObservableObject {
     }
 
     private func loadAccountData() async {
-        try? await loadWorkspaces()
+        do {
+            try await loadWorkspaces()
+            if await restoreRememberedWorkspaceIfNeeded() {
+                return
+            }
+        } catch {}
         try? await loadAccountProfile()
+    }
+
+    private func restoreRememberedWorkspaceIfNeeded() async -> Bool {
+        guard !userID.isEmpty,
+              let rememberedWorkspaceID = UserDefaults.standard.string(
+                  forKey: Self.lastWorkspaceKeyPrefix + userID
+              )
+        else {
+            rememberActiveWorkspace()
+            return false
+        }
+        guard rememberedWorkspaceID != activeWorkspaceID else { return false }
+        guard workspaces.contains(where: { $0.workspaceID == rememberedWorkspaceID }) else {
+            rememberActiveWorkspace()
+            return false
+        }
+
+        do {
+            try await switchWorkspace(to: rememberedWorkspaceID)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    private func rememberActiveWorkspace() {
+        guard !userID.isEmpty else { return }
+        UserDefaults.standard.set(
+            activeWorkspaceID,
+            forKey: Self.lastWorkspaceKeyPrefix + userID
+        )
     }
 
     private func refreshStoredSession() async -> Bool {

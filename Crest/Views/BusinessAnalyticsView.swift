@@ -1,6 +1,7 @@
 import Charts
 import Foundation
 import SwiftUI
+import UIKit
 import UniformTypeIdentifiers
 
 struct BusinessAnalyticsView: View {
@@ -254,7 +255,6 @@ struct BusinessAnalyticsView: View {
                 AnalyticsDashboardContent(
                     overview: overview,
                     trend: revenueTrend,
-                    onSelectStore: { selectedDetail = .dimension($0, subtitle: "\(dateFrom) 至 \(dateTo)") },
                     onSelectChannel: { selectedDetail = .dimension($0, subtitle: "\(dateFrom) 至 \(dateTo)") }
                 )
             }
@@ -434,17 +434,15 @@ struct BusinessAnalyticsView: View {
         _ operation: (String, AnalyticsCacheIdentity) async throws -> Result
     ) async throws -> Result {
 #if DEBUG
-        if AnalyticsOnlineSession.isConfigured {
-            do {
-                let context = try await AnalyticsOnlineSession.shared.validContext()
-                return try await operation(context.accessToken, context.cacheIdentity)
-            } catch is AnalyticsAPIError {
-                AnalyticsOnlineSession.shared.invalidateAccessToken()
-                let context = try await AnalyticsOnlineSession.shared.validContext()
-                return try await operation(context.accessToken, context.cacheIdentity)
-            }
+        do {
+            let context = try await AnalyticsOnlineSession.shared.validContext()
+            return try await operation(context.accessToken, context.cacheIdentity)
+        } catch is AnalyticsAPIError {
+            AnalyticsOnlineSession.shared.invalidateAccessToken()
+            let context = try await AnalyticsOnlineSession.shared.validContext()
+            return try await operation(context.accessToken, context.cacheIdentity)
         }
-#endif
+#else
         guard let identity = AnalyticsCacheIdentity(
             userID: session.userID,
             workspaceID: session.activeWorkspaceID
@@ -458,6 +456,7 @@ struct BusinessAnalyticsView: View {
                 throw APIError.unauthorized(error.localizedDescription)
             }
         }
+#endif
     }
 
     private func resetLoadedData() {
@@ -577,6 +576,7 @@ private enum AnalyticsModule: String, CaseIterable, Identifiable {
 }
 
 private enum AnalyticsPeriodPreset: String, CaseIterable, Identifiable {
+    case yesterday
     case lastSevenDays
     case currentMonth
     case previousMonth
@@ -585,6 +585,7 @@ private enum AnalyticsPeriodPreset: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
+        case .yesterday: "昨日"
         case .lastSevenDays: "近 7 天"
         case .currentMonth: "本月"
         case .previousMonth: "上月"
@@ -595,6 +596,8 @@ private enum AnalyticsPeriodPreset: String, CaseIterable, Identifiable {
         let calendar = AnalyticsDateFormat.calendar
         let end = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -1, to: Date()) ?? Date())
         switch self {
+        case .yesterday:
+            return end...end
         case .lastSevenDays:
             return (calendar.date(byAdding: .day, value: -6, to: end) ?? end)...end
         case .currentMonth:
@@ -797,83 +800,80 @@ private struct AnalyticsFilterSheet: View {
 }
 
 private struct AnalyticsDashboardContent: View {
+    private struct TrendChartPoint: Identifiable {
+        let period: String
+        let date: Date
+        let netIncome: Double
+        let orderCount: Double
+
+        var id: String { period }
+    }
+
+    @State private var selectedDate: Date?
+    @State private var isTrendFullScreenPresented = false
+
     let overview: AnalyticsOverview
     let trend: AnalyticsRevenueTrendResponse?
-    let onSelectStore: (AnalyticsDimensionRow) -> Void
     let onSelectChannel: (AnalyticsDimensionRow) -> Void
-
-    private var stores: [AnalyticsDimensionRow] {
-        overview.stores.sorted { $0.value("net_income") > $1.value("net_income") }
-    }
 
     private var trendPoints: [AnalyticsRevenueTrendPoint] {
         trend?.points.filter { $0.missing != true } ?? []
     }
 
-    var body: some View {
-        AnalyticsPageTitle(title: "经营看板", subtitle: "当前周期与上期经营表现")
-        AnalyticsKPIGrid(metrics: overview.metrics)
+    private var trendChartPoints: [TrendChartPoint] {
+        trendPoints.compactMap { point in
+            guard let date = AnalyticsDateFormat.api.date(from: point.period) else { return nil }
+            return TrendChartPoint(
+                period: point.period,
+                date: date,
+                netIncome: point.netIncome,
+                orderCount: point.orderCount
+            )
+        }
+    }
 
-        AnalyticsSection(title: "营收趋势", subtitle: "按日净实收") {
-            if trendPoints.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无营收趋势数据")
-            } else {
-                Chart(trendPoints) { point in
-                    LineMark(
-                        x: .value("日期", point.period),
-                        y: .value("净实收", point.netIncome)
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
-                    .interpolationMethod(.catmullRom)
-                    PointMark(
-                        x: .value("日期", point.period),
-                        y: .value("净实收", point.netIncome)
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
-                }
-                .chartXAxis(.hidden)
-                .chartYAxis {
-                    AxisMarks(position: .leading) { _ in
-                        AxisGridLine().foregroundStyle(AppColors.border)
-                        AxisValueLabel(format: Decimal.FormatStyle.Currency(code: "CNY").precision(.fractionLength(0)))
-                    }
-                }
-                .frame(height: 210)
-            }
+    private var trendYDomain: ClosedRange<Double> {
+        guard
+            let minimum = trendChartPoints.map(\.netIncome).min(),
+            let maximum = trendChartPoints.map(\.netIncome).max()
+        else {
+            return 0...1
         }
 
-        AnalyticsSection(title: "门店净实收", subtitle: stores.isEmpty ? nil : "按净实收从高到低") {
-            if stores.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无门店营收数据")
-            } else {
-                Chart(Array(stores.prefix(8))) { store in
-                    BarMark(
-                        x: .value("净实收", store.value("net_income")),
-                        y: .value("门店", store.shortLabel)
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
-                    .cornerRadius(3)
-                }
-                .chartXAxis {
-                    AxisMarks(position: .bottom) { _ in
-                        AxisGridLine().foregroundStyle(AppColors.border)
-                        AxisValueLabel(format: Decimal.FormatStyle.Currency(code: "CNY").precision(.fractionLength(0)))
-                    }
-                }
-                .frame(height: CGFloat(max(150, min(300, stores.prefix(8).count * 38))))
+        let fallbackSpread = max(abs(maximum) * 0.08, 1)
+        let spread = max(maximum - minimum, fallbackSpread)
+        let padding = spread * 0.18
+        return max(0, minimum - padding)...(maximum + padding)
+    }
 
-                Divider().overlay(AppColors.border)
-                ForEach(Array(stores.prefix(8))) { store in
-                    Button { onSelectStore(store) } label: {
-                        AnalyticsDetailLinkRow(
-                            title: store.label,
-                            primary: AnalyticsValue.currency(store.value("net_income")),
-                            secondary: "\(AnalyticsValue.count(store.value("order_count"))) 单"
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
+    private var latestTrendPointID: String? {
+        trendChartPoints.last?.id
+    }
+
+    private var selectedTrendPoint: TrendChartPoint? {
+        guard let selectedDate else { return nil }
+        return trendChartPoints.min {
+            abs($0.date.timeIntervalSince(selectedDate)) < abs($1.date.timeIntervalSince(selectedDate))
+        }
+    }
+
+    var body: some View {
+        AnalyticsPageTitle(title: "经营看板", subtitle: "当前周期与上期经营表现")
+        AnalyticsKPIGrid(metrics: overview.metrics, compact: true)
+
+        AnalyticsSection(
+            title: "营收趋势",
+            subtitle: "按日净实收",
+            onExpand: { isTrendFullScreenPresented = true }
+        ) {
+            if trendChartPoints.isEmpty {
+                AnalyticsEmptyText(text: "当前周期暂无营收趋势数据")
+            } else {
+                trendChart.frame(height: 220)
             }
+        }
+        .fullScreenCover(isPresented: $isTrendFullScreenPresented) {
+            fullScreenTrendView
         }
 
         AnalyticsSection(title: "渠道表现") {
@@ -892,6 +892,202 @@ private struct AnalyticsDashboardContent: View {
                 }
             }
         }
+    }
+
+    private var fullScreenTrendView: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("按日净实收")
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.secondaryText)
+                trendChart
+            }
+            .padding(16)
+            .background(AppColors.background.ignoresSafeArea())
+            .navigationTitle("营收趋势")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        updateTrendOrientation(.portrait)
+                        isTrendFullScreenPresented = false
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .frame(width: 32, height: 32)
+                    }
+                    .frame(width: 44, height: 44)
+                    .accessibilityLabel("关闭全屏")
+                }
+            }
+        }
+        .foregroundStyle(AppColors.primaryText)
+        .onAppear {
+            updateTrendOrientation(.landscape)
+        }
+        .onDisappear {
+            updateTrendOrientation(.portrait)
+        }
+    }
+
+    @MainActor
+    private func updateTrendOrientation(_ orientations: UIInterfaceOrientationMask) {
+        AppOrientation.update(orientations)
+    }
+
+    private var trendChart: some View {
+        GeometryReader { geometry in
+            Chart {
+                ForEach(trendChartPoints) { point in
+                    AreaMark(
+                        x: .value("日期", point.date),
+                        yStart: .value("范围下限", trendYDomain.lowerBound),
+                        yEnd: .value("净实收", point.netIncome)
+                    )
+                    .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
+                    .interpolationMethod(.catmullRom)
+
+                    LineMark(
+                        x: .value("日期", point.date),
+                        y: .value("净实收", point.netIncome)
+                    )
+                    .foregroundStyle(AppColors.chatSendButton)
+                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .interpolationMethod(.catmullRom)
+
+                    if point.id == latestTrendPointID, point.id != selectedTrendPoint?.id {
+                        PointMark(
+                            x: .value("日期", point.date),
+                            y: .value("净实收", point.netIncome)
+                        )
+                        .foregroundStyle(AppColors.chatSendButton)
+                        .symbolSize(42)
+                    }
+                }
+
+                if let selectedPoint = selectedTrendPoint {
+                    RuleMark(x: .value("选中日期", selectedPoint.date))
+                        .foregroundStyle(AppColors.secondaryText.opacity(0.55))
+
+                    PointMark(
+                        x: .value("选中日期", selectedPoint.date),
+                        y: .value("选中净实收", selectedPoint.netIncome)
+                    )
+                    .foregroundStyle(AppColors.chatSendButton)
+                    .symbolSize(58)
+                    .annotation(
+                        position: selectedPoint.netIncome > (trendYDomain.lowerBound + trendYDomain.upperBound) / 2
+                            ? .bottom
+                            : .top,
+                        alignment: tooltipAlignment(for: selectedPoint),
+                        spacing: 8
+                    ) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(selectedPoint.date, format: .dateTime.month().day())
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.secondaryText)
+                            Text(compactCurrency(selectedPoint.netIncome))
+                                .font(.caption.weight(.bold))
+                            Text("\(AnalyticsValue.count(selectedPoint.orderCount)) 单")
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 6))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(AppColors.border, lineWidth: 1)
+                        }
+                        .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+                    }
+                }
+            }
+            .chartXScale(range: .plotDimension(padding: 6))
+            .chartYScale(domain: trendYDomain)
+            .chartXAxis {
+                AxisMarks(values: xAxisDates(for: geometry.size.width)) { value in
+                    AxisTick().foregroundStyle(AppColors.border)
+                    AxisValueLabel {
+                        if let date = value.as(Date.self) {
+                            Text(date, format: .dateTime.month(.twoDigits).day(.twoDigits))
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
+                        .foregroundStyle(AppColors.border)
+                    AxisValueLabel {
+                        if let amount = value.as(Double.self) {
+                            Text(compactCurrency(amount))
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+                    }
+                }
+            }
+            .chartOverlay { proxy in
+                GeometryReader { overlayGeometry in
+                    Rectangle()
+                        .fill(.clear)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            SpatialTapGesture()
+                                .onEnded { value in
+                                    guard let plotFrame = proxy.plotFrame else { return }
+                                    let frame = overlayGeometry[plotFrame]
+                                    guard
+                                        frame.contains(value.location),
+                                        let date: Date = proxy.value(
+                                            atX: value.location.x - frame.minX
+                                        )
+                                    else {
+                                        return
+                                    }
+                                    selectedDate = date
+                                }
+                        )
+                }
+            }
+            .accessibilityLabel("按日净实收趋势")
+        }
+    }
+
+    private func tooltipAlignment(for point: TrendChartPoint) -> Alignment {
+        guard let index = trendChartPoints.firstIndex(where: { $0.id == point.id }) else { return .center }
+        if index < trendChartPoints.count / 3 { return .leading }
+        if index >= trendChartPoints.count * 2 / 3 { return .trailing }
+        return .center
+    }
+
+    private func xAxisDates(for width: CGFloat) -> [Date] {
+        guard !trendChartPoints.isEmpty else { return [] }
+        let labelCount = min(trendChartPoints.count, min(8, max(2, Int(width / 68))))
+        guard labelCount > 1 else { return [trendChartPoints[0].date] }
+
+        let lastIndex = trendChartPoints.count - 1
+        return (0..<labelCount).map { labelIndex in
+            let position = Double(labelIndex) * Double(lastIndex) / Double(labelCount - 1)
+            return trendChartPoints[Int(position.rounded())].date
+        }
+    }
+
+    private func compactCurrency(_ value: Double) -> String {
+        if abs(value) >= 10_000 {
+            let amount = value / 10_000
+            if abs(amount) >= 10 {
+                return "¥\(amount.formatted(.number.precision(.fractionLength(0))))万"
+            }
+            return "¥\(amount.formatted(.number.precision(.fractionLength(1))))万"
+        }
+        if abs(value) >= 1_000 {
+            return "¥\((value / 1_000).formatted(.number.precision(.fractionLength(0))))k"
+        }
+        return "¥\(value.formatted(.number.precision(.fractionLength(0))))"
     }
 }
 
@@ -1260,25 +1456,49 @@ private struct AnalyticsPageTitle: View {
 
 private struct AnalyticsKPIGrid: View {
     let metrics: [String: AnalyticsMetricComparison]
+    var compact = false
 
     var body: some View {
-        VStack(spacing: 10) {
-            AnalyticsMetricTile(
-                label: "周期净实收",
-                value: AnalyticsValue.currency(metrics["net_income"]?.current),
-                comparison: metrics["net_income"]
-            )
-            HStack(spacing: 10) {
+        if compact {
+            HStack(spacing: 8) {
                 AnalyticsMetricTile(
-                    label: "周期订单",
+                    label: "净实收",
+                    value: AnalyticsValue.currency(metrics["net_income"]?.current),
+                    comparison: metrics["net_income"],
+                    compact: true
+                )
+                AnalyticsMetricTile(
+                    label: "订单数",
                     value: AnalyticsValue.count(metrics["order_count"]?.current),
-                    comparison: metrics["order_count"]
+                    comparison: metrics["order_count"],
+                    compact: true
                 )
                 AnalyticsMetricTile(
                     label: "客单价",
                     value: AnalyticsValue.currency(metrics["avg_order_value"]?.current),
-                    comparison: metrics["avg_order_value"]
+                    comparison: metrics["avg_order_value"],
+                    compact: true
                 )
+            }
+        } else {
+            VStack(spacing: 10) {
+                AnalyticsMetricTile(
+                    label: "周期净实收",
+                    value: AnalyticsValue.currency(metrics["net_income"]?.current),
+                    comparison: metrics["net_income"]
+                )
+                HStack(spacing: 10) {
+                    AnalyticsMetricTile(
+                        label: "周期订单",
+                        value: AnalyticsValue.count(metrics["order_count"]?.current),
+                        comparison: metrics["order_count"]
+                    )
+                    AnalyticsMetricTile(
+                        label: "客单价",
+                        value: AnalyticsValue.currency(metrics["avg_order_value"]?.current),
+                        comparison: metrics["avg_order_value"]
+                    )
+                }
             }
         }
     }
@@ -1288,31 +1508,35 @@ private struct AnalyticsMetricTile: View {
     let label: String
     let value: String
     var comparison: AnalyticsMetricComparison?
+    var compact = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: compact ? 5 : 8) {
             Text(label)
-                .font(.caption)
+                .font(compact ? .caption2 : .caption)
                 .foregroundStyle(AppColors.secondaryText)
             Text(value)
-                .font(.title3.weight(.bold))
+                .font(compact ? .headline.weight(.bold) : .title3.weight(.bold))
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .minimumScaleFactor(0.65)
             if let change = comparison?.changeRate {
                 Label(
-                    "较上期 \(AnalyticsValue.signedPercent(change))",
+                    compact ? AnalyticsValue.signedPercent(change) : "较上期 \(AnalyticsValue.signedPercent(change))",
                     systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right"
                 )
                 .font(.caption2.weight(.medium))
                 .foregroundStyle(change >= 0 ? Color.green : Color.red)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .accessibilityLabel("较上期 \(AnalyticsValue.signedPercent(change))")
             } else {
-                Text("暂无上期对比")
+                Text(compact ? "无对比" : "暂无上期对比")
                     .font(.caption2)
                     .foregroundStyle(AppColors.tertiaryText)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 94, alignment: .leading)
-        .padding(14)
+        .frame(maxWidth: .infinity, minHeight: compact ? 68 : 94, alignment: .leading)
+        .padding(compact ? 10 : 14)
         .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
         .overlay {
             RoundedRectangle(cornerRadius: 8).stroke(AppColors.border, lineWidth: 1)
@@ -1323,23 +1547,44 @@ private struct AnalyticsMetricTile: View {
 private struct AnalyticsSection<Content: View>: View {
     let title: String
     var subtitle: String?
+    var onExpand: (() -> Void)?
     @ViewBuilder let content: Content
 
-    init(title: String, subtitle: String? = nil, @ViewBuilder content: () -> Content) {
+    init(
+        title: String,
+        subtitle: String? = nil,
+        onExpand: (() -> Void)? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
         self.title = title
         self.subtitle = subtitle
+        self.onExpand = onExpand
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.headline)
-                if let subtitle {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.secondaryText)
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.headline)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                }
+                Spacer(minLength: 0)
+                if let onExpand {
+                    Button(action: onExpand) {
+                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(AppColors.secondaryText)
+                            .frame(width: 32, height: 32)
+                    }
+                    .frame(width: 44, height: 44)
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("全屏查看\(title)")
                 }
             }
             content

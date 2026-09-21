@@ -3,6 +3,9 @@ import SwiftUI
 /// 聊天主页，负责消息流、历史会话、侧边栏和设置弹窗的状态编排。
 struct ChatView: View {
     @EnvironmentObject private var session: SessionStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.scenePhase) private var scenePhase
     @FocusState private var isComposerFocused: Bool
     @FocusState private var isSearchFocused: Bool
 
@@ -30,6 +33,9 @@ struct ChatView: View {
     @State private var chatTask: Task<Void, Never>?
     @State private var pendingStreamText = ""
     @State private var streamFlushTask: Task<Void, Never>?
+    @State private var replyPlayback = ChatTextPlayback()
+    @State private var replyPlaybackTask: Task<Void, Never>?
+    @State private var followsLatestReply = true
     @State private var isCopyToastPresented = false
     @State private var copyToastTask: Task<Void, Never>?
 
@@ -114,8 +120,14 @@ struct ChatView: View {
         }
         .onDisappear {
             chatTask?.cancel()
+            if let messageID = streamingMessageID {
+                finishStreamingMessage(messageID)
+            }
             cancelPendingStreamText()
             copyToastTask?.cancel()
+        }
+        .onChange(of: shouldAnimateReply) { _, shouldAnimate in
+            if !shouldAnimate { revealReceivedReply() }
         }
         .sheet(isPresented: $isSettingsPresented) {
             AppSettingsSheet()
@@ -249,7 +261,8 @@ struct ChatView: View {
                         streamStatus: streamStatus,
                         canRetry: !isWaitingForService,
                         onCopy: showCopyConfirmation,
-                        onRetry: retryResponse
+                        onRetry: retryResponse,
+                        playback: replyPlayback
                     )
                 }
             }
@@ -261,7 +274,43 @@ struct ChatView: View {
             .onTapGesture {
                 isComposerFocused = false
             }
+            .simultaneousGesture(
+                DragGesture().onChanged { value in
+                    if ChatFeatureFlags.lightweightTypewriter, value.translation.height > 8 {
+                        followsLatestReply = false
+                    }
+                },
+                including: ChatFeatureFlags.lightweightTypewriter ? .all : .none
+            )
+            .overlay(alignment: .bottomTrailing) {
+                if ChatFeatureFlags.lightweightTypewriter,
+                   isWaitingForService || !followsLatestReply, !messages.isEmpty {
+                    Button {
+                        followsLatestReply = true
+                        scrollToBottom(with: proxy, animated: !reduceMotion)
+                    } label: {
+                        Image(systemName: isWaitingForService ? "ellipsis" : "arrow.down")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(AppColors.primaryText)
+                            .symbolEffect(
+                                .pulse,
+                                options: .repeating,
+                                isActive: isWaitingForService && shouldAnimateReply
+                            )
+                            .frame(width: 44, height: 44)
+                    }
+                    .systemGlassCircleButton()
+                    .accessibilityLabel("滚动到最底部")
+                    .accessibilityValue(isWaitingForService ? "正在生成回复" : "")
+                    .accessibilityHint("返回最新消息并恢复自动跟随")
+                    .padding(.trailing, 18)
+                    .padding(.bottom, 12)
+                }
+            }
             .onChange(of: messages.last?.content) { _, _ in
+                scrollToBottom(with: proxy, animated: false)
+            }
+            .onChange(of: replyPlayback.visibleText) { _, _ in
                 scrollToBottom(with: proxy, animated: false)
             }
             .onChange(of: isWaitingForService) { _, _ in
@@ -338,6 +387,9 @@ struct ChatView: View {
 
         chatTask?.cancel()
         cancelPendingStreamText()
+        if ChatFeatureFlags.lightweightTypewriter {
+            replyPlayback = ChatTextPlayback(messageID: assistantID)
+        }
         chatTask = Task {
             do {
                 try await session.withAuthenticatedSession { token in
@@ -347,17 +399,18 @@ struct ChatView: View {
                         accessToken: token
                     ) { event in
                         await MainActor.run {
-                            guard workspaceID == session.activeWorkspaceID else { return }
+                            guard !Task.isCancelled, workspaceID == session.activeWorkspaceID else { return }
                             apply(event, to: assistantID)
                         }
                     }
                 }
                 guard workspaceID == session.activeWorkspaceID else { return }
-                finishStreamingMessage(assistantID)
+                finishStreamingMessage(assistantID, animateRemainder: true)
                 await loadHistory()
             } catch is CancellationError {
                 finishStreamingMessage(assistantID)
             } catch {
+                guard streamingMessageID == assistantID else { return }
                 finishStreamingMessage(assistantID)
                 presentedAlert = ChatAlert(
                     title: "发送失败",
@@ -699,6 +752,7 @@ struct ChatView: View {
 
     /// 将网络层流式事件合并进当前页面状态。
     private func apply(_ event: ChatStreamEvent, to messageID: String) {
+        guard streamingMessageID == messageID else { return }
         switch event {
         case .text(let text):
             pendingStreamText += text
@@ -723,10 +777,19 @@ struct ChatView: View {
         }
     }
 
-    private func finishStreamingMessage(_ messageID: String) {
+    private func finishStreamingMessage(_ messageID: String, animateRemainder: Bool = false) {
+        guard streamingMessageID == messageID else { return }
         streamFlushTask?.cancel()
         streamFlushTask = nil
         flushPendingStreamText(to: messageID)
+        if replyPlayback.messageID == messageID {
+            if animateRemainder, shouldAnimateReply {
+                replyPlayback.finish(at: ProcessInfo.processInfo.systemUptime)
+                scheduleReplyPlayback()
+            } else {
+                revealReceivedReply()
+            }
+        }
 
         if let index = messages.firstIndex(where: { $0.id == messageID }),
            messages[index].content.isEmpty {
@@ -746,15 +809,53 @@ struct ChatView: View {
         guard !text.isEmpty,
               let index = messages.firstIndex(where: { $0.id == messageID }) else { return }
         messages[index].content += text
+        if replyPlayback.messageID == messageID {
+            replyPlayback.receive(messages[index].content, animated: shouldAnimateReply)
+            scheduleReplyPlayback()
+        }
     }
 
     private func cancelPendingStreamText() {
         streamFlushTask?.cancel()
         streamFlushTask = nil
         pendingStreamText = ""
+        revealReceivedReply()
+        replyPlayback = ChatTextPlayback()
+        followsLatestReply = true
+    }
+
+    private var shouldAnimateReply: Bool {
+        ChatFeatureFlags.lightweightTypewriter && !reduceMotion && !voiceOverEnabled
+            && scenePhase == .active && !isSearchPresented && !isAnalyticsPresented
+            && !isSidebarOpen && !isSettingsPresented
+    }
+
+    private func scheduleReplyPlayback() {
+        guard replyPlaybackTask == nil, replyPlayback.hasPendingText,
+              let messageID = replyPlayback.messageID else { return }
+        replyPlayback.resume(at: ProcessInfo.processInfo.systemUptime)
+        replyPlaybackTask = Task { @MainActor in
+            while replyPlayback.messageID == messageID, replyPlayback.hasPendingText {
+                do {
+                    try await Task.sleep(for: .milliseconds(32))
+                } catch {
+                    return
+                }
+                guard !Task.isCancelled else { return }
+                replyPlayback.advance(at: ProcessInfo.processInfo.systemUptime)
+            }
+            replyPlaybackTask = nil
+        }
+    }
+
+    private func revealReceivedReply() {
+        replyPlaybackTask?.cancel()
+        replyPlaybackTask = nil
+        replyPlayback.revealAll()
     }
 
     private func scrollToBottom(with proxy: ScrollViewProxy, animated: Bool = true) {
+        guard !ChatFeatureFlags.lightweightTypewriter || followsLatestReply else { return }
         guard let lastID = messages.last?.id else { return }
         DispatchQueue.main.async {
             if animated {
