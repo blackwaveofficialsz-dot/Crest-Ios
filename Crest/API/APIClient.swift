@@ -306,12 +306,12 @@ struct APIClient {
     }
 
     private static var defaultBaseURL: URL {
-#if DEBUG
         if let value = ProcessInfo.processInfo.environment["CREST_API_BASE_URL"],
            let overrideURL = URL(string: value) {
             return overrideURL
         }
-        return URL(string: "http://127.0.0.1:8010")!
+#if DEBUG
+        return URL(string: "http://127.0.0.1:8000")!
 #else
         return URL(string: "https://blackwave.org.cn/yuanji")!
 #endif
