@@ -12,6 +12,7 @@ struct AppSidebar: View {
     let isLoading: Bool
     let onNewConversation: () -> Void
     let onOpenSearch: () -> Void
+    let onOpenAnalytics: () -> Void
     let onSelectSession: (ChatSessionSummary) -> Void
     let onPinSession: (ChatSessionSummary) -> Void
     let onRenameSession: (ChatSessionSummary) -> Void
@@ -80,6 +81,21 @@ struct AppSidebar: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(AppColors.secondaryText)
                         Text("搜索对话内容")
+                            .foregroundStyle(AppColors.secondaryText)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 52)
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    onOpenAnalytics()
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "chart.xyaxis.line")
+                            .foregroundStyle(AppColors.secondaryText)
+                        Text("经营分析")
                             .foregroundStyle(AppColors.secondaryText)
                         Spacer()
                     }

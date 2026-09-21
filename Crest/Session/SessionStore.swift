@@ -6,6 +6,7 @@ final class SessionStore: ObservableObject {
     @Published private(set) var isSignedIn = false
     @Published private(set) var isRestoringSession: Bool
     @Published private(set) var username = ""
+    @Published private(set) var userID = ""
     @Published private(set) var displayName = ""
     @Published private(set) var avatarData: Data?
     @Published private(set) var tenantID: String?
@@ -125,6 +126,7 @@ final class SessionStore: ObservableObject {
         } else {
             accessToken = nil
             username = ""
+            userID = ""
             displayName = ""
             avatarData = nil
             tenantID = nil
@@ -181,8 +183,9 @@ final class SessionStore: ObservableObject {
         let refreshToken = keychain.readRefreshToken()
         clearLocalSession()
 
-        guard let refreshToken else { return }
         Task {
+            try? await AnalyticsCache.shared.clearAll()
+            guard let refreshToken else { return }
             try? await api.logout(refreshToken: refreshToken)
         }
     }
@@ -235,6 +238,7 @@ final class SessionStore: ObservableObject {
         try keychain.saveRefreshToken(refreshToken)
         accessToken = response.token
         username = response.username
+        userID = response.userID
         tenantID = response.tenantID
         role = response.role
         hasPassword = response.hasPassword
@@ -288,6 +292,7 @@ final class SessionStore: ObservableObject {
         accessToken = nil
         keychain.deleteSessionTokens()
         username = ""
+        userID = ""
         displayName = ""
         avatarData = nil
         tenantID = nil

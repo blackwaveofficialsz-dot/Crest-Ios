@@ -1,10 +1,8 @@
 import SwiftUI
 
-/// 新对话的欢迎内容和快捷问题入口。
+/// 新对话的欢迎内容。
 struct ChatEmptyState: View {
-    let suggestions: [ChatSuggestion]
     let subtitle: String
-    let onSelectSuggestion: (ChatSuggestion) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,43 +20,49 @@ struct ChatEmptyState: View {
                 .foregroundStyle(AppColors.secondaryText)
                 .padding(.top, 8)
 
-            VStack(spacing: 10) {
-                ForEach(suggestions) { suggestion in
-                    Button {
-                        onSelectSuggestion(suggestion)
-                    } label: {
-                        HStack(spacing: 14) {
-                            Image(systemName: suggestion.icon)
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundStyle(AppColors.secondaryText)
-                                .frame(width: 22)
-
-                            Text(suggestion.title)
-                                .font(.subheadline.weight(.medium))
-
-                            Spacer()
-
-                            Image(systemName: "arrow.up.right")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(AppColors.tertiaryText)
-                        }
-                        .foregroundStyle(AppColors.primaryText)
-                        .padding(.horizontal, 16)
-                        .frame(minHeight: 54)
-                        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(AppColors.border, lineWidth: 1)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.top, 34)
-
             Spacer(minLength: 24)
         }
         .frame(maxWidth: 560, minHeight: 500)
+    }
+}
+
+/// 新对话时显示在输入框上方的快捷问题。
+struct ChatSuggestionBar: View {
+    let suggestions: [ChatSuggestion]
+    let onSelectSuggestion: (ChatSuggestion) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(suggestions) { suggestion in
+                Button {
+                    onSelectSuggestion(suggestion)
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: suggestion.icon)
+                            .frame(width: 20)
+                        Text(suggestion.title)
+                    }
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(AppColors.primaryText)
+                    .lineLimit(1)
+                    .padding(.horizontal, 14)
+                    .frame(minHeight: 42)
+                    .background(
+                        AppColors.surface,
+                        in: RoundedRectangle(cornerRadius: 21, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 21, style: .continuous)
+                            .stroke(AppColors.border, lineWidth: 1)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 25)
+        .padding(.bottom, 8)
+        .background(AppColors.background)
     }
 }
 

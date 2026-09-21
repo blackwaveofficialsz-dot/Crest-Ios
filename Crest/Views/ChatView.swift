@@ -22,6 +22,7 @@ struct ChatView: View {
     @State private var isSidebarOpen = false
     @State private var sidebarDragTranslation: CGFloat = 0
     @State private var isSearchPresented = false
+    @State private var isAnalyticsPresented = false
     @State private var isSettingsPresented = false
     @State private var isSettingPassword = false
     @State private var presentedAlert: ChatAlert?
@@ -56,6 +57,9 @@ struct ChatView: View {
                 if isSearchPresented {
                     searchContent
                         .transition(.move(edge: .trailing))
+                } else if isAnalyticsPresented {
+                    businessAnalyticsContent
+                        .transition(.move(edge: .trailing))
                 } else {
                     chatContent
                         .transition(.move(edge: .leading))
@@ -65,6 +69,7 @@ struct ChatView: View {
             .simultaneousGesture(sidebarDragGesture(drawerWidth: geometry.size.width))
         }
         .animation(.easeInOut(duration: 0.28), value: isSearchPresented)
+        .animation(.easeInOut(duration: 0.28), value: isAnalyticsPresented)
         .overlay(alignment: .top) {
             if isCopyToastPresented {
                 CopyConfirmationToast()
@@ -169,6 +174,13 @@ struct ChatView: View {
                 conversation
                     .frame(maxHeight: .infinity)
 
+                if !isLoadingConversation && messages.isEmpty {
+                    ChatSuggestionBar(suggestions: suggestions) { suggestion in
+                        draft = suggestion.title
+                        isComposerFocused = true
+                    }
+                }
+
                 ChatComposer(
                     draft: $draft,
                     isFocused: $isComposerFocused,
@@ -190,6 +202,7 @@ struct ChatView: View {
             isLoading: isLoadingHistory,
             onNewConversation: startNewConversation,
             onOpenSearch: openSearch,
+            onOpenAnalytics: openAnalytics,
             onSelectSession: openConversation,
             onPinSession: pinConversation,
             onRenameSession: renameConversation,
@@ -213,6 +226,13 @@ struct ChatView: View {
         }
     }
 
+    private var businessAnalyticsContent: some View {
+        BusinessAnalyticsView(
+            onOpenSidebar: openSidebar,
+            onOpenSettings: openSettings
+        )
+    }
+
     private var conversation: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -221,13 +241,7 @@ struct ChatView: View {
                         .tint(AppColors.secondaryText)
                         .frame(maxWidth: .infinity, minHeight: 500)
                 } else if messages.isEmpty {
-                    ChatEmptyState(
-                        suggestions: suggestions,
-                        subtitle: "从一个餐饮经营问题开始"
-                    ) { suggestion in
-                        draft = suggestion.title
-                        isComposerFocused = true
-                    }
+                    ChatEmptyState(subtitle: "从一个餐饮经营问题开始")
                 } else {
                     ChatMessageList(
                         messages: messages,
@@ -359,6 +373,7 @@ struct ChatView: View {
         dismissInputFocus()
         withAnimation(.easeInOut(duration: 0.2)) {
             isSearchPresented = false
+            isAnalyticsPresented = false
             messages.removeAll()
             draft = ""
             isWaitingForService = false
@@ -444,7 +459,17 @@ struct ChatView: View {
     private func openSearch() {
         dismissInputFocus()
         withAnimation(.easeInOut(duration: 0.28)) {
+            isAnalyticsPresented = false
             isSearchPresented = true
+        }
+        closeSidebar()
+    }
+
+    private func openAnalytics() {
+        dismissInputFocus()
+        withAnimation(.easeInOut(duration: 0.28)) {
+            isSearchPresented = false
+            isAnalyticsPresented = true
         }
         closeSidebar()
     }
@@ -618,6 +643,7 @@ struct ChatView: View {
         cancelPendingStreamText()
         let waitsForSidebar = isSidebarOpen
         isSearchPresented = false
+        isAnalyticsPresented = false
         closeSidebar()
         dismissInputFocus()
         let workspaceID = session.activeWorkspaceID
@@ -667,6 +693,7 @@ struct ChatView: View {
         activeSessionID = nil
         activeTitle = "新对话"
         isSearchPresented = false
+        isAnalyticsPresented = false
         closeSidebar()
     }
 
