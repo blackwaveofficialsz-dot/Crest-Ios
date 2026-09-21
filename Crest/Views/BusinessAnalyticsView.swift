@@ -6,6 +6,9 @@ import UniformTypeIdentifiers
 
 struct BusinessAnalyticsView: View {
     @EnvironmentObject private var session: SessionStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @Namespace private var moduleSelection
 
     let onOpenSidebar: () -> Void
     let onOpenSettings: () -> Void
@@ -112,8 +115,13 @@ struct BusinessAnalyticsView: View {
 
     private var header: some View {
         ZStack {
-            Text("经营分析")
-                .font(.headline.weight(.semibold))
+            VStack(spacing: 1) {
+                Text("经营分析")
+                    .font(.headline.weight(.semibold))
+                Text(module.title)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(AppColors.secondaryText)
+            }
 
             HStack {
                 SidebarOpenButton(action: onOpenSidebar)
@@ -148,34 +156,44 @@ struct BusinessAnalyticsView: View {
     }
 
     private var moduleTabs: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 8) {
-                ForEach(AnalyticsModule.allCases) { item in
-                    Button {
+        HStack(spacing: 4) {
+            ForEach(AnalyticsModule.allCases) { item in
+                Button {
+                    withAnimation(reduceMotion ? nil : .snappy(duration: 0.28)) {
                         module = item
                         errorMessage = nil
-                    } label: {
-                        Label(item.title, systemImage: item.systemImage)
-                            .font(.subheadline.weight(module == item ? .semibold : .regular))
-                            .foregroundStyle(module == item ? Color.white : AppColors.secondaryText)
-                            .padding(.horizontal, 12)
-                            .frame(height: 34)
-                            .background(
-                                module == item ? AppColors.chatSendButton : AppColors.surface,
-                                in: Capsule()
-                            )
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(module == item ? .isSelected : [])
+                } label: {
+                    VStack(spacing: 4) {
+                        Image(systemName: item.systemImage)
+                            .font(.system(size: 14, weight: .semibold))
+                        Text(item.title)
+                            .font(.caption2.weight(module == item ? .semibold : .medium))
+                    }
+                    .foregroundStyle(module == item ? Color.white : AppColors.secondaryText)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 46)
+                    .background {
+                        if module == item {
+                            RoundedRectangle(cornerRadius: 7)
+                                .fill(AppColors.chatSendButton)
+                                .matchedGeometryEffect(id: "module-selection", in: moduleSelection)
+                        }
+                    }
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(module == item ? .isSelected : [])
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
         }
-        .scrollIndicators(.hidden)
-        .overlay(alignment: .bottom) {
-            Divider().overlay(AppColors.border)
+        .padding(4)
+        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(AppColors.border, lineWidth: 1)
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 
     private var analyticsContent: some View {
@@ -199,6 +217,15 @@ struct BusinessAnalyticsView: View {
                     }
                 } else {
                     selectedModuleContent
+                        .id(module)
+                        .transition(
+                            reduceMotion
+                                ? .opacity
+                                : .asymmetric(
+                                    insertion: .opacity.combined(with: .move(edge: .trailing)),
+                                    removal: .opacity.combined(with: .move(edge: .leading))
+                                )
+                        )
                     if let errorMessage {
                         Label(errorMessage, systemImage: "exclamationmark.circle")
                             .font(.footnote)
@@ -219,10 +246,12 @@ struct BusinessAnalyticsView: View {
         Button {
             isFilterPresented = true
         } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "line.3.horizontal.decrease")
-                    .font(.system(size: 14, weight: .semibold))
+            HStack(spacing: 12) {
+                Image(systemName: "calendar")
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppColors.chatSendButton)
+                    .frame(width: 34, height: 34)
+                    .background(AppColors.chatSendButton.opacity(0.10), in: RoundedRectangle(cornerRadius: 7))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(AnalyticsDateFormat.display.string(from: period.lowerBound)) 至 \(AnalyticsDateFormat.display.string(from: period.upperBound))")
@@ -235,11 +264,20 @@ struct BusinessAnalyticsView: View {
                 Spacer(minLength: 4)
 
                 Text(periodTitle)
-                    .font(.subheadline.weight(.medium))
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(AppColors.chatSendButton)
+                    .padding(.horizontal, 8)
+                    .frame(height: 26)
+                    .background(AppColors.chatSendButton.opacity(0.10), in: RoundedRectangle(cornerRadius: 6))
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(AppColors.tertiaryText)
+            }
+            .padding(10)
+            .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppColors.border, lineWidth: 1)
             }
             .contentShape(Rectangle())
         }
@@ -800,6 +838,8 @@ private struct AnalyticsFilterSheet: View {
 }
 
 private struct AnalyticsDashboardContent: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private struct TrendChartPoint: Identifiable {
         let period: String
         let date: Date
@@ -857,9 +897,20 @@ private struct AnalyticsDashboardContent: View {
         }
     }
 
+    private var trendChangeRate: Double? {
+        guard
+            let first = trendChartPoints.first?.netIncome,
+            let last = trendChartPoints.last?.netIncome,
+            first != 0
+        else { return nil }
+        return (last - first) / abs(first)
+    }
+
     var body: some View {
         AnalyticsPageTitle(title: "经营看板", subtitle: "当前周期与上期经营表现")
+            .analyticsEntrance(order: 0)
         AnalyticsKPIGrid(metrics: overview.metrics, compact: true)
+            .analyticsEntrance(order: 1)
 
         AnalyticsSection(
             title: "营收趋势",
@@ -869,9 +920,35 @@ private struct AnalyticsDashboardContent: View {
             if trendChartPoints.isEmpty {
                 AnalyticsEmptyText(text: "当前周期暂无营收趋势数据")
             } else {
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(compactCurrency(trendChartPoints.last?.netIncome ?? 0))
+                            .font(.title2.weight(.bold))
+                            .contentTransition(.numericText())
+                        Text("最新净实收")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                    Spacer()
+                    if let trendChangeRate {
+                        Label(
+                            AnalyticsValue.signedPercent(trendChangeRate),
+                            systemImage: trendChangeRate >= 0 ? "arrow.up.right" : "arrow.down.right"
+                        )
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(trendChangeRate >= 0 ? Color.green : Color.red)
+                        .padding(.horizontal, 8)
+                        .frame(height: 26)
+                        .background(
+                            (trendChangeRate >= 0 ? Color.green : Color.red).opacity(0.10),
+                            in: RoundedRectangle(cornerRadius: 6)
+                        )
+                    }
+                }
                 trendChart.frame(height: 220)
             }
         }
+        .analyticsEntrance(order: 2)
         .fullScreenCover(isPresented: $isTrendFullScreenPresented) {
             fullScreenTrendView
         }
@@ -892,6 +969,7 @@ private struct AnalyticsDashboardContent: View {
                 }
             }
         }
+        .analyticsEntrance(order: 3)
     }
 
     private var fullScreenTrendView: some View {
@@ -1048,12 +1126,18 @@ private struct AnalyticsDashboardContent: View {
                                     else {
                                         return
                                     }
-                                    selectedDate = date
+                                    withAnimation(reduceMotion ? nil : .snappy(duration: 0.22)) {
+                                        selectedDate = date
+                                    }
                                 }
                         )
                 }
             }
             .accessibilityLabel("按日净实收趋势")
+            .animation(
+                reduceMotion ? nil : .easeOut(duration: 0.65),
+                value: trendChartPoints.map(\.id)
+            )
         }
     }
 
@@ -1106,7 +1190,9 @@ private struct AnalyticsOrdersContent: View {
 
     var body: some View {
         AnalyticsPageTitle(title: "订单统计", subtitle: "全部门店订单与实收概览")
+            .analyticsEntrance(order: 0)
         AnalyticsKPIGrid(metrics: overview.metrics)
+            .analyticsEntrance(order: 1)
 
         AnalyticsSection(title: "订单趋势", subtitle: "按日订单量") {
             if trendPoints.isEmpty {
@@ -1130,6 +1216,7 @@ private struct AnalyticsOrdersContent: View {
                 .frame(height: 210)
             }
         }
+        .analyticsEntrance(order: 2)
 
         AnalyticsSection(title: "门店订单", subtitle: "按订单量排序") {
             if stores.isEmpty {
@@ -1166,6 +1253,7 @@ private struct AnalyticsOrdersContent: View {
                 }
             }
         }
+        .analyticsEntrance(order: 3)
     }
 }
 
@@ -1180,6 +1268,7 @@ private struct AnalyticsProductsContent: View {
 
     var body: some View {
         AnalyticsPageTitle(title: "产品分析", subtitle: "按商品销售额排名，共 \(response.total) 项")
+            .analyticsEntrance(order: 0)
 
         AnalyticsSection(title: "产品销售趋势", subtitle: trend?.productName ?? response.items.first?.productName) {
             if trendPoints.isEmpty {
@@ -1208,6 +1297,7 @@ private struct AnalyticsProductsContent: View {
                 .frame(height: 210)
             }
         }
+        .analyticsEntrance(order: 1)
 
         AnalyticsSection(title: "销售排行", subtitle: "商品销额不等同于财务净实收") {
             if response.items.isEmpty {
@@ -1242,6 +1332,7 @@ private struct AnalyticsProductsContent: View {
                 }
             }
         }
+        .analyticsEntrance(order: 2)
     }
 }
 
@@ -1251,6 +1342,7 @@ private struct AnalyticsLaborContent: View {
 
     var body: some View {
         AnalyticsPageTitle(title: "人效分析", subtitle: "实际工时、计划工时与小时产出")
+            .analyticsEntrance(order: 0)
 
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
             AnalyticsMetricTile(label: "实际工时", value: AnalyticsValue.hours(response.summary.actualHours))
@@ -1258,6 +1350,7 @@ private struct AnalyticsLaborContent: View {
             AnalyticsMetricTile(label: "人数", value: AnalyticsValue.count(response.summary.headcount))
             AnalyticsMetricTile(label: "小时产出", value: AnalyticsValue.currency(response.summary.actualRevenuePerHour))
         }
+        .analyticsEntrance(order: 1)
 
         AnalyticsSection(title: "小时产出趋势") {
             if response.points.isEmpty {
@@ -1297,6 +1390,7 @@ private struct AnalyticsLaborContent: View {
                 .font(.caption)
             }
         }
+        .analyticsEntrance(order: 2)
 
         AnalyticsSection(title: "工时趋势", subtitle: "实际工时与计划工时") {
             if response.points.isEmpty {
@@ -1333,6 +1427,7 @@ private struct AnalyticsLaborContent: View {
                 .font(.caption)
             }
         }
+        .analyticsEntrance(order: 3)
 
         AnalyticsSection(title: "每日明细") {
             if response.points.isEmpty {
@@ -1350,6 +1445,7 @@ private struct AnalyticsLaborContent: View {
                 }
             }
         }
+        .analyticsEntrance(order: 4)
     }
 }
 
@@ -1364,6 +1460,7 @@ private struct AnalyticsAlertsContent: View {
 
     var body: some View {
         AnalyticsPageTitle(title: "营收报警", subtitle: "检测日 \(businessDate)")
+            .analyticsEntrance(order: 0)
 
         if sortedAlerts.isEmpty {
             AnalyticsMessageState(
@@ -1372,6 +1469,7 @@ private struct AnalyticsAlertsContent: View {
                 message: "当前检测日没有发现需要关注的门店营收波动。"
             )
             .frame(maxWidth: .infinity, minHeight: 260)
+            .analyticsEntrance(order: 1)
         } else {
             AnalyticsSection(title: "报警偏离率", subtitle: "按偏离绝对值排序") {
                 Chart(Array(sortedAlerts.prefix(8))) { alert in
@@ -1390,6 +1488,7 @@ private struct AnalyticsAlertsContent: View {
                 }
                 .frame(height: CGFloat(max(150, min(300, sortedAlerts.prefix(8).count * 38))))
             }
+            .analyticsEntrance(order: 1)
 
             ForEach(sortedAlerts) { alert in
                 Button { onSelectAlert(alert) } label: {
@@ -1433,6 +1532,7 @@ private struct AnalyticsAlertsContent: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 8).stroke(AppColors.border, lineWidth: 1)
                 }
+                .analyticsEntrance(order: 2)
             }
         }
     }
@@ -1443,12 +1543,18 @@ private struct AnalyticsPageTitle: View {
     let subtitle: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.title3.weight(.bold))
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(AppColors.secondaryText)
+        HStack(alignment: .top, spacing: 10) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(AppColors.chatSendButton)
+                .frame(width: 3, height: 36)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.title3.weight(.bold))
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.secondaryText)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -1460,25 +1566,37 @@ private struct AnalyticsKPIGrid: View {
 
     var body: some View {
         if compact {
-            HStack(spacing: 8) {
+            HStack(spacing: 0) {
                 AnalyticsMetricTile(
                     label: "净实收",
                     value: AnalyticsValue.currency(metrics["net_income"]?.current),
                     comparison: metrics["net_income"],
-                    compact: true
+                    compact: true,
+                    framed: false
                 )
+                Divider().frame(height: 54)
                 AnalyticsMetricTile(
                     label: "订单数",
                     value: AnalyticsValue.count(metrics["order_count"]?.current),
                     comparison: metrics["order_count"],
-                    compact: true
+                    compact: true,
+                    framed: false
                 )
+                Divider().frame(height: 54)
                 AnalyticsMetricTile(
                     label: "客单价",
                     value: AnalyticsValue.currency(metrics["avg_order_value"]?.current),
                     comparison: metrics["avg_order_value"],
-                    compact: true
+                    compact: true,
+                    framed: false
                 )
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 9)
+            .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppColors.border, lineWidth: 1)
             }
         } else {
             VStack(spacing: 10) {
@@ -1509,6 +1627,7 @@ private struct AnalyticsMetricTile: View {
     let value: String
     var comparison: AnalyticsMetricComparison?
     var compact = false
+    var framed = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 5 : 8) {
@@ -1535,11 +1654,19 @@ private struct AnalyticsMetricTile: View {
                     .foregroundStyle(AppColors.tertiaryText)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: compact ? 68 : 94, alignment: .leading)
-        .padding(compact ? 10 : 14)
-        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
+        .frame(maxWidth: .infinity, minHeight: compact ? 60 : 94, alignment: .leading)
+        .padding(framed ? (compact ? 10 : 14) : 8)
+        .background {
+            if framed {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(AppColors.surface)
+            }
+        }
         .overlay {
-            RoundedRectangle(cornerRadius: 8).stroke(AppColors.border, lineWidth: 1)
+            if framed {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppColors.border, lineWidth: 1)
+            }
         }
     }
 }
@@ -1565,13 +1692,19 @@ private struct AnalyticsSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(title)
-                        .font(.headline)
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.caption)
-                            .foregroundStyle(AppColors.secondaryText)
+                HStack(alignment: .top, spacing: 8) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(AppColors.chatSendButton.opacity(0.75))
+                        .frame(width: 3, height: subtitle == nil ? 18 : 34)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(title)
+                            .font(.headline)
+                        if let subtitle {
+                            Text(subtitle)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
                     }
                 }
                 Spacer(minLength: 0)
@@ -1595,6 +1728,39 @@ private struct AnalyticsSection<Content: View>: View {
         .overlay {
             RoundedRectangle(cornerRadius: 8).stroke(AppColors.border, lineWidth: 1)
         }
+    }
+}
+
+private struct AnalyticsEntranceModifier: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let order: Int
+    @State private var isVisible = false
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(isVisible ? 1 : 0)
+            .offset(y: reduceMotion || isVisible ? 0 : 12)
+            .scaleEffect(reduceMotion || isVisible ? 1 : 0.985, anchor: .top)
+            .onAppear {
+                guard !isVisible else { return }
+                if reduceMotion {
+                    isVisible = true
+                } else {
+                    withAnimation(
+                        .spring(response: 0.42, dampingFraction: 0.88)
+                            .delay(Double(order) * 0.065)
+                    ) {
+                        isVisible = true
+                    }
+                }
+            }
+    }
+}
+
+private extension View {
+    func analyticsEntrance(order: Int) -> some View {
+        modifier(AnalyticsEntranceModifier(order: order))
     }
 }
 
