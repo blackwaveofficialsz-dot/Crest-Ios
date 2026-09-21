@@ -1188,29 +1188,77 @@ private struct AnalyticsOrdersContent: View {
         trend?.points.filter { $0.missing != true } ?? []
     }
 
+    private var totalOrders: Double {
+        overview.metrics["order_count"]?.current ?? 0
+    }
+
+    private var averageDailyOrders: Double {
+        guard !trendPoints.isEmpty else { return 0 }
+        return totalOrders / Double(trendPoints.count)
+    }
+
+    private var maxStoreOrders: Double {
+        max(stores.map { $0.value("order_count") }.max() ?? 0, 1)
+    }
+
     var body: some View {
         AnalyticsPageTitle(title: "订单统计", subtitle: "全部门店订单与实收概览")
             .analyticsEntrance(order: 0)
-        AnalyticsKPIGrid(metrics: overview.metrics)
+        AnalyticsKPIGrid(metrics: overview.metrics, compact: true)
             .analyticsEntrance(order: 1)
 
         AnalyticsSection(title: "订单趋势", subtitle: "按日订单量") {
             if trendPoints.isEmpty {
                 AnalyticsEmptyText(text: "当前周期暂无订单趋势数据")
             } else {
-                Chart(trendPoints) { point in
-                    BarMark(
-                        x: .value("日期", point.period),
-                        y: .value("订单", point.orderCount)
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
-                    .cornerRadius(2)
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(AnalyticsValue.count(averageDailyOrders))
+                            .font(.title2.weight(.bold))
+                        Text("日均订单")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                    Spacer()
+                    Text("共 \(AnalyticsValue.count(totalOrders)) 单")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColors.chatSendButton)
+                        .padding(.horizontal, 8)
+                        .frame(height: 26)
+                        .background(AppColors.chatSendButton.opacity(0.10), in: RoundedRectangle(cornerRadius: 6))
                 }
-                .chartXAxis(.hidden)
-                .chartYAxis {
-                    AxisMarks(position: .leading) { _ in
-                        AxisGridLine().foregroundStyle(AppColors.border)
-                        AxisValueLabel()
+
+                GeometryReader { geometry in
+                    Chart(trendPoints) { point in
+                        BarMark(
+                            x: .value("日期", point.period),
+                            y: .value("订单", point.orderCount)
+                        )
+                        .foregroundStyle(AppColors.chatSendButton.gradient)
+                        .cornerRadius(3)
+                    }
+                    .chartXAxis {
+                        AxisMarks(values: AnalyticsChartAxis.values(
+                            from: trendPoints.map(\.period),
+                            width: geometry.size.width
+                        )) { value in
+                            AxisTick().foregroundStyle(AppColors.border)
+                            AxisValueLabel {
+                                if let period = value.as(String.self) {
+                                    Text(AnalyticsChartAxis.shortLabel(period))
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.secondaryText)
+                                        .fixedSize(horizontal: true, vertical: false)
+                                }
+                            }
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { _ in
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
+                                .foregroundStyle(AppColors.border)
+                            AxisValueLabel()
+                        }
                     }
                 }
                 .frame(height: 210)
@@ -1222,18 +1270,32 @@ private struct AnalyticsOrdersContent: View {
             if stores.isEmpty {
                 AnalyticsEmptyText(text: "当前周期暂无订单数据")
             } else {
-                ForEach(stores) { store in
+                ForEach(Array(stores.enumerated()), id: \.element.id) { index, store in
                     Button { onSelectStore(store) } label: {
-                        HStack(spacing: 10) {
-                            VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 12) {
+                            Text("\(index + 1)")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(index < 3 ? Color.white : AppColors.secondaryText)
+                                .frame(width: 26, height: 26)
+                                .background(
+                                    index < 3 ? AppColors.chatSendButton : AppColors.background,
+                                    in: RoundedRectangle(cornerRadius: 6)
+                                )
+
+                            VStack(alignment: .leading, spacing: 7) {
                                 HStack {
                                     Text(store.label)
-                                        .font(.subheadline.weight(.medium))
+                                        .font(.subheadline.weight(.semibold))
                                         .lineLimit(1)
                                     Spacer()
                                     Text("\(AnalyticsValue.count(store.value("order_count"))) 单")
                                         .font(.subheadline.weight(.semibold))
                                 }
+
+                                ProgressView(value: store.value("order_count"), total: maxStoreOrders)
+                                    .tint(index < 3 ? AppColors.chatSendButton : AppColors.tertiaryText)
+                                    .scaleEffect(y: 0.65)
+
                                 HStack {
                                     Text("净实收 \(AnalyticsValue.currency(store.value("net_income")))")
                                     Spacer()
@@ -1266,38 +1328,112 @@ private struct AnalyticsProductsContent: View {
         trend?.points.filter { $0.missing != true } ?? []
     }
 
+    private var totalSales: Double {
+        response.items.reduce(0) { $0 + $1.salesAmount }
+    }
+
+    private var totalQuantity: Double {
+        response.items.reduce(0) { $0 + $1.quantity }
+    }
+
+    private var maxProductSales: Double {
+        max(response.items.map(\.salesAmount).max() ?? 0, 1)
+    }
+
+    private var productSnapshot: [AnalyticsSnapshotItem] {
+        [
+            AnalyticsSnapshotItem(
+                label: "榜单销售额",
+                value: AnalyticsValue.currency(totalSales),
+                detail: "当前榜单合计",
+                systemImage: "yensign.circle"
+            ),
+            AnalyticsSnapshotItem(
+                label: "商品数",
+                value: AnalyticsValue.count(Double(response.total)),
+                detail: "参与销售商品",
+                systemImage: "shippingbox"
+            ),
+            AnalyticsSnapshotItem(
+                label: "总销量",
+                value: AnalyticsValue.count(totalQuantity),
+                detail: "当前榜单合计",
+                systemImage: "cart"
+            )
+        ]
+    }
+
     var body: some View {
         AnalyticsPageTitle(title: "产品分析", subtitle: "按商品销售额排名，共 \(response.total) 项")
             .analyticsEntrance(order: 0)
+
+        AnalyticsSnapshotGrid(items: productSnapshot, columns: 3)
+            .analyticsEntrance(order: 1)
 
         AnalyticsSection(title: "产品销售趋势", subtitle: trend?.productName ?? response.items.first?.productName) {
             if trendPoints.isEmpty {
                 AnalyticsEmptyText(text: "当前周期暂无产品趋势数据")
             } else {
-                Chart(trendPoints) { point in
-                    LineMark(
-                        x: .value("日期", point.period),
-                        y: .value("销售额", point.salesAmount)
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
-                    .interpolationMethod(.catmullRom)
-                    PointMark(
-                        x: .value("日期", point.period),
-                        y: .value("销售额", point.salesAmount)
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
+                if let latest = trendPoints.last {
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(AnalyticsValue.currency(latest.salesAmount))
+                                .font(.title2.weight(.bold))
+                            Text("最新销售额")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+                        Spacer()
+                        Text("销量 \(AnalyticsValue.count(latest.quantity))")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColors.chatSendButton)
+                    }
                 }
-                .chartXAxis(.hidden)
-                .chartYAxis {
-                    AxisMarks(position: .leading) { _ in
-                        AxisGridLine().foregroundStyle(AppColors.border)
-                        AxisValueLabel(format: Decimal.FormatStyle.Currency(code: "CNY").precision(.fractionLength(0)))
+
+                GeometryReader { geometry in
+                    Chart(trendPoints) { point in
+                        AreaMark(
+                            x: .value("日期", point.period),
+                            y: .value("销售额", point.salesAmount)
+                        )
+                        .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
+                        .interpolationMethod(.catmullRom)
+
+                        LineMark(
+                            x: .value("日期", point.period),
+                            y: .value("销售额", point.salesAmount)
+                        )
+                        .foregroundStyle(AppColors.chatSendButton)
+                        .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                        .interpolationMethod(.catmullRom)
+                    }
+                    .chartXAxis {
+                        AxisMarks(values: AnalyticsChartAxis.values(
+                            from: trendPoints.map(\.period),
+                            width: geometry.size.width
+                        )) { value in
+                            AxisValueLabel {
+                                if let period = value.as(String.self) {
+                                    Text(AnalyticsChartAxis.shortLabel(period))
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.secondaryText)
+                                        .fixedSize(horizontal: true, vertical: false)
+                                }
+                            }
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { _ in
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
+                                .foregroundStyle(AppColors.border)
+                            AxisValueLabel(format: Decimal.FormatStyle.Currency(code: "CNY").precision(.fractionLength(0)))
+                        }
                     }
                 }
                 .frame(height: 210)
             }
         }
-        .analyticsEntrance(order: 1)
+        .analyticsEntrance(order: 2)
 
         AnalyticsSection(title: "销售排行", subtitle: "商品销额不等同于财务净实收") {
             if response.items.isEmpty {
@@ -1308,12 +1444,19 @@ private struct AnalyticsProductsContent: View {
                         HStack(spacing: 12) {
                             Text("\(index + 1)")
                                 .font(.caption.weight(.bold))
-                                .foregroundStyle(index < 3 ? AppColors.chatSendButton : AppColors.tertiaryText)
-                                .frame(width: 22)
-                            VStack(alignment: .leading, spacing: 3) {
+                                .foregroundStyle(index < 3 ? Color.white : AppColors.secondaryText)
+                                .frame(width: 26, height: 26)
+                                .background(
+                                    index < 3 ? AppColors.chatSendButton : AppColors.background,
+                                    in: RoundedRectangle(cornerRadius: 6)
+                                )
+                            VStack(alignment: .leading, spacing: 6) {
                                 Text(item.productName)
-                                    .font(.subheadline.weight(.medium))
+                                    .font(.subheadline.weight(.semibold))
                                     .lineLimit(1)
+                                ProgressView(value: item.salesAmount, total: maxProductSales)
+                                    .tint(index < 3 ? AppColors.chatSendButton : AppColors.tertiaryText)
+                                    .scaleEffect(y: 0.65)
                                 Text("销量 \(AnalyticsValue.count(item.quantity)) · 占比 \(AnalyticsValue.percent(item.amountShare))")
                                     .font(.caption)
                                     .foregroundStyle(AppColors.secondaryText)
@@ -1332,7 +1475,7 @@ private struct AnalyticsProductsContent: View {
                 }
             }
         }
-        .analyticsEntrance(order: 2)
+        .analyticsEntrance(order: 3)
     }
 }
 
@@ -1340,47 +1483,113 @@ private struct AnalyticsLaborContent: View {
     let response: AnalyticsLaborResponse
     let onSelectPoint: (AnalyticsLaborPoint) -> Void
 
+    private var planAttainment: String {
+        guard response.summary.plannedHours > 0 else { return "暂无计划" }
+        return (response.summary.actualHours / response.summary.plannedHours)
+            .formatted(.percent.precision(.fractionLength(1)))
+    }
+
+    private var laborSnapshot: [AnalyticsSnapshotItem] {
+        [
+            AnalyticsSnapshotItem(
+                label: "实际工时",
+                value: AnalyticsValue.hours(response.summary.actualHours),
+                detail: "计划达成 \(planAttainment)",
+                systemImage: "clock"
+            ),
+            AnalyticsSnapshotItem(
+                label: "计划工时",
+                value: AnalyticsValue.hours(response.summary.plannedHours),
+                detail: "排班计划基准",
+                systemImage: "calendar.badge.clock"
+            ),
+            AnalyticsSnapshotItem(
+                label: "人数",
+                value: AnalyticsValue.count(response.summary.headcount),
+                detail: "当前统计范围",
+                systemImage: "person.2"
+            ),
+            AnalyticsSnapshotItem(
+                label: "小时产出",
+                value: AnalyticsValue.currency(response.summary.actualRevenuePerHour),
+                detail: "实际每小时产出",
+                systemImage: "gauge.with.dots.needle.50percent"
+            )
+        ]
+    }
+
     var body: some View {
         AnalyticsPageTitle(title: "人效分析", subtitle: "实际工时、计划工时与小时产出")
             .analyticsEntrance(order: 0)
 
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-            AnalyticsMetricTile(label: "实际工时", value: AnalyticsValue.hours(response.summary.actualHours))
-            AnalyticsMetricTile(label: "计划工时", value: AnalyticsValue.hours(response.summary.plannedHours))
-            AnalyticsMetricTile(label: "人数", value: AnalyticsValue.count(response.summary.headcount))
-            AnalyticsMetricTile(label: "小时产出", value: AnalyticsValue.currency(response.summary.actualRevenuePerHour))
-        }
+        AnalyticsSnapshotGrid(items: laborSnapshot, columns: 2)
         .analyticsEntrance(order: 1)
 
         AnalyticsSection(title: "小时产出趋势") {
             if response.points.isEmpty {
                 AnalyticsEmptyText(text: "当前周期暂无人效数据")
             } else {
-                Chart(response.points) { point in
-                    if let actual = point.actualRevenuePerHour {
-                        LineMark(
-                            x: .value("日期", point.period),
-                            y: .value("小时产出", actual),
-                            series: .value("类型", "实际")
-                        )
-                        .foregroundStyle(AppColors.chatSendButton)
-                        .interpolationMethod(.catmullRom)
-                        PointMark(
-                            x: .value("日期", point.period),
-                            y: .value("小时产出", actual)
-                        )
-                        .foregroundStyle(AppColors.chatSendButton)
-                    }
-                    if let planned = point.plannedRevenuePerHour {
-                        LineMark(
-                            x: .value("日期", point.period),
-                            y: .value("小时产出", planned),
-                            series: .value("类型", "计划")
-                        )
-                        .foregroundStyle(AppColors.tertiaryText)
+                if let latest = response.points.last?.actualRevenuePerHour {
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(AnalyticsValue.currency(latest))
+                                .font(.title2.weight(.bold))
+                            Text("最新小时产出")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+                        Spacer()
+                        Label("实际", systemImage: "circle.fill")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColors.chatSendButton)
                     }
                 }
-                .chartXAxis(.hidden)
+
+                GeometryReader { geometry in
+                    Chart(response.points) { point in
+                        if let actual = point.actualRevenuePerHour {
+                            AreaMark(
+                                x: .value("日期", point.period),
+                                y: .value("小时产出", actual)
+                            )
+                            .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
+                            .interpolationMethod(.catmullRom)
+
+                            LineMark(
+                                x: .value("日期", point.period),
+                                y: .value("小时产出", actual),
+                                series: .value("类型", "实际")
+                            )
+                            .foregroundStyle(AppColors.chatSendButton)
+                            .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                            .interpolationMethod(.catmullRom)
+                        }
+                        if let planned = point.plannedRevenuePerHour {
+                            LineMark(
+                                x: .value("日期", point.period),
+                                y: .value("小时产出", planned),
+                                series: .value("类型", "计划")
+                            )
+                            .foregroundStyle(AppColors.tertiaryText)
+                            .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                        }
+                    }
+                    .chartXAxis {
+                        AxisMarks(values: AnalyticsChartAxis.values(
+                            from: response.points.map(\.period),
+                            width: geometry.size.width
+                        )) { value in
+                            AxisValueLabel {
+                                if let period = value.as(String.self) {
+                                    Text(AnalyticsChartAxis.shortLabel(period))
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.secondaryText)
+                                        .fixedSize(horizontal: true, vertical: false)
+                                }
+                            }
+                        }
+                    }
+                }
                 .frame(height: 210)
 
                 HStack(spacing: 16) {
@@ -1396,26 +1605,43 @@ private struct AnalyticsLaborContent: View {
             if response.points.isEmpty {
                 AnalyticsEmptyText(text: "当前周期暂无工时数据")
             } else {
-                Chart(response.points) { point in
-                    LineMark(
-                        x: .value("日期", point.period),
-                        y: .value("工时", point.actualHours),
-                        series: .value("类型", "实际")
-                    )
-                    .foregroundStyle(AppColors.chatSendButton)
-                    .interpolationMethod(.catmullRom)
-                    LineMark(
-                        x: .value("日期", point.period),
-                        y: .value("工时", point.plannedHours),
-                        series: .value("类型", "计划")
-                    )
-                    .foregroundStyle(AppColors.tertiaryText)
-                }
-                .chartXAxis(.hidden)
-                .chartYAxis {
-                    AxisMarks(position: .leading) { _ in
-                        AxisGridLine().foregroundStyle(AppColors.border)
-                        AxisValueLabel()
+                GeometryReader { geometry in
+                    Chart(response.points) { point in
+                        BarMark(
+                            x: .value("日期", point.period),
+                            y: .value("实际工时", point.actualHours)
+                        )
+                        .foregroundStyle(AppColors.chatSendButton.opacity(0.75))
+                        .cornerRadius(2)
+
+                        LineMark(
+                            x: .value("日期", point.period),
+                            y: .value("计划工时", point.plannedHours)
+                        )
+                        .foregroundStyle(AppColors.tertiaryText)
+                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                    }
+                    .chartXAxis {
+                        AxisMarks(values: AnalyticsChartAxis.values(
+                            from: response.points.map(\.period),
+                            width: geometry.size.width
+                        )) { value in
+                            AxisValueLabel {
+                                if let period = value.as(String.self) {
+                                    Text(AnalyticsChartAxis.shortLabel(period))
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.secondaryText)
+                                        .fixedSize(horizontal: true, vertical: false)
+                                }
+                            }
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { _ in
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
+                                .foregroundStyle(AppColors.border)
+                            AxisValueLabel()
+                        }
                     }
                 }
                 .frame(height: 210)
@@ -1435,11 +1661,30 @@ private struct AnalyticsLaborContent: View {
             } else {
                 ForEach(response.points) { point in
                     Button { onSelectPoint(point) } label: {
-                        AnalyticsDetailLinkRow(
-                            title: point.period,
-                            primary: AnalyticsValue.currency(point.actualRevenuePerHour),
-                            secondary: AnalyticsValue.hours(point.actualHours)
-                        )
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(AnalyticsChartAxis.shortLabel(point.period))
+                                    .font(.subheadline.weight(.semibold))
+                                Text("实际 \(AnalyticsValue.hours(point.actualHours)) · 计划 \(AnalyticsValue.hours(point.plannedHours))")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.secondaryText)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.75)
+                            }
+                            Spacer(minLength: 8)
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(AnalyticsValue.currency(point.actualRevenuePerHour))
+                                    .font(.subheadline.weight(.semibold))
+                                Text("小时产出")
+                                    .font(.caption2)
+                                    .foregroundStyle(AppColors.secondaryText)
+                            }
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(AppColors.tertiaryText)
+                        }
+                        .padding(.vertical, 3)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
@@ -1458,9 +1703,41 @@ private struct AnalyticsAlertsContent: View {
         alerts.sorted { abs($0.deviationPercent) > abs($1.deviationPercent) }
     }
 
+    private var alertSnapshot: [AnalyticsSnapshotItem] {
+        let upwardCount = alerts.filter { $0.deviationPercent >= 0 }.count
+        let downwardCount = alerts.count - upwardCount
+        let largestDeviation = sortedAlerts.first.map { AnalyticsValue.signedPercent($0.deviationPercent) } ?? "—"
+        return [
+            AnalyticsSnapshotItem(
+                label: "报警数",
+                value: "\(alerts.count)",
+                detail: "需要关注",
+                systemImage: "exclamationmark.triangle",
+                tint: .orange
+            ),
+            AnalyticsSnapshotItem(
+                label: "营收上扬",
+                value: "\(upwardCount)",
+                detail: "高于基准",
+                systemImage: "arrow.up.right",
+                tint: .green
+            ),
+            AnalyticsSnapshotItem(
+                label: "最大偏离",
+                value: largestDeviation,
+                detail: "\(downwardCount) 家低于基准",
+                systemImage: "arrow.down.right",
+                tint: .red
+            )
+        ]
+    }
+
     var body: some View {
         AnalyticsPageTitle(title: "营收报警", subtitle: "检测日 \(businessDate)")
             .analyticsEntrance(order: 0)
+
+        AnalyticsSnapshotGrid(items: alertSnapshot, columns: 3)
+            .analyticsEntrance(order: 1)
 
         if sortedAlerts.isEmpty {
             AnalyticsMessageState(
@@ -1469,16 +1746,20 @@ private struct AnalyticsAlertsContent: View {
                 message: "当前检测日没有发现需要关注的门店营收波动。"
             )
             .frame(maxWidth: .infinity, minHeight: 260)
-            .analyticsEntrance(order: 1)
+            .analyticsEntrance(order: 2)
         } else {
             AnalyticsSection(title: "报警偏离率", subtitle: "按偏离绝对值排序") {
-                Chart(Array(sortedAlerts.prefix(8))) { alert in
-                    BarMark(
-                        x: .value("偏离率（%）", alert.deviationPoints),
-                        y: .value("门店", alert.shortLabel)
-                    )
-                    .foregroundStyle(alert.deviationPercent >= 0 ? Color.green : Color.red)
-                    .cornerRadius(3)
+                Chart {
+                    RuleMark(x: .value("基准", 0))
+                        .foregroundStyle(AppColors.secondaryText.opacity(0.5))
+                    ForEach(Array(sortedAlerts.prefix(8))) { alert in
+                        BarMark(
+                            x: .value("偏离率（%）", alert.deviationPoints),
+                            y: .value("门店", alert.shortLabel)
+                        )
+                        .foregroundStyle(alert.deviationPercent >= 0 ? Color.green : Color.red)
+                        .cornerRadius(3)
+                    }
                 }
                 .chartXAxis {
                     AxisMarks(position: .bottom) { _ in
@@ -1488,9 +1769,10 @@ private struct AnalyticsAlertsContent: View {
                 }
                 .frame(height: CGFloat(max(150, min(300, sortedAlerts.prefix(8).count * 38))))
             }
-            .analyticsEntrance(order: 1)
+            .analyticsEntrance(order: 2)
 
-            ForEach(sortedAlerts) { alert in
+            ForEach(Array(sortedAlerts.enumerated()), id: \.element.id) { index, alert in
+                let severity = alertSeverity(alert)
                 Button { onSelectAlert(alert) } label: {
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: alert.deviationPercent >= 0 ? "arrow.up.right" : "arrow.down.right")
@@ -1505,12 +1787,23 @@ private struct AnalyticsAlertsContent: View {
                                     .font(.subheadline.weight(.semibold))
                                     .lineLimit(1)
                                 Spacer()
+                                Text(severity.title)
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(severity.color)
+                                    .padding(.horizontal, 7)
+                                    .frame(height: 22)
+                                    .background(severity.color.opacity(0.10), in: RoundedRectangle(cornerRadius: 5))
+                            }
+                            HStack {
+                                Text("实际 \(AnalyticsValue.currency(alert.actualAmount))")
+                                Spacer()
                                 Text(AnalyticsValue.signedPercent(alert.deviationPercent))
-                                    .font(.subheadline.weight(.bold))
+                                    .fontWeight(.semibold)
                                     .foregroundStyle(alert.deviationPercent >= 0 ? Color.green : Color.red)
                             }
-                            Text("实际 \(AnalyticsValue.currency(alert.actualAmount)) · 基准 \(AnalyticsValue.currency(alert.baselineAmount))")
-                                .font(.caption)
+                            .font(.caption)
+                            Text("基准 \(AnalyticsValue.currency(alert.baselineAmount))")
+                                .font(.caption2)
                                 .foregroundStyle(AppColors.secondaryText)
                             if let hint = alert.reasonHints?.first, !hint.isEmpty {
                                 Text(hint)
@@ -1532,9 +1825,16 @@ private struct AnalyticsAlertsContent: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 8).stroke(AppColors.border, lineWidth: 1)
                 }
-                .analyticsEntrance(order: 2)
+                .analyticsEntrance(order: min(index + 3, 7))
             }
         }
+    }
+
+    private func alertSeverity(_ alert: AnalyticsRevenueAlert) -> (title: String, color: Color) {
+        let deviation = abs(alert.deviationPoints)
+        if deviation >= 20 { return ("显著", .red) }
+        if deviation >= 10 { return ("关注", .orange) }
+        return ("轻微", AppColors.secondaryText)
     }
 }
 
@@ -1557,6 +1857,93 @@ private struct AnalyticsPageTitle: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct AnalyticsSnapshotItem: Identifiable {
+    let label: String
+    let value: String
+    let detail: String
+    let systemImage: String
+    let tint: Color
+
+    var id: String { label }
+
+    init(
+        label: String,
+        value: String,
+        detail: String,
+        systemImage: String,
+        tint: Color = AppColors.chatSendButton
+    ) {
+        self.label = label
+        self.value = value
+        self.detail = detail
+        self.systemImage = systemImage
+        self.tint = tint
+    }
+}
+
+private struct AnalyticsSnapshotGrid: View {
+    let items: [AnalyticsSnapshotItem]
+    let columns: Int
+
+    private var gridColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: 0), count: max(columns, 1))
+    }
+
+    var body: some View {
+        LazyVGrid(columns: gridColumns, spacing: 4) {
+            ForEach(items) { item in
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 5) {
+                        Image(systemName: item.systemImage)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(item.tint)
+                        Text(item.label)
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.secondaryText)
+                            .lineLimit(1)
+                    }
+                    Text(item.value)
+                        .font(.headline.weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.62)
+                    Text(item.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.tertiaryText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                }
+                .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
+                .padding(8)
+            }
+        }
+        .padding(4)
+        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 8))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(AppColors.border, lineWidth: 1)
+        }
+    }
+}
+
+private enum AnalyticsChartAxis {
+    static func values(from periods: [String], width: CGFloat) -> [String] {
+        guard !periods.isEmpty else { return [] }
+        let labelCount = min(periods.count, min(7, max(2, Int(width / 68))))
+        guard labelCount > 1 else { return [periods[0]] }
+
+        let lastIndex = periods.count - 1
+        return (0..<labelCount).map { labelIndex in
+            let position = Double(labelIndex) * Double(lastIndex) / Double(labelCount - 1)
+            return periods[Int(position.rounded())]
+        }
+    }
+
+    static func shortLabel(_ period: String) -> String {
+        guard period.count >= 5 else { return period }
+        return String(period.suffix(5)).replacingOccurrences(of: "-", with: "/")
     }
 }
 
