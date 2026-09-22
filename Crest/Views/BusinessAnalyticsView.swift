@@ -1340,16 +1340,20 @@ private struct AnalyticsOrdersContent: View {
         GeometryReader { geometry in
             Chart {
                 ForEach(trendPoints) { point in
-                    BarMark(
+                    AreaMark(
                         x: .value("日期", point.period),
                         y: .value("订单", point.orderCount)
                     )
-                    .foregroundStyle(
-                        point.id == selectedPoint?.id
-                            ? AppColors.chatSendButton
-                            : AppColors.chatSendButton.opacity(0.72)
+                    .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
+                    .interpolationMethod(.catmullRom)
+
+                    LineMark(
+                        x: .value("日期", point.period),
+                        y: .value("订单", point.orderCount)
                     )
-                    .cornerRadius(3)
+                    .foregroundStyle(AppColors.chatSendButton)
+                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .interpolationMethod(.catmullRom)
                 }
 
                 if let selectedPoint {
