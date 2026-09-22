@@ -1207,7 +1207,11 @@ private struct AnalyticsDashboardContent: View {
 }
 
 private struct AnalyticsOrdersContent: View {
-    @State private var selectedPeriod: String?
+    @State private var selectedPosition: Double?
+    @State private var visibleDayCount = 14.0
+    @State private var scrollPosition = 0.0
+    @State private var zoomStartVisibleDayCount: Double?
+    @State private var zoomStartCenter: Double?
     @State private var isTrendFullScreenPresented = false
 
     let overview: AnalyticsOverview
@@ -1232,8 +1236,26 @@ private struct AnalyticsOrdersContent: View {
     }
 
     private var selectedPoint: AnalyticsRevenueTrendPoint? {
-        guard let selectedPeriod else { return nil }
-        return trendPoints.first { $0.period == selectedPeriod }
+        guard let selectedPosition else { return nil }
+        let index = Int(selectedPosition.rounded())
+        guard trendPoints.indices.contains(index) else { return nil }
+        return trendPoints[index]
+    }
+
+    private var selectedPointPosition: Double? {
+        guard let selectedPoint,
+              let index = trendPoints.firstIndex(where: { $0.id == selectedPoint.id }) else {
+            return nil
+        }
+        return Double(index)
+    }
+
+    private var maximumVisibleDayCount: Double {
+        max(Double(trendPoints.count), 1)
+    }
+
+    private var minimumVisibleDayCount: Double {
+        min(7, maximumVisibleDayCount)
     }
 
     private var maxStoreOrders: Double {
@@ -1275,6 +1297,10 @@ private struct AnalyticsOrdersContent: View {
             }
         }
         .analyticsEntrance(order: 2)
+        .onAppear(perform: resetTrendViewport)
+        .onChange(of: trendPoints.map(\.period)) { _, _ in
+            resetTrendViewport()
+        }
         .fullScreenCover(isPresented: $isTrendFullScreenPresented) {
             AnalyticsChartFullScreen(
                 title: "订单趋势",
@@ -1339,16 +1365,16 @@ private struct AnalyticsOrdersContent: View {
     private var orderTrendChart: some View {
         GeometryReader { geometry in
             Chart {
-                ForEach(trendPoints) { point in
+                ForEach(Array(trendPoints.enumerated()), id: \.element.id) { index, point in
                     AreaMark(
-                        x: .value("日期", point.period),
+                        x: .value("日期", Double(index)),
                         y: .value("订单", point.orderCount)
                     )
                     .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
                     .interpolationMethod(.catmullRom)
 
                     LineMark(
-                        x: .value("日期", point.period),
+                        x: .value("日期", Double(index)),
                         y: .value("订单", point.orderCount)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
@@ -1356,11 +1382,11 @@ private struct AnalyticsOrdersContent: View {
                     .interpolationMethod(.catmullRom)
                 }
 
-                if let selectedPoint {
-                    RuleMark(x: .value("选中日期", selectedPoint.period))
+                if let selectedPoint, let selectedPointPosition {
+                    RuleMark(x: .value("选中日期", selectedPointPosition))
                         .foregroundStyle(AppColors.secondaryText.opacity(0.55))
                     PointMark(
-                        x: .value("选中日期", selectedPoint.period),
+                        x: .value("选中日期", selectedPointPosition),
                         y: .value("选中订单", selectedPoint.orderCount)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
@@ -1376,15 +1402,17 @@ private struct AnalyticsOrdersContent: View {
                     }
                 }
             }
-            .analyticsChartTapSelection(axis: .x, selection: $selectedPeriod)
+            .chartXSelection(value: $selectedPosition)
+            .chartScrollableAxes(.horizontal)
+            .chartXVisibleDomain(length: visibleDayCount)
+            .chartScrollPosition(x: $scrollPosition)
+            .simultaneousGesture(trendZoomGesture)
             .chartXAxis {
-                AxisMarks(values: AnalyticsChartAxis.values(
-                    from: trendPoints.map(\.period),
-                    width: geometry.size.width
-                )) { value in
+                AxisMarks(values: .stride(by: xAxisStride(for: geometry.size.width))) { value in
                     AxisTick().foregroundStyle(AppColors.border)
                     AxisValueLabel {
-                        if let period = value.as(String.self) {
+                        if let position = value.as(Double.self),
+                           let period = period(at: position) {
                             Text(AnalyticsChartAxis.shortLabel(period))
                                 .font(.caption2)
                                 .foregroundStyle(AppColors.secondaryText)
@@ -1401,8 +1429,54 @@ private struct AnalyticsOrdersContent: View {
                 }
             }
             .accessibilityLabel("最近30天按日订单趋势")
-            .accessibilityHint("点按图表查看每日订单详情")
+            .accessibilityHint("左右拖动查看日期，双指缩放，点按查看每日订单详情")
         }
+    }
+
+    private var trendZoomGesture: some Gesture {
+        MagnificationGesture()
+            .onChanged { scale in
+                if zoomStartVisibleDayCount == nil {
+                    zoomStartVisibleDayCount = visibleDayCount
+                    zoomStartCenter = scrollPosition + visibleDayCount / 2
+                }
+
+                guard let startVisibleDayCount = zoomStartVisibleDayCount,
+                      let center = zoomStartCenter else { return }
+                let nextVisibleDayCount = clampedVisibleDayCount(startVisibleDayCount / scale)
+                visibleDayCount = nextVisibleDayCount
+                scrollPosition = clampedScrollPosition(center - nextVisibleDayCount / 2)
+            }
+            .onEnded { _ in
+                zoomStartVisibleDayCount = nil
+                zoomStartCenter = nil
+            }
+    }
+
+    private func resetTrendViewport() {
+        selectedPosition = nil
+        visibleDayCount = clampedVisibleDayCount(14)
+        scrollPosition = clampedScrollPosition(maximumVisibleDayCount - visibleDayCount)
+    }
+
+    private func clampedVisibleDayCount(_ value: Double) -> Double {
+        min(max(value, minimumVisibleDayCount), maximumVisibleDayCount)
+    }
+
+    private func clampedScrollPosition(_ value: Double) -> Double {
+        min(max(value, 0), max(maximumVisibleDayCount - visibleDayCount, 0))
+    }
+
+    private func xAxisStride(for width: CGFloat) -> Double {
+        let desiredLabelCount = max(2, Int(width / 68))
+        return max(1, (visibleDayCount / Double(desiredLabelCount)).rounded(.up))
+    }
+
+    private func period(at position: Double) -> String? {
+        let index = Int(position.rounded())
+        guard abs(position - Double(index)) < 0.01,
+              trendPoints.indices.contains(index) else { return nil }
+        return trendPoints[index].period
     }
 }
 
