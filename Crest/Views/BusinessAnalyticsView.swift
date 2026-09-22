@@ -26,6 +26,7 @@ struct BusinessAnalyticsView: View {
     @State private var products: AnalyticsProductsResponse?
     @State private var productTrend: AnalyticsProductTrendResponse?
     @State private var labor: AnalyticsLaborResponse?
+    @State private var laborTrend: AnalyticsLaborResponse?
     @State private var alerts: [AnalyticsRevenueAlert]?
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -37,6 +38,14 @@ struct BusinessAnalyticsView: View {
     private var period: ClosedRange<Date> { customPeriod ?? periodPreset.range }
     private var dateFrom: String { AnalyticsDateFormat.api.string(from: period.lowerBound) }
     private var dateTo: String { AnalyticsDateFormat.api.string(from: period.upperBound) }
+    private var trendPeriod: ClosedRange<Date> {
+        let calendar = AnalyticsDateFormat.calendar
+        let end = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -1, to: Date()) ?? Date())
+        let start = calendar.date(byAdding: .day, value: -29, to: end) ?? end
+        return start...end
+    }
+    private var trendDateFrom: String { AnalyticsDateFormat.api.string(from: trendPeriod.lowerBound) }
+    private var trendDateTo: String { AnalyticsDateFormat.api.string(from: trendPeriod.upperBound) }
     private var storeKeys: [String] { selectedStoreKeys.sorted() }
     private var storeOptions: [AnalyticsStoreOption] {
         var seen: Set<String> = []
@@ -316,6 +325,7 @@ struct BusinessAnalyticsView: View {
             if let labor {
                 AnalyticsLaborContent(
                     response: labor,
+                    trend: laborTrend,
                     onSelectPoint: { selectedDetail = .labor($0) }
                 )
             }
@@ -382,8 +392,8 @@ struct BusinessAnalyticsView: View {
                 overview = value
                 revenueTrend = try await withAnalyticsSession { token, identity in
                     try await api.analyticsRevenueTrend(
-                        dateFrom: dateFrom,
-                        dateTo: dateTo,
+                        dateFrom: trendDateFrom,
+                        dateTo: trendDateTo,
                         storeKeys: storeKeys,
                         refresh: forceRefresh,
                         accessToken: token,
@@ -403,12 +413,22 @@ struct BusinessAnalyticsView: View {
                 }
                 guard workspaceID == session.activeWorkspaceID else { return }
                 products = value
-                if let product = value.items.first {
+                let recentProducts = try await withAnalyticsSession { token, identity in
+                    try await api.analyticsProducts(
+                        dateFrom: trendDateFrom,
+                        dateTo: trendDateTo,
+                        storeKeys: storeKeys,
+                        refresh: forceRefresh,
+                        accessToken: token,
+                        cacheIdentity: identity
+                    )
+                }
+                if let product = recentProducts.items.first {
                     productTrend = try await withAnalyticsSession { token, identity in
                         try await api.analyticsProductTrend(
                             productKey: product.productKey,
-                            dateFrom: dateFrom,
-                            dateTo: dateTo,
+                            dateFrom: trendDateFrom,
+                            dateTo: trendDateTo,
                             storeKeys: storeKeys,
                             refresh: forceRefresh,
                             accessToken: token,
@@ -429,6 +449,16 @@ struct BusinessAnalyticsView: View {
                 }
                 guard workspaceID == session.activeWorkspaceID else { return }
                 labor = value
+                laborTrend = try await withAnalyticsSession { token, identity in
+                    try await api.analyticsLabor(
+                        dateFrom: trendDateFrom,
+                        dateTo: trendDateTo,
+                        storeKeys: storeKeys,
+                        refresh: forceRefresh,
+                        accessToken: token,
+                        cacheIdentity: identity
+                    )
+                }
             case .alerts:
                 let value = try await withAnalyticsSession { token, identity in
                     try await api.analyticsRevenueAlerts(
@@ -503,6 +533,7 @@ struct BusinessAnalyticsView: View {
         products = nil
         productTrend = nil
         labor = nil
+        laborTrend = nil
         alerts = nil
         errorMessage = nil
     }
@@ -914,11 +945,11 @@ private struct AnalyticsDashboardContent: View {
 
         AnalyticsSection(
             title: "营收趋势",
-            subtitle: "按日净实收",
+            subtitle: "最近30天 · 按日净实收",
             onExpand: { isTrendFullScreenPresented = true }
         ) {
             if trendChartPoints.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无营收趋势数据")
+                AnalyticsEmptyText(text: "最近30天暂无营收趋势数据")
             } else {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: 2) {
@@ -975,7 +1006,7 @@ private struct AnalyticsDashboardContent: View {
     private var fullScreenTrendView: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text("按日净实收")
+                Text("最近30天 · 按日净实收")
                     .font(.subheadline)
                     .foregroundStyle(AppColors.secondaryText)
                 trendChart
@@ -1188,13 +1219,13 @@ private struct AnalyticsOrdersContent: View {
         trend?.points.filter { $0.missing != true } ?? []
     }
 
-    private var totalOrders: Double {
-        overview.metrics["order_count"]?.current ?? 0
+    private var trendOrderTotal: Double {
+        trendPoints.reduce(0) { $0 + $1.orderCount }
     }
 
     private var averageDailyOrders: Double {
         guard !trendPoints.isEmpty else { return 0 }
-        return totalOrders / Double(trendPoints.count)
+        return trendOrderTotal / Double(trendPoints.count)
     }
 
     private var maxStoreOrders: Double {
@@ -1207,9 +1238,9 @@ private struct AnalyticsOrdersContent: View {
         AnalyticsKPIGrid(metrics: overview.metrics, compact: true)
             .analyticsEntrance(order: 1)
 
-        AnalyticsSection(title: "订单趋势", subtitle: "按日订单量") {
+        AnalyticsSection(title: "订单趋势", subtitle: "最近30天 · 按日订单量") {
             if trendPoints.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无订单趋势数据")
+                AnalyticsEmptyText(text: "最近30天暂无订单趋势数据")
             } else {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: 2) {
@@ -1220,7 +1251,7 @@ private struct AnalyticsOrdersContent: View {
                             .foregroundStyle(AppColors.secondaryText)
                     }
                     Spacer()
-                    Text("共 \(AnalyticsValue.count(totalOrders)) 单")
+                    Text("共 \(AnalyticsValue.count(trendOrderTotal)) 单")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(AppColors.chatSendButton)
                         .padding(.horizontal, 8)
@@ -1340,6 +1371,13 @@ private struct AnalyticsProductsContent: View {
         max(response.items.map(\.salesAmount).max() ?? 0, 1)
     }
 
+    private var trendSubtitle: String {
+        guard let productName = trend?.productName else {
+            return "最近30天"
+        }
+        return "最近30天 · \(productName)"
+    }
+
     private var productSnapshot: [AnalyticsSnapshotItem] {
         [
             AnalyticsSnapshotItem(
@@ -1370,9 +1408,9 @@ private struct AnalyticsProductsContent: View {
         AnalyticsSnapshotGrid(items: productSnapshot, columns: 3)
             .analyticsEntrance(order: 1)
 
-        AnalyticsSection(title: "产品销售趋势", subtitle: trend?.productName ?? response.items.first?.productName) {
+        AnalyticsSection(title: "产品销售趋势", subtitle: trendSubtitle) {
             if trendPoints.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无产品趋势数据")
+                AnalyticsEmptyText(text: "最近30天暂无产品趋势数据")
             } else {
                 if let latest = trendPoints.last {
                     HStack(alignment: .firstTextBaseline) {
@@ -1481,7 +1519,12 @@ private struct AnalyticsProductsContent: View {
 
 private struct AnalyticsLaborContent: View {
     let response: AnalyticsLaborResponse
+    let trend: AnalyticsLaborResponse?
     let onSelectPoint: (AnalyticsLaborPoint) -> Void
+
+    private var trendPoints: [AnalyticsLaborPoint] {
+        trend?.points ?? []
+    }
 
     private var planAttainment: String {
         guard response.summary.plannedHours > 0 else { return "暂无计划" }
@@ -1525,11 +1568,11 @@ private struct AnalyticsLaborContent: View {
         AnalyticsSnapshotGrid(items: laborSnapshot, columns: 2)
         .analyticsEntrance(order: 1)
 
-        AnalyticsSection(title: "小时产出趋势") {
-            if response.points.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无人效数据")
+        AnalyticsSection(title: "小时产出趋势", subtitle: "最近30天") {
+            if trendPoints.isEmpty {
+                AnalyticsEmptyText(text: "最近30天暂无人效趋势数据")
             } else {
-                if let latest = response.points.last?.actualRevenuePerHour {
+                if let latest = trendPoints.last?.actualRevenuePerHour {
                     HStack(alignment: .firstTextBaseline) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(AnalyticsValue.currency(latest))
@@ -1546,7 +1589,7 @@ private struct AnalyticsLaborContent: View {
                 }
 
                 GeometryReader { geometry in
-                    Chart(response.points) { point in
+                    Chart(trendPoints) { point in
                         if let actual = point.actualRevenuePerHour {
                             AreaMark(
                                 x: .value("日期", point.period),
@@ -1576,7 +1619,7 @@ private struct AnalyticsLaborContent: View {
                     }
                     .chartXAxis {
                         AxisMarks(values: AnalyticsChartAxis.values(
-                            from: response.points.map(\.period),
+                            from: trendPoints.map(\.period),
                             width: geometry.size.width
                         )) { value in
                             AxisValueLabel {
@@ -1601,12 +1644,12 @@ private struct AnalyticsLaborContent: View {
         }
         .analyticsEntrance(order: 2)
 
-        AnalyticsSection(title: "工时趋势", subtitle: "实际工时与计划工时") {
-            if response.points.isEmpty {
-                AnalyticsEmptyText(text: "当前周期暂无工时数据")
+        AnalyticsSection(title: "工时趋势", subtitle: "最近30天 · 实际工时与计划工时") {
+            if trendPoints.isEmpty {
+                AnalyticsEmptyText(text: "最近30天暂无工时趋势数据")
             } else {
                 GeometryReader { geometry in
-                    Chart(response.points) { point in
+                    Chart(trendPoints) { point in
                         BarMark(
                             x: .value("日期", point.period),
                             y: .value("实际工时", point.actualHours)
@@ -1623,7 +1666,7 @@ private struct AnalyticsLaborContent: View {
                     }
                     .chartXAxis {
                         AxisMarks(values: AnalyticsChartAxis.values(
-                            from: response.points.map(\.period),
+                            from: trendPoints.map(\.period),
                             width: geometry.size.width
                         )) { value in
                             AxisValueLabel {
