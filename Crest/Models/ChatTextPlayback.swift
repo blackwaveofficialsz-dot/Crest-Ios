@@ -50,7 +50,7 @@ struct ChatTextPlayback {
         guard elapsed >= 0.016 else { return }
         lastTick = time
         let remaining = characters.count - visibleCount
-        let catchUpDuration = finishDeadline.map { max(0.032, $0 - time) } ?? 0.75
+        let catchUpDuration = finishDeadline.map { max(0.032, $0 - time) } ?? 5.0
         let speed = max(80, Double(remaining) / catchUpDuration)
         let step = min(remaining, max(1, Int(ceil(speed * min(elapsed, 0.1)))))
         visibleText.append(contentsOf: characters[visibleCount..<(visibleCount + step)])
@@ -58,7 +58,7 @@ struct ChatTextPlayback {
     }
 
     mutating func finish(at time: TimeInterval) {
-        finishDeadline = time + 0.6
+        finishDeadline = time + 10.0
     }
 
     /// 失败、减少动态效果或退入后台后，本条回复不再重启动画。

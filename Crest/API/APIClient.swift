@@ -72,16 +72,16 @@ private struct WorkspaceSwitchRequest: Encodable {
     }
 }
 
-private struct JoinTenantRequest: Encodable {
-    let tenantCode: String
+private struct AcceptInvitationRequest: Encodable {
+    let inviteToken: String
 
     enum CodingKeys: String, CodingKey {
-        case tenantCode = "tenant_code"
+        case inviteToken = "invite_token"
     }
 }
 
-struct JoinTenantResponse: Decodable {
-    let status: String
+struct AcceptInvitationResponse: Decodable {
+    let workspace: WorkspaceSummary
     let message: String
 }
 
@@ -310,11 +310,7 @@ struct APIClient {
            let overrideURL = URL(string: value) {
             return overrideURL
         }
-#if DEBUG
-        return URL(string: "http://127.0.0.1:8000")!
-#else
         return URL(string: "https://blackwave.org.cn/yuanji")!
-#endif
     }
 
     func phoneRegistrationStatus(
@@ -502,13 +498,13 @@ struct APIClient {
         return try JSONDecoder().decode(WorkspaceListResponse.self, from: data)
     }
 
-    func joinTenant(
-        tenantCode: String,
+    func acceptInvitation(
+        inviteToken: String,
         accessToken: String
-    ) async throws -> JoinTenantResponse {
+    ) async throws -> AcceptInvitationResponse {
         try await post(
-            "/api/v1/auth/join-tenant",
-            body: JoinTenantRequest(tenantCode: tenantCode),
+            "/api/v1/auth/accept-invite",
+            body: AcceptInvitationRequest(inviteToken: inviteToken),
             fallbackError: "加入团队失败",
             accessToken: accessToken
         )

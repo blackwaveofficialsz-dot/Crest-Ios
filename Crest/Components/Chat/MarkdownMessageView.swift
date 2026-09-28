@@ -107,7 +107,11 @@ struct MarkdownMessageView: View {
             MarkdownCodeBlock(language: language, code: code)
 
         case .table(let headers, let rows):
-            MarkdownTable(headers: headers, rows: rows)
+            if isStreaming {
+                StreamingMarkdownTable(headers: headers, rows: rows)
+            } else {
+                MarkdownTable(headers: headers, rows: rows)
+            }
 
         case .divider:
             Divider()
@@ -123,6 +127,34 @@ struct MarkdownMessageView: View {
         default:
             .system(size: 17, weight: .semibold)
         }
+    }
+}
+
+private struct StreamingMarkdownTable: View {
+    let headers: [String]
+    let rows: [[String]]
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            Text(source)
+                .font(.system(size: 14, design: .monospaced))
+                .foregroundStyle(AppColors.primaryText)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(12)
+        }
+        .scrollIndicators(.hidden)
+        .background(AppColors.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(AppColors.border, lineWidth: 1)
+        }
+    }
+
+    private var source: String {
+        ([headers] + rows)
+            .map { "| " + $0.joined(separator: " | ") + " |" }
+            .joined(separator: "\n")
     }
 }
 
@@ -203,62 +235,124 @@ private struct MarkdownCodeBlock: View {
     }
 }
 
-private struct MarkdownTable: View {
+struct MarkdownTable: View {
     let headers: [String]
     let rows: [[String]]
+    var title: String? = nil
+    var previewRowCount = 10
+    var totalRowCount: Int? = nil
+    var columnWidths: [CGFloat]? = nil
+
+    @State private var isExpanded = false
 
     private var columnCount: Int {
         max(headers.count, rows.map(\.count).max() ?? 0)
     }
 
-    var body: some View {
-        ScrollView(.horizontal) {
-            Grid(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0) {
-                GridRow {
-                    ForEach(0..<columnCount, id: \.self) { column in
-                        cell(
-                            value(at: column, in: headers),
-                            isHeader: true,
-                            showsSeparator: true
-                        )
-                    }
-                }
+    private var visibleRows: [[String]] {
+        isExpanded ? rows : Array(rows.prefix(previewRowCount))
+    }
 
-                ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
-                    GridRow {
+    private var reportedRowCount: Int {
+        max(totalRowCount ?? rows.count, rows.count)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let title, !title.isEmpty {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColors.primaryText)
+            }
+
+            ScrollView(.horizontal) {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(alignment: .top, spacing: 0) {
                         ForEach(0..<columnCount, id: \.self) { column in
                             cell(
-                                value(at: column, in: row),
-                                isHeader: false,
-                                showsSeparator: rowIndex < rows.count - 1
+                                value(at: column, in: headers),
+                                column: column,
+                                isHeader: true
                             )
                         }
                     }
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(AppColors.border)
+                            .frame(height: 1)
+                    }
+
+                    ForEach(Array(visibleRows.enumerated()), id: \.offset) { rowIndex, row in
+                        HStack(alignment: .top, spacing: 0) {
+                            ForEach(0..<columnCount, id: \.self) { column in
+                                cell(
+                                    value(at: column, in: row),
+                                    column: column,
+                                    isHeader: false
+                                )
+                            }
+                        }
+                        .overlay(alignment: .bottom) {
+                            if rowIndex < visibleRows.count - 1 {
+                                Rectangle()
+                                    .fill(AppColors.border)
+                                    .frame(height: 1)
+                            }
+                        }
+                    }
                 }
+                .background(AppColors.background)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             }
-            .background(AppColors.background)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .scrollIndicators(.hidden)
+
+            if totalRowCount != nil {
+                Text("当前展示 \(visibleRows.count) / \(reportedRowCount) 行")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.secondaryText)
+            }
+
+            if rows.count > previewRowCount {
+                Button(isExpanded ? "收起" : expandButtonTitle) {
+                    isExpanded.toggle()
+                }
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(AppColors.chatSendButton)
+                .buttonStyle(.plain)
+                .accessibilityHint(isExpanded ? "只显示前十行" : "显示全部表格行")
+            }
         }
-        .scrollIndicators(.hidden)
+    }
+
+    private var expandButtonTitle: String {
+        if reportedRowCount > rows.count {
+            return "展开已返回的 \(rows.count) 行"
+        }
+        return "展开全部（\(rows.count) 行）"
     }
 
     private func value(at index: Int, in row: [String]) -> String {
         index < row.count ? row[index] : ""
     }
 
-    private func cell(_ value: String, isHeader: Bool, showsSeparator: Bool) -> some View {
-        MarkdownInlineText(value)
+    private func cell(
+        _ value: String,
+        column: Int,
+        isHeader: Bool
+    ) -> some View {
+        Text(value)
             .font(.system(size: 15, weight: isHeader ? .semibold : .regular))
+            .lineLimit(3)
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
-            .frame(minWidth: 96, maxWidth: 220, alignment: .leading)
+            .frame(width: width(for: column), alignment: .leading)
             .background(isHeader ? AppColors.surface : AppColors.background)
-            .overlay(alignment: .bottom) {
-                if showsSeparator {
-                    Rectangle()
-                        .fill(AppColors.border)
-                        .frame(height: 1)
-                }
-            }
+    }
+
+    private func width(for column: Int) -> CGFloat {
+        guard let columnWidths, column < columnWidths.count else {
+            return column == 0 ? 168 : 144
+        }
+        return columnWidths[column]
     }
 }

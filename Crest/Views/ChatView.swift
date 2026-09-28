@@ -1,5 +1,15 @@
 import SwiftUI
 
+private struct PendingAgentRun {
+    let message: String
+    let sessionID: String
+    let runID: String
+    let userMessageID: String
+    let interaction: ChatInteraction?
+    let assistantMessageID: String
+    var lastEventID: String?
+}
+
 /// 聊天主页，负责消息流、历史会话、侧边栏和设置弹窗的状态编排。
 struct ChatView: View {
     @EnvironmentObject private var session: SessionStore
@@ -38,6 +48,7 @@ struct ChatView: View {
     @State private var followsLatestReply = true
     @State private var isCopyToastPresented = false
     @State private var copyToastTask: Task<Void, Never>?
+    @State private var pendingAgentRun: PendingAgentRun?
 
     private let sidebarEdgeWidth: CGFloat = 32
     private let sidebarDistanceThreshold: CGFloat = 0.34
@@ -197,7 +208,9 @@ struct ChatView: View {
                     draft: $draft,
                     isFocused: $isComposerFocused,
                     canSend: canSend,
-                    onSend: sendMessage
+                    isStreaming: isWaitingForService,
+                    onSend: sendMessage,
+                    onStop: stopResponse
                 )
             }
         }
@@ -211,7 +224,8 @@ struct ChatView: View {
             avatarData: session.avatarData,
             sessions: history,
             activeSessionID: activeSessionID,
-            isLoading: isLoadingHistory,
+            isLoading: isSidebarOpen && isLoadingHistory,
+            showsAnalytics: session.workspaceType != .personal,
             onNewConversation: startNewConversation,
             onOpenSearch: openSearch,
             onOpenAnalytics: openAnalytics,
@@ -262,9 +276,15 @@ struct ChatView: View {
                         canRetry: !isWaitingForService,
                         onCopy: showCopyConfirmation,
                         onRetry: retryResponse,
+                        onAction: handleResponseAction,
+                        onApproval: handleApprovalDecision,
                         playback: replyPlayback
                     )
                 }
+
+                Color.clear
+                    .frame(height: 1)
+                    .id("conversation-bottom")
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 18)
@@ -289,7 +309,7 @@ struct ChatView: View {
                         followsLatestReply = true
                         scrollToBottom(with: proxy, animated: !reduceMotion)
                     } label: {
-                        Image(systemName: isWaitingForService ? "ellipsis" : "arrow.down")
+                        Image(systemName: "arrow.down")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(AppColors.primaryText)
                             .symbolEffect(
@@ -308,13 +328,19 @@ struct ChatView: View {
                 }
             }
             .onChange(of: messages.last?.content) { _, _ in
-                scrollToBottom(with: proxy, animated: false)
+                if isWaitingForService && followsLatestReply {
+                    scrollToBottom(with: proxy, animated: false)
+                }
             }
             .onChange(of: replyPlayback.visibleText) { _, _ in
-                scrollToBottom(with: proxy, animated: false)
+                if isWaitingForService && followsLatestReply {
+                    scrollToBottom(with: proxy, animated: false)
+                }
             }
-            .onChange(of: isWaitingForService) { _, _ in
-                scrollToBottom(with: proxy)
+            .onChange(of: isWaitingForService) { _, isWaiting in
+                if isWaiting {
+                    scrollToBottom(with: proxy)
+                }
             }
             .onChange(of: isComposerFocused) { _, isFocused in
                 if isFocused {
@@ -364,25 +390,53 @@ struct ChatView: View {
         sendMessage(userMessage.content, clearsDraft: false)
     }
 
-    private func sendMessage(_ rawContent: String, clearsDraft: Bool) {
+    private func handleResponseAction(_ action: ChatResponseAction) {
+        guard !isWaitingForService, let message = action.params?.message else { return }
+        let interaction: ChatInteraction?
+        if action.kind == "clarify",
+           let sourceTurnID = action.sourceTurnID,
+           let candidateID = action.params?.candidateID {
+            interaction = ChatInteraction(sourceTurnID: sourceTurnID, candidateID: candidateID)
+        } else {
+            interaction = nil
+        }
+        sendMessage(message, clearsDraft: false, interaction: interaction)
+    }
+
+    private func sendMessage(
+        _ rawContent: String,
+        clearsDraft: Bool,
+        interaction: ChatInteraction? = nil
+    ) {
         let content = rawContent.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty, !isWaitingForService else { return }
 
         let requestSessionID = activeSessionID ?? UUID().uuidString
         let assistantID = UUID().uuidString
+        let runID = UUID().uuidString
+        let userMessageID = UUID().uuidString
         let workspaceID = session.activeWorkspaceID
         activeSessionID = requestSessionID
 
-        withAnimation(.easeOut(duration: 0.2)) {
-            messages.append(ChatMessage(role: .user, content: content))
-            messages.append(ChatMessage(id: assistantID, role: .assistant, content: ""))
-            if clearsDraft {
-                draft = ""
-            }
-            isWaitingForService = true
-            streamingMessageID = assistantID
-            streamStatus = "正在连接"
+        pendingAgentRun = PendingAgentRun(
+            message: content,
+            sessionID: requestSessionID,
+            runID: runID,
+            userMessageID: userMessageID,
+            interaction: interaction,
+            assistantMessageID: assistantID,
+            lastEventID: nil
+        )
+
+        followsLatestReply = true
+        messages.append(ChatMessage(role: .user, content: content))
+        messages.append(ChatMessage(id: assistantID, role: .assistant, content: ""))
+        if clearsDraft {
+            draft = ""
         }
+        isWaitingForService = true
+        streamingMessageID = assistantID
+        streamStatus = "正在连接"
         isComposerFocused = false
 
         chatTask?.cancel()
@@ -391,11 +445,19 @@ struct ChatView: View {
             replyPlayback = ChatTextPlayback(messageID: assistantID)
         }
         chatTask = Task {
+            defer {
+                if streamingMessageID == assistantID {
+                    finishStreamingMessage(assistantID)
+                }
+            }
             do {
                 try await session.withAuthenticatedSession { token in
                     try await api.streamChat(
                         message: content,
                         sessionID: requestSessionID,
+                        runID: runID,
+                        userMessageID: userMessageID,
+                        interaction: interaction,
                         accessToken: token
                     ) { event in
                         await MainActor.run {
@@ -406,15 +468,111 @@ struct ChatView: View {
                 }
                 guard workspaceID == session.activeWorkspaceID else { return }
                 finishStreamingMessage(assistantID, animateRemainder: true)
-                await loadHistory()
+                if pendingAgentRun?.assistantMessageID != assistantID {
+                    await loadHistory()
+                }
             } catch is CancellationError {
-                finishStreamingMessage(assistantID)
+                return
             } catch {
                 guard streamingMessageID == assistantID else { return }
-                finishStreamingMessage(assistantID)
+                applyFailure(
+                    ChatFailure(
+                        message: error.localizedDescription,
+                        code: nil,
+                        retryable: true
+                    ),
+                    to: assistantID
+                )
+            }
+        }
+    }
+
+    private func stopResponse() {
+        guard isWaitingForService, let messageID = streamingMessageID else { return }
+        let runID = pendingAgentRun?.runID
+
+        chatTask?.cancel()
+        finishStreamingMessage(messageID)
+
+        guard let runID else { return }
+        Task {
+            do {
+                try await session.withAuthenticatedSession { token in
+                    try await api.cancelAgentRun(runID: runID, accessToken: token)
+                }
+            } catch {
                 presentedAlert = ChatAlert(
-                    title: "发送失败",
+                    title: "停止失败",
                     message: error.localizedDescription
+                )
+            }
+        }
+    }
+
+    private func handleApprovalDecision(_ approval: ChatApproval, decision: String) {
+        guard !isWaitingForService,
+              var run = pendingAgentRun,
+              run.runID == approval.runID,
+              run.assistantMessageID == messages.first(where: { $0.approval == approval })?.id
+        else { return }
+
+        let workspaceID = session.activeWorkspaceID
+        run.lastEventID = approval.lastEventID
+        pendingAgentRun = run
+        if let index = messages.firstIndex(where: { $0.id == run.assistantMessageID }) {
+            messages[index].approval = nil
+            messages[index].failure = nil
+        }
+        isWaitingForService = true
+        streamingMessageID = run.assistantMessageID
+        streamStatus = decision == "approve" ? "正在执行已确认操作" : "正在取消操作"
+
+        chatTask?.cancel()
+        chatTask = Task {
+            defer {
+                if streamingMessageID == run.assistantMessageID {
+                    finishStreamingMessage(run.assistantMessageID)
+                }
+            }
+            do {
+                try await session.withAuthenticatedSession { token in
+                    try await api.decideAgentRun(
+                        runID: run.runID,
+                        decision: decision,
+                        accessToken: token
+                    )
+                    try await api.streamChat(
+                        message: run.message,
+                        sessionID: run.sessionID,
+                        runID: run.runID,
+                        userMessageID: run.userMessageID,
+                        afterEventID: run.lastEventID,
+                        interaction: run.interaction,
+                        accessToken: token
+                    ) { event in
+                        await MainActor.run {
+                            guard !Task.isCancelled, workspaceID == session.activeWorkspaceID else { return }
+                            apply(event, to: run.assistantMessageID)
+                        }
+                    }
+                }
+                guard workspaceID == session.activeWorkspaceID else { return }
+                finishStreamingMessage(run.assistantMessageID, animateRemainder: true)
+                if pendingAgentRun?.assistantMessageID != run.assistantMessageID {
+                    await loadHistory()
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                guard workspaceID == session.activeWorkspaceID,
+                      streamingMessageID == run.assistantMessageID else { return }
+                applyFailure(
+                    ChatFailure(
+                        message: error.localizedDescription,
+                        code: nil,
+                        retryable: true
+                    ),
+                    to: run.assistantMessageID
                 )
             }
         }
@@ -431,6 +589,7 @@ struct ChatView: View {
             draft = ""
             isWaitingForService = false
             streamingMessageID = nil
+            pendingAgentRun = nil
             activeSessionID = nil
             activeTitle = "新对话"
         }
@@ -743,6 +902,7 @@ struct ChatView: View {
         isWaitingForService = false
         isLoadingConversation = false
         streamingMessageID = nil
+        pendingAgentRun = nil
         activeSessionID = nil
         activeTitle = "新对话"
         isSearchPresented = false
@@ -765,6 +925,28 @@ struct ChatView: View {
                     return
                 }
                 flushPendingStreamText(to: messageID)
+            }
+        case .actions(let actions):
+            if let index = messages.firstIndex(where: { $0.id == messageID }) {
+                messages[index].responseActions = actions
+            }
+        case .parts(let parts):
+            if let index = messages.firstIndex(where: { $0.id == messageID }) {
+                messages[index].responseParts = parts
+            }
+        case .responseStatus(let status):
+            if let index = messages.firstIndex(where: { $0.id == messageID }) {
+                messages[index].responseStatus = status
+            }
+        case .cursor(let eventID):
+            if pendingAgentRun?.assistantMessageID == messageID {
+                pendingAgentRun?.lastEventID = eventID
+            }
+        case .failure(let failure):
+            applyFailure(failure, to: messageID)
+        case .approval(let approval):
+            if let index = messages.firstIndex(where: { $0.id == messageID }) {
+                messages[index].approval = approval
             }
         case .metadata(let serverSessionID):
             if let serverSessionID, !serverSessionID.isEmpty {
@@ -792,13 +974,28 @@ struct ChatView: View {
         }
 
         if let index = messages.firstIndex(where: { $0.id == messageID }),
-           messages[index].content.isEmpty {
+           messages[index].content.isEmpty,
+           messages[index].responseParts.isEmpty,
+           messages[index].responseActions.isEmpty,
+           messages[index].failure == nil,
+           messages[index].approval == nil {
             messages.remove(at: index)
+        }
+        if messages.first(where: { $0.id == messageID })?.approval == nil {
+            pendingAgentRun = nil
         }
         isWaitingForService = false
         if streamingMessageID == messageID {
             streamingMessageID = nil
         }
+    }
+
+    private func applyFailure(_ failure: ChatFailure, to messageID: String) {
+        guard let index = messages.firstIndex(where: { $0.id == messageID }) else { return }
+        messages[index].failure = failure
+        messages[index].responseStatus = "failed"
+        messages[index].approval = nil
+        streamStatus = ""
     }
 
     private func flushPendingStreamText(to messageID: String) {
@@ -856,14 +1053,13 @@ struct ChatView: View {
 
     private func scrollToBottom(with proxy: ScrollViewProxy, animated: Bool = true) {
         guard !ChatFeatureFlags.lightweightTypewriter || followsLatestReply else { return }
-        guard let lastID = messages.last?.id else { return }
         DispatchQueue.main.async {
             if animated {
                 withAnimation(.easeOut(duration: 0.22)) {
-                    proxy.scrollTo(lastID, anchor: .bottom)
+                    proxy.scrollTo("conversation-bottom", anchor: .bottom)
                 }
             } else {
-                proxy.scrollTo(lastID, anchor: .bottom)
+                proxy.scrollTo("conversation-bottom", anchor: .bottom)
             }
         }
     }

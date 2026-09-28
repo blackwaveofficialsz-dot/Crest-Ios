@@ -11,18 +11,18 @@ struct JoinTeamSheet: View {
     @FocusState private var isCodeFocused: Bool
 
     private var normalizedCode: String {
-        tenantCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        tenantCode.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("团队加入码")
+                    Text("邀请码")
                         .font(.headline)
 
-                    TextField("输入团队加入码", text: $tenantCode)
-                        .textInputAutocapitalization(.characters)
+                    TextField("输入邮件中的邀请码", text: $tenantCode)
+                        .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .submitLabel(.send)
                         .focused($isCodeFocused)
@@ -36,7 +36,7 @@ struct JoinTeamSheet: View {
                                 .stroke(AppColors.border, lineWidth: 1)
                         }
 
-                    Text("提交后需要目标团队管理员审批。")
+                    Text("邀请码区分大小写，验证成功后即可加入对应工作空间。")
                         .font(.footnote)
                         .foregroundStyle(AppColors.secondaryText)
                 }
@@ -47,7 +47,7 @@ struct JoinTeamSheet: View {
                             ProgressView()
                                 .tint(.white)
                         } else {
-                            Label("提交申请", systemImage: "paperplane.fill")
+                            Label("加入团队", systemImage: "person.badge.plus")
                         }
                     }
                     .font(.body.weight(.semibold))
@@ -101,8 +101,8 @@ struct JoinTeamSheet: View {
         Task {
             defer { isSubmitting = false }
             do {
-                let response = try await session.joinTenant(code: code)
-                alertTitle = response.status == "approved" ? "已加入团队" : "申请已提交"
+                let response = try await session.acceptInvitation(code: code)
+                alertTitle = "已加入团队"
                 alertMessage = response.message
                 dismissAfterAlert = true
             } catch {

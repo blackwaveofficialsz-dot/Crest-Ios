@@ -5,7 +5,9 @@ struct ChatComposer: View {
     @Binding var draft: String
     @FocusState.Binding var isFocused: Bool
     let canSend: Bool
+    let isStreaming: Bool
     let onSend: () -> Void
+    let onStop: () -> Void
 
     var body: some View {
         // 外层负责底部区域背景，内层 HStack 是可见的圆角输入框。
@@ -25,16 +27,16 @@ struct ChatComposer: View {
                 .padding(.vertical, 14)
 
                 // 发送按钮和多行输入框底部对齐。
-                Button(action: onSend) {
-                    Image(systemName: "arrow.up")
+                Button(action: isStreaming ? onStop : onSend) {
+                    Image(systemName: isStreaming ? "stop.fill" : "arrow.up")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(AppColors.chatSendButtonText)
                         .frame(width: 30, height: 30)
                 }
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.circle)
-                .disabled(!canSend)
-                .accessibilityLabel("发送")
+                .disabled(!isStreaming && !canSend)
+                .accessibilityLabel(isStreaming ? "停止本轮" : "发送")
                 .tint(AppColors.chatSendButton)
                 .padding(.trailing, 2)
                 .padding(.bottom, 4)

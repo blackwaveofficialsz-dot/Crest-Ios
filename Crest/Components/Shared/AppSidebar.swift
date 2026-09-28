@@ -10,6 +10,7 @@ struct AppSidebar: View {
     let sessions: [ChatSessionSummary]
     let activeSessionID: String?
     let isLoading: Bool
+    let showsAnalytics: Bool
     let onNewConversation: () -> Void
     let onOpenSearch: () -> Void
     let onOpenAnalytics: () -> Void
@@ -89,20 +90,22 @@ struct AppSidebar: View {
                 }
                 .buttonStyle(.plain)
 
-                Button {
-                    onOpenAnalytics()
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "chart.xyaxis.line")
-                            .foregroundStyle(AppColors.secondaryText)
-                        Text("经营分析")
-                            .foregroundStyle(AppColors.secondaryText)
-                        Spacer()
+                if showsAnalytics {
+                    Button {
+                        onOpenAnalytics()
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "chart.xyaxis.line")
+                                .foregroundStyle(AppColors.secondaryText)
+                            Text("经营分析")
+                                .foregroundStyle(AppColors.secondaryText)
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(height: 52)
                     }
-                    .padding(.horizontal, 16)
-                    .frame(height: 52)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
 
                 Divider()
                     .overlay(AppColors.border)
