@@ -152,12 +152,16 @@ final class SessionStore: ObservableObject {
         workspaces = response.items
     }
 
-    func joinTenant(code: String) async throws -> JoinTenantResponse {
+    func acceptInvitation(code: String) async throws -> AcceptInvitationResponse {
         let response = try await withAuthenticatedSession { token in
-            try await api.joinTenant(tenantCode: code, accessToken: token)
+            try await api.acceptInvitation(inviteToken: code, accessToken: token)
         }
-        if response.status == "approved" {
-            try? await loadWorkspaces()
+        if let index = workspaces.firstIndex(where: {
+            $0.workspaceID == response.workspace.workspaceID
+        }) {
+            workspaces[index] = response.workspace
+        } else {
+            workspaces.append(response.workspace)
         }
         return response
     }
