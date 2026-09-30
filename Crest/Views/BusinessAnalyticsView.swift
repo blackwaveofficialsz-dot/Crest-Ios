@@ -54,12 +54,17 @@ struct BusinessAnalyticsView: View {
             .filter { seen.insert($0.id).inserted }
             .sorted { $0.label.localizedStandardCompare($1.label) == .orderedAscending }
     }
-    private var periodTitle: String { customPeriod == nil ? periodPreset.title : "自定义" }
+    private var periodTitle: String {
+        customPeriod == nil ? periodPreset.title : AppLocalization.string("自定义")
+    }
     private var storeSummary: String {
-        guard !selectedStoreKeys.isEmpty else { return "全部门店" }
+        guard !selectedStoreKeys.isEmpty else { return AppLocalization.string("全部门店") }
         let labels = storeOptions.filter { selectedStoreKeys.contains($0.id) }.map(\.label)
         if labels.count == 1 { return labels[0] }
-        return "\(labels.isEmpty ? selectedStoreKeys.count : labels.count) 家门店"
+        return AppLocalization.format(
+            "%lld 家门店",
+            Int64(labels.isEmpty ? selectedStoreKeys.count : labels.count)
+        )
     }
     private var taskID: String {
         "\(session.activeWorkspaceID):\(module.rawValue):\(dateFrom):\(dateTo):\(storeKeys.joined(separator: ","))"
@@ -117,7 +122,10 @@ struct BusinessAnalyticsView: View {
             defaultFilename: "Crest-\(module.title)-\(dateFrom)-\(dateTo).csv"
         ) { result in
             if case .failure(let error) = result {
-                errorMessage = "导出失败：\(error.localizedDescription)"
+                errorMessage = AppLocalization.format(
+                    "导出失败：%@",
+                    AppLocalization.string(error.localizedDescription)
+                )
             }
         }
     }
@@ -263,9 +271,15 @@ struct BusinessAnalyticsView: View {
                     .background(AppColors.chatSendButton.opacity(0.10), in: RoundedRectangle(cornerRadius: 7))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(AnalyticsDateFormat.display.string(from: period.lowerBound)) 至 \(AnalyticsDateFormat.display.string(from: period.upperBound))")
+                    Text(
+                        AppLocalization.format(
+                            "%@ 至 %@",
+                            AnalyticsDateFormat.display(period.lowerBound),
+                            AnalyticsDateFormat.display(period.upperBound)
+                        )
+                    )
                         .font(.subheadline.weight(.medium))
-                    Text("\(storeSummary) · 按日统计")
+                    Text(AppLocalization.format("%@ · 按日统计", storeSummary))
                         .font(.caption)
                         .foregroundStyle(AppColors.secondaryText)
                 }
@@ -302,7 +316,12 @@ struct BusinessAnalyticsView: View {
                 AnalyticsDashboardContent(
                     overview: overview,
                     trend: revenueTrend,
-                    onSelectChannel: { selectedDetail = .dimension($0, subtitle: "\(dateFrom) 至 \(dateTo)") }
+                    onSelectChannel: {
+                        selectedDetail = .dimension(
+                            $0,
+                            subtitle: AppLocalization.format("%@ 至 %@", dateFrom, dateTo)
+                        )
+                    }
                 )
             }
         case .orders:
@@ -310,7 +329,12 @@ struct BusinessAnalyticsView: View {
                 AnalyticsOrdersContent(
                     overview: overview,
                     trend: revenueTrend,
-                    onSelectStore: { selectedDetail = .dimension($0, subtitle: "\(dateFrom) 至 \(dateTo)") }
+                    onSelectStore: {
+                        selectedDetail = .dimension(
+                            $0,
+                            subtitle: AppLocalization.format("%@ 至 %@", dateFrom, dateTo)
+                        )
+                    }
                 )
             }
         case .products:
@@ -318,7 +342,12 @@ struct BusinessAnalyticsView: View {
                 AnalyticsProductsContent(
                     response: products,
                     trend: productTrend,
-                    onSelectProduct: { selectedDetail = .product($0, subtitle: "\(dateFrom) 至 \(dateTo)") }
+                    onSelectProduct: {
+                        selectedDetail = .product(
+                            $0,
+                            subtitle: AppLocalization.format("%@ 至 %@", dateFrom, dateTo)
+                        )
+                    }
                 )
             }
         case .labor:
@@ -475,7 +504,7 @@ struct BusinessAnalyticsView: View {
             return
         } catch {
             guard workspaceID == session.activeWorkspaceID else { return }
-            errorMessage = error.localizedDescription
+            errorMessage = AppLocalization.string(error.localizedDescription)
         }
     }
 
@@ -494,7 +523,7 @@ struct BusinessAnalyticsView: View {
             storeScopeError = nil
         } catch {
             guard workspaceID == session.activeWorkspaceID else { return }
-            storeScopeError = error.localizedDescription
+            storeScopeError = AppLocalization.string(error.localizedDescription)
         }
     }
 
@@ -546,27 +575,27 @@ struct BusinessAnalyticsView: View {
 
     private func makeExportDocument() -> AnalyticsCSVDocument? {
         var rows = [
-            ["模块", module.title],
-            ["日期范围", dateFrom, dateTo],
-            ["门店范围", storeSummary],
+            [AppLocalization.string("模块"), module.title],
+            [AppLocalization.string("日期范围"), dateFrom, dateTo],
+            [AppLocalization.string("门店范围"), storeSummary],
             [],
         ]
 
         switch module {
         case .dashboard, .orders:
             guard let overview else { return nil }
-            rows.append(["门店", "订单数", "净实收", "客单价"])
+            rows.append(["门店", "订单数", "净实收", "客单价"].map(AppLocalization.string))
             rows += overview.stores.map {
                 [$0.label, $0.csvValue("order_count"), $0.csvValue("net_income"), $0.csvValue("avg_order_value")]
             }
             rows.append([])
-            rows.append(["渠道", "订单数", "净实收", "客单价"])
+            rows.append(["渠道", "订单数", "净实收", "客单价"].map(AppLocalization.string))
             rows += overview.channels.map {
                 [$0.label, $0.csvValue("order_count"), $0.csvValue("net_income"), $0.csvValue("avg_order_value")]
             }
         case .products:
             guard let products else { return nil }
-            rows.append(["产品", "销量", "销售额", "订单数", "数量占比", "销售额占比"])
+            rows.append(["产品", "销量", "销售额", "订单数", "数量占比", "销售额占比"].map(AppLocalization.string))
             rows += products.items.map {
                 [
                     $0.productName,
@@ -579,7 +608,7 @@ struct BusinessAnalyticsView: View {
             }
         case .labor:
             guard let labor else { return nil }
-            rows.append(["日期", "实际工时", "计划工时", "净营收", "人数", "实际小时产出", "计划小时产出"])
+            rows.append(["日期", "实际工时", "计划工时", "净营收", "人数", "实际小时产出", "计划小时产出"].map(AppLocalization.string))
             rows += labor.points.map {
                 [
                     $0.period,
@@ -596,7 +625,7 @@ struct BusinessAnalyticsView: View {
             let visibleAlerts = selectedStoreKeys.isEmpty
                 ? alerts
                 : alerts.filter { selectedStoreKeys.contains($0.shopKey) }
-            rows.append(["日期", "门店", "实际营收", "基准营收", "偏离率", "方向", "状态", "原因提示"])
+            rows.append(["日期", "门店", "实际营收", "基准营收", "偏离率", "方向", "状态", "原因提示"].map(AppLocalization.string))
             rows += visibleAlerts.map {
                 [
                     $0.businessDate,
@@ -625,11 +654,11 @@ private enum AnalyticsModule: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .dashboard: "看板"
-        case .orders: "订单"
-        case .products: "产品"
-        case .labor: "人效"
-        case .alerts: "报警"
+        case .dashboard: AppLocalization.string("看板")
+        case .orders: AppLocalization.string("订单")
+        case .products: AppLocalization.string("产品")
+        case .labor: AppLocalization.string("人效")
+        case .alerts: AppLocalization.string("报警")
         }
     }
 
@@ -654,10 +683,10 @@ private enum AnalyticsPeriodPreset: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .yesterday: "昨日"
-        case .lastSevenDays: "近 7 天"
-        case .currentMonth: "本月"
-        case .previousMonth: "上月"
+        case .yesterday: AppLocalization.string("昨日")
+        case .lastSevenDays: AppLocalization.string("近 7 天")
+        case .currentMonth: AppLocalization.string("本月")
+        case .previousMonth: AppLocalization.string("上月")
         }
     }
 
@@ -697,14 +726,14 @@ private enum AnalyticsDateFormat {
         return formatter
     }()
 
-    static let display: DateFormatter = {
+    static func display(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.calendar = calendar
         formatter.timeZone = calendar.timeZone
-        formatter.locale = Locale(identifier: "zh_CN")
-        formatter.dateFormat = "M月d日"
-        return formatter
-    }()
+        formatter.locale = AppLocalization.locale
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        return formatter.string(from: date)
+    }
 }
 
 private struct AnalyticsStoreOption: Identifiable, Hashable {
@@ -819,7 +848,7 @@ private struct AnalyticsFilterSheet: View {
                     }
 
                     if stores.isEmpty {
-                        Text(storeError ?? "暂未读取到可选门店")
+                        Text(AppLocalization.string(storeError ?? "暂未读取到可选门店"))
                             .font(.caption)
                             .foregroundStyle(AppColors.secondaryText)
                     }
@@ -855,7 +884,7 @@ private struct AnalyticsFilterSheet: View {
 
     private func selectionRow(title: String, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
-            Text(title)
+            Text(AppLocalization.string(title))
                 .foregroundStyle(AppColors.primaryText)
             Spacer()
             if isSelected {
@@ -1049,16 +1078,16 @@ private struct AnalyticsDashboardContent: View {
             Chart {
                 ForEach(trendChartPoints) { point in
                     AreaMark(
-                        x: .value("日期", point.date),
-                        yStart: .value("范围下限", trendYDomain.lowerBound),
-                        yEnd: .value("净实收", point.netIncome)
+                        x: .value(AppLocalization.string("日期"), point.date),
+                        yStart: .value(AppLocalization.string("范围下限"), trendYDomain.lowerBound),
+                        yEnd: .value(AppLocalization.string("净实收"), point.netIncome)
                     )
                     .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
                     .interpolationMethod(.catmullRom)
 
                     LineMark(
-                        x: .value("日期", point.date),
-                        y: .value("净实收", point.netIncome)
+                        x: .value(AppLocalization.string("日期"), point.date),
+                        y: .value(AppLocalization.string("净实收"), point.netIncome)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
                     .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
@@ -1066,8 +1095,8 @@ private struct AnalyticsDashboardContent: View {
 
                     if point.id == latestTrendPointID, point.id != selectedTrendPoint?.id {
                         PointMark(
-                            x: .value("日期", point.date),
-                            y: .value("净实收", point.netIncome)
+                            x: .value(AppLocalization.string("日期"), point.date),
+                            y: .value(AppLocalization.string("净实收"), point.netIncome)
                         )
                         .foregroundStyle(AppColors.chatSendButton)
                         .symbolSize(42)
@@ -1075,12 +1104,12 @@ private struct AnalyticsDashboardContent: View {
                 }
 
                 if let selectedPoint = selectedTrendPoint {
-                    RuleMark(x: .value("选中日期", selectedPoint.date))
+                    RuleMark(x: .value(AppLocalization.string("选中日期"), selectedPoint.date))
                         .foregroundStyle(AppColors.secondaryText.opacity(0.55))
 
                     PointMark(
-                        x: .value("选中日期", selectedPoint.date),
-                        y: .value("选中净实收", selectedPoint.netIncome)
+                        x: .value(AppLocalization.string("选中日期"), selectedPoint.date),
+                        y: .value(AppLocalization.string("选中净实收"), selectedPoint.netIncome)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
                     .symbolSize(58)
@@ -1097,7 +1126,12 @@ private struct AnalyticsDashboardContent: View {
                                 .foregroundStyle(AppColors.secondaryText)
                             Text(compactCurrency(selectedPoint.netIncome))
                                 .font(.caption.weight(.bold))
-                            Text("\(AnalyticsValue.count(selectedPoint.orderCount)) 单")
+                            Text(
+                                AppLocalization.format(
+                                    "%@ 单",
+                                    AnalyticsValue.count(selectedPoint.orderCount)
+                                )
+                            )
                                 .font(.caption2)
                                 .foregroundStyle(AppColors.secondaryText)
                         }
@@ -1192,17 +1226,30 @@ private struct AnalyticsDashboardContent: View {
     }
 
     private func compactCurrency(_ value: Double) -> String {
-        if abs(value) >= 10_000 {
+        if AppLocalization.locale.identifier.lowercased().hasPrefix("zh"),
+           abs(value) >= 10_000 {
             let amount = value / 10_000
             if abs(amount) >= 10 {
-                return "¥\(amount.formatted(.number.precision(.fractionLength(0))))万"
+                return AppLocalization.format(
+                    "¥%@万",
+                    amount.formatted(.number.precision(.fractionLength(0)))
+                )
             }
-            return "¥\(amount.formatted(.number.precision(.fractionLength(1))))万"
+            return AppLocalization.format(
+                "¥%@万",
+                amount.formatted(.number.precision(.fractionLength(1)))
+            )
         }
         if abs(value) >= 1_000 {
-            return "¥\((value / 1_000).formatted(.number.precision(.fractionLength(0))))k"
+            return AppLocalization.format(
+                "¥%@k",
+                (value / 1_000).formatted(.number.precision(.fractionLength(0)))
+            )
         }
-        return "¥\(value.formatted(.number.precision(.fractionLength(0))))"
+        return AppLocalization.format(
+            "¥%@",
+            value.formatted(.number.precision(.fractionLength(0)))
+        )
     }
 }
 
@@ -1285,7 +1332,12 @@ private struct AnalyticsOrdersContent: View {
                             .foregroundStyle(AppColors.secondaryText)
                     }
                     Spacer()
-                    Text("共 \(AnalyticsValue.count(trendOrderTotal)) 单")
+                    Text(
+                        AppLocalization.format(
+                            "共 %@ 单",
+                            AnalyticsValue.count(trendOrderTotal)
+                        )
+                    )
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(AppColors.chatSendButton)
                         .padding(.horizontal, 8)
@@ -1332,7 +1384,12 @@ private struct AnalyticsOrdersContent: View {
                                         .font(.subheadline.weight(.semibold))
                                         .lineLimit(1)
                                     Spacer()
-                                    Text("\(AnalyticsValue.count(store.value("order_count"))) 单")
+                                    Text(
+                                        AppLocalization.format(
+                                            "%@ 单",
+                                            AnalyticsValue.count(store.value("order_count"))
+                                        )
+                                    )
                                         .font(.subheadline.weight(.semibold))
                                 }
 
@@ -1341,9 +1398,19 @@ private struct AnalyticsOrdersContent: View {
                                     .scaleEffect(y: 0.65)
 
                                 HStack {
-                                    Text("净实收 \(AnalyticsValue.currency(store.value("net_income")))")
+                                    Text(
+                                        AppLocalization.format(
+                                            "净实收 %@",
+                                            AnalyticsValue.currency(store.value("net_income"))
+                                        )
+                                    )
                                     Spacer()
-                                    Text("客单价 \(AnalyticsValue.currency(store.value("avg_order_value")))")
+                                    Text(
+                                        AppLocalization.format(
+                                            "客单价 %@",
+                                            AnalyticsValue.currency(store.value("avg_order_value"))
+                                        )
+                                    )
                                 }
                                 .font(.caption)
                                 .foregroundStyle(AppColors.secondaryText)
@@ -1367,15 +1434,15 @@ private struct AnalyticsOrdersContent: View {
             Chart {
                 ForEach(Array(trendPoints.enumerated()), id: \.element.id) { index, point in
                     AreaMark(
-                        x: .value("日期", Double(index)),
-                        y: .value("订单", point.orderCount)
+                        x: .value(AppLocalization.string("日期"), Double(index)),
+                        y: .value(AppLocalization.string("订单"), point.orderCount)
                     )
                     .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
                     .interpolationMethod(.catmullRom)
 
                     LineMark(
-                        x: .value("日期", Double(index)),
-                        y: .value("订单", point.orderCount)
+                        x: .value(AppLocalization.string("日期"), Double(index)),
+                        y: .value(AppLocalization.string("订单"), point.orderCount)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
                     .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
@@ -1383,11 +1450,11 @@ private struct AnalyticsOrdersContent: View {
                 }
 
                 if let selectedPoint, let selectedPointPosition {
-                    RuleMark(x: .value("选中日期", selectedPointPosition))
+                    RuleMark(x: .value(AppLocalization.string("选中日期"), selectedPointPosition))
                         .foregroundStyle(AppColors.secondaryText.opacity(0.55))
                     PointMark(
-                        x: .value("选中日期", selectedPointPosition),
-                        y: .value("选中订单", selectedPoint.orderCount)
+                        x: .value(AppLocalization.string("选中日期"), selectedPointPosition),
+                        y: .value(AppLocalization.string("选中订单"), selectedPoint.orderCount)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
                     .symbolSize(58)
@@ -1396,7 +1463,10 @@ private struct AnalyticsOrdersContent: View {
                             title: AnalyticsChartAxis.shortLabel(selectedPoint.period),
                             rows: [
                                 "\(AnalyticsValue.count(selectedPoint.orderCount)) 单",
-                                "净实收 \(AnalyticsValue.currency(selectedPoint.netIncome))"
+                                AppLocalization.format(
+                                    "净实收 %@",
+                                    AnalyticsValue.currency(selectedPoint.netIncome)
+                                )
                             ]
                         )
                     }
@@ -1511,9 +1581,9 @@ private struct AnalyticsProductsContent: View {
 
     private var trendSubtitle: String {
         guard let productName = trend?.productName else {
-            return "最近30天"
+            return AppLocalization.string("最近30天")
         }
-        return "最近30天 · \(productName)"
+        return AppLocalization.format("最近30天 · %@", productName)
     }
 
     private var productSnapshot: [AnalyticsSnapshotItem] {
@@ -1540,7 +1610,10 @@ private struct AnalyticsProductsContent: View {
     }
 
     var body: some View {
-        AnalyticsPageTitle(title: "产品分析", subtitle: "按商品销售额排名，共 \(response.total) 项")
+        AnalyticsPageTitle(
+            title: "产品分析",
+            subtitle: AppLocalization.format("按商品销售额排名，共 %lld 项", Int64(response.total))
+        )
             .analyticsEntrance(order: 0)
 
         AnalyticsSnapshotGrid(items: productSnapshot, columns: 3)
@@ -1564,7 +1637,12 @@ private struct AnalyticsProductsContent: View {
                                 .foregroundStyle(AppColors.secondaryText)
                         }
                         Spacer()
-                        Text("销量 \(AnalyticsValue.count(latest.quantity))")
+                        Text(
+                            AppLocalization.format(
+                                "销量 %@",
+                                AnalyticsValue.count(latest.quantity)
+                            )
+                        )
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(AppColors.chatSendButton)
                     }
@@ -1602,7 +1680,13 @@ private struct AnalyticsProductsContent: View {
                                 ProgressView(value: item.salesAmount, total: maxProductSales)
                                     .tint(index < 3 ? AppColors.chatSendButton : AppColors.tertiaryText)
                                     .scaleEffect(y: 0.65)
-                                Text("销量 \(AnalyticsValue.count(item.quantity)) · 占比 \(AnalyticsValue.percent(item.amountShare))")
+                                Text(
+                                    AppLocalization.format(
+                                        "销量 %@ · 占比 %@",
+                                        AnalyticsValue.count(item.quantity),
+                                        AnalyticsValue.percent(item.amountShare)
+                                    )
+                                )
                                     .font(.caption)
                                     .foregroundStyle(AppColors.secondaryText)
                             }
@@ -1628,15 +1712,15 @@ private struct AnalyticsProductsContent: View {
             Chart {
                 ForEach(trendPoints) { point in
                     AreaMark(
-                        x: .value("日期", point.period),
-                        y: .value("销售额", point.salesAmount)
+                        x: .value(AppLocalization.string("日期"), point.period),
+                        y: .value(AppLocalization.string("销售额"), point.salesAmount)
                     )
                     .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
                     .interpolationMethod(.catmullRom)
 
                     LineMark(
-                        x: .value("日期", point.period),
-                        y: .value("销售额", point.salesAmount)
+                        x: .value(AppLocalization.string("日期"), point.period),
+                        y: .value(AppLocalization.string("销售额"), point.salesAmount)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
                     .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
@@ -1644,11 +1728,11 @@ private struct AnalyticsProductsContent: View {
                 }
 
                 if let selectedPoint {
-                    RuleMark(x: .value("选中日期", selectedPoint.period))
+                    RuleMark(x: .value(AppLocalization.string("选中日期"), selectedPoint.period))
                         .foregroundStyle(AppColors.secondaryText.opacity(0.55))
                     PointMark(
-                        x: .value("选中日期", selectedPoint.period),
-                        y: .value("选中销售额", selectedPoint.salesAmount)
+                        x: .value(AppLocalization.string("选中日期"), selectedPoint.period),
+                        y: .value(AppLocalization.string("选中销售额"), selectedPoint.salesAmount)
                     )
                     .foregroundStyle(AppColors.chatSendButton)
                     .symbolSize(58)
@@ -1657,7 +1741,10 @@ private struct AnalyticsProductsContent: View {
                             title: AnalyticsChartAxis.shortLabel(selectedPoint.period),
                             rows: [
                                 AnalyticsValue.currency(selectedPoint.salesAmount),
-                                "销量 \(AnalyticsValue.count(selectedPoint.quantity))"
+                                AppLocalization.format(
+                                    "销量 %@",
+                                    AnalyticsValue.count(selectedPoint.quantity)
+                                )
                             ]
                         )
                     }
@@ -1707,7 +1794,9 @@ private struct AnalyticsLaborContent: View {
     }
 
     private var planAttainment: String {
-        guard response.summary.plannedHours > 0 else { return "暂无计划" }
+        guard response.summary.plannedHours > 0 else {
+            return AppLocalization.string("暂无计划")
+        }
         return (response.summary.actualHours / response.summary.plannedHours)
             .formatted(.percent.precision(.fractionLength(1)))
     }
@@ -1727,7 +1816,7 @@ private struct AnalyticsLaborContent: View {
             AnalyticsSnapshotItem(
                 label: "实际工时",
                 value: AnalyticsValue.hours(response.summary.actualHours),
-                detail: "计划达成 \(planAttainment)",
+                detail: AppLocalization.format("计划达成 %@", planAttainment),
                 systemImage: "clock"
             ),
             AnalyticsSnapshotItem(
@@ -1835,7 +1924,13 @@ private struct AnalyticsLaborContent: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(AnalyticsChartAxis.shortLabel(point.period))
                                     .font(.subheadline.weight(.semibold))
-                                Text("实际 \(AnalyticsValue.hours(point.actualHours)) · 计划 \(AnalyticsValue.hours(point.plannedHours))")
+                                Text(
+                                    AppLocalization.format(
+                                        "实际 %@ · 计划 %@",
+                                        AnalyticsValue.hours(point.actualHours),
+                                        AnalyticsValue.hours(point.plannedHours)
+                                    )
+                                )
                                     .font(.caption)
                                     .foregroundStyle(AppColors.secondaryText)
                                     .lineLimit(1)
@@ -1869,16 +1964,16 @@ private struct AnalyticsLaborContent: View {
                 ForEach(trendPoints) { point in
                     if let actual = point.actualRevenuePerHour {
                         AreaMark(
-                            x: .value("日期", point.period),
-                            y: .value("小时产出", actual)
+                            x: .value(AppLocalization.string("日期"), point.period),
+                            y: .value(AppLocalization.string("小时产出"), actual)
                         )
                         .foregroundStyle(AppColors.chatSendButton.opacity(0.10))
                         .interpolationMethod(.catmullRom)
 
                         LineMark(
-                            x: .value("日期", point.period),
-                            y: .value("小时产出", actual),
-                            series: .value("类型", "实际")
+                            x: .value(AppLocalization.string("日期"), point.period),
+                            y: .value(AppLocalization.string("小时产出"), actual),
+                            series: .value(AppLocalization.string("类型"), AppLocalization.string("实际"))
                         )
                         .foregroundStyle(AppColors.chatSendButton)
                         .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
@@ -1886,9 +1981,9 @@ private struct AnalyticsLaborContent: View {
                     }
                     if let planned = point.plannedRevenuePerHour {
                         LineMark(
-                            x: .value("日期", point.period),
-                            y: .value("小时产出", planned),
-                            series: .value("类型", "计划")
+                            x: .value(AppLocalization.string("日期"), point.period),
+                            y: .value(AppLocalization.string("小时产出"), planned),
+                            series: .value(AppLocalization.string("类型"), AppLocalization.string("计划"))
                         )
                         .foregroundStyle(AppColors.tertiaryText)
                         .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
@@ -1896,14 +1991,20 @@ private struct AnalyticsLaborContent: View {
                 }
 
                 if let selectedOutputPoint {
-                    RuleMark(x: .value("选中日期", selectedOutputPoint.period))
+                    RuleMark(x: .value(AppLocalization.string("选中日期"), selectedOutputPoint.period))
                         .foregroundStyle(AppColors.secondaryText.opacity(0.55))
                         .annotation(position: .top, spacing: 8) {
                             AnalyticsChartTooltip(
                                 title: AnalyticsChartAxis.shortLabel(selectedOutputPoint.period),
                                 rows: [
-                                    "实际 \(AnalyticsValue.currency(selectedOutputPoint.actualRevenuePerHour))",
-                                    "计划 \(AnalyticsValue.currency(selectedOutputPoint.plannedRevenuePerHour))"
+                                    AppLocalization.format(
+                                        "实际 %@",
+                                        AnalyticsValue.currency(selectedOutputPoint.actualRevenuePerHour)
+                                    ),
+                                    AppLocalization.format(
+                                        "计划 %@",
+                                        AnalyticsValue.currency(selectedOutputPoint.plannedRevenuePerHour)
+                                    )
                                 ]
                             )
                         }
@@ -1935,8 +2036,8 @@ private struct AnalyticsLaborContent: View {
             Chart {
                 ForEach(trendPoints) { point in
                     BarMark(
-                        x: .value("日期", point.period),
-                        y: .value("实际工时", point.actualHours)
+                        x: .value(AppLocalization.string("日期"), point.period),
+                        y: .value(AppLocalization.string("实际工时"), point.actualHours)
                     )
                     .foregroundStyle(
                         point.id == selectedHoursPoint?.id
@@ -1946,22 +2047,28 @@ private struct AnalyticsLaborContent: View {
                     .cornerRadius(2)
 
                     LineMark(
-                        x: .value("日期", point.period),
-                        y: .value("计划工时", point.plannedHours)
+                        x: .value(AppLocalization.string("日期"), point.period),
+                        y: .value(AppLocalization.string("计划工时"), point.plannedHours)
                     )
                     .foregroundStyle(AppColors.tertiaryText)
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
                 }
 
                 if let selectedHoursPoint {
-                    RuleMark(x: .value("选中日期", selectedHoursPoint.period))
+                    RuleMark(x: .value(AppLocalization.string("选中日期"), selectedHoursPoint.period))
                         .foregroundStyle(AppColors.secondaryText.opacity(0.55))
                         .annotation(position: .top, spacing: 8) {
                             AnalyticsChartTooltip(
                                 title: AnalyticsChartAxis.shortLabel(selectedHoursPoint.period),
                                 rows: [
-                                    "实际 \(AnalyticsValue.hours(selectedHoursPoint.actualHours))",
-                                    "计划 \(AnalyticsValue.hours(selectedHoursPoint.plannedHours))"
+                                    AppLocalization.format(
+                                        "实际 %@",
+                                        AnalyticsValue.hours(selectedHoursPoint.actualHours)
+                                    ),
+                                    AppLocalization.format(
+                                        "计划 %@",
+                                        AnalyticsValue.hours(selectedHoursPoint.plannedHours)
+                                    )
                                 ]
                             )
                         }
@@ -2039,7 +2146,7 @@ private struct AnalyticsAlertsContent: View {
             AnalyticsSnapshotItem(
                 label: "最大偏离",
                 value: largestDeviation,
-                detail: "\(downwardCount) 家低于基准",
+                detail: AppLocalization.format("%lld 家低于基准", Int64(downwardCount)),
                 systemImage: "arrow.down.right",
                 tint: .red
             )
@@ -2047,7 +2154,10 @@ private struct AnalyticsAlertsContent: View {
     }
 
     var body: some View {
-        AnalyticsPageTitle(title: "营收报警", subtitle: "检测日 \(businessDate)")
+        AnalyticsPageTitle(
+            title: "营收报警",
+            subtitle: AppLocalization.format("检测日 %@", businessDate)
+        )
             .analyticsEntrance(order: 0)
 
         AnalyticsSnapshotGrid(items: alertSnapshot, columns: 3)
@@ -2101,14 +2211,24 @@ private struct AnalyticsAlertsContent: View {
                                     .background(severity.color.opacity(0.10), in: RoundedRectangle(cornerRadius: 5))
                             }
                             HStack {
-                                Text("实际 \(AnalyticsValue.currency(alert.actualAmount))")
+                                Text(
+                                    AppLocalization.format(
+                                        "实际 %@",
+                                        AnalyticsValue.currency(alert.actualAmount)
+                                    )
+                                )
                                 Spacer()
                                 Text(AnalyticsValue.signedPercent(alert.deviationPercent))
                                     .fontWeight(.semibold)
                                     .foregroundStyle(alert.deviationPercent >= 0 ? Color.green : Color.red)
                             }
                             .font(.caption)
-                            Text("基准 \(AnalyticsValue.currency(alert.baselineAmount))")
+                            Text(
+                                AppLocalization.format(
+                                    "基准 %@",
+                                    AnalyticsValue.currency(alert.baselineAmount)
+                                )
+                            )
                                 .font(.caption2)
                                 .foregroundStyle(AppColors.secondaryText)
                             if let hint = alert.reasonHints?.first, !hint.isEmpty {
@@ -2138,34 +2258,43 @@ private struct AnalyticsAlertsContent: View {
 
     private func alertSeverity(_ alert: AnalyticsRevenueAlert) -> (title: String, color: Color) {
         let deviation = abs(alert.deviationPoints)
-        if deviation >= 20 { return ("显著", .red) }
-        if deviation >= 10 { return ("关注", .orange) }
-        return ("轻微", AppColors.secondaryText)
+        if deviation >= 20 { return (AppLocalization.string("显著"), .red) }
+        if deviation >= 10 { return (AppLocalization.string("关注"), .orange) }
+        return (AppLocalization.string("轻微"), AppColors.secondaryText)
     }
 
     private var alertChart: some View {
         Chart {
-            RuleMark(x: .value("基准", 0))
+            RuleMark(x: .value(AppLocalization.string("基准"), 0))
                 .foregroundStyle(AppColors.secondaryText.opacity(0.5))
             ForEach(chartAlerts) { alert in
                 BarMark(
-                    x: .value("偏离率（%）", alert.deviationPoints),
-                    y: .value("门店", alert.shortLabel)
+                    x: .value(AppLocalization.string("偏离率（%）"), alert.deviationPoints),
+                    y: .value(AppLocalization.string("门店"), alert.shortLabel)
                 )
                 .foregroundStyle(alert.deviationPercent >= 0 ? Color.green : Color.red)
                 .cornerRadius(3)
             }
 
             if let selectedAlert {
-                RuleMark(y: .value("选中门店", selectedAlert.shortLabel))
+                RuleMark(y: .value(AppLocalization.string("选中门店"), selectedAlert.shortLabel))
                     .foregroundStyle(AppColors.secondaryText.opacity(0.55))
                     .annotation(position: .overlay) {
                         AnalyticsChartTooltip(
                             title: selectedAlert.shopLabel ?? selectedAlert.shopKey,
                             rows: [
-                                "偏离 \(AnalyticsValue.signedPercent(selectedAlert.deviationPercent))",
-                                "实际 \(AnalyticsValue.currency(selectedAlert.actualAmount))",
-                                "基准 \(AnalyticsValue.currency(selectedAlert.baselineAmount))"
+                                AppLocalization.format(
+                                    "偏离 %@",
+                                    AnalyticsValue.signedPercent(selectedAlert.deviationPercent)
+                                ),
+                                AppLocalization.format(
+                                    "实际 %@",
+                                    AnalyticsValue.currency(selectedAlert.actualAmount)
+                                ),
+                                AppLocalization.format(
+                                    "基准 %@",
+                                    AnalyticsValue.currency(selectedAlert.baselineAmount)
+                                )
                             ]
                         )
                     }
@@ -2249,7 +2378,7 @@ private struct AnalyticsChartFullScreen<Content: View>: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text(subtitle)
+                Text(AppLocalization.string(subtitle))
                     .font(.subheadline)
                     .foregroundStyle(AppColors.secondaryText)
                 content
@@ -2257,7 +2386,7 @@ private struct AnalyticsChartFullScreen<Content: View>: View {
             }
             .padding(16)
             .background(AppColors.background.ignoresSafeArea())
-            .navigationTitle(title)
+            .navigationTitle(AppLocalization.string(title))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -2290,10 +2419,10 @@ private struct AnalyticsChartTooltip: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(title)
+            Text(AppLocalization.string(title))
                 .font(.caption.weight(.bold))
             ForEach(rows, id: \.self) { row in
-                Text(row)
+                Text(AppLocalization.string(row))
                     .font(.caption2)
                     .foregroundStyle(AppColors.secondaryText)
             }
@@ -2321,9 +2450,9 @@ private struct AnalyticsPageTitle: View {
                 .frame(width: 3, height: 36)
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(title)
+                Text(AppLocalization.string(title))
                     .font(.title3.weight(.bold))
-                Text(subtitle)
+                Text(AppLocalization.string(subtitle))
                     .font(.caption)
                     .foregroundStyle(AppColors.secondaryText)
             }
@@ -2372,7 +2501,7 @@ private struct AnalyticsSnapshotGrid: View {
                         Image(systemName: item.systemImage)
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(item.tint)
-                        Text(item.label)
+                        Text(AppLocalization.string(item.label))
                             .font(.caption2)
                             .foregroundStyle(AppColors.secondaryText)
                             .lineLimit(1)
@@ -2381,7 +2510,7 @@ private struct AnalyticsSnapshotGrid: View {
                         .font(.headline.weight(.bold))
                         .lineLimit(1)
                         .minimumScaleFactor(0.62)
-                    Text(item.detail)
+                    Text(AppLocalization.string(item.detail))
                         .font(.caption2)
                         .foregroundStyle(AppColors.tertiaryText)
                         .lineLimit(1)
@@ -2490,7 +2619,7 @@ private struct AnalyticsMetricTile: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 5 : 8) {
-            Text(label)
+            Text(AppLocalization.string(label))
                 .font(compact ? .caption2 : .caption)
                 .foregroundStyle(AppColors.secondaryText)
             Text(value)
@@ -2499,16 +2628,20 @@ private struct AnalyticsMetricTile: View {
                 .minimumScaleFactor(0.65)
             if let change = comparison?.changeRate {
                 Label(
-                    compact ? AnalyticsValue.signedPercent(change) : "较上期 \(AnalyticsValue.signedPercent(change))",
+                    compact
+                        ? AnalyticsValue.signedPercent(change)
+                        : AppLocalization.format("较上期 %@", AnalyticsValue.signedPercent(change)),
                     systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right"
                 )
                 .font(.caption2.weight(.medium))
                 .foregroundStyle(change >= 0 ? Color.green : Color.red)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-                .accessibilityLabel("较上期 \(AnalyticsValue.signedPercent(change))")
+                .accessibilityLabel(
+                    AppLocalization.format("较上期 %@", AnalyticsValue.signedPercent(change))
+                )
             } else {
-                Text(compact ? "无对比" : "暂无上期对比")
+                Text(AppLocalization.string(compact ? "无对比" : "暂无上期对比"))
                     .font(.caption2)
                     .foregroundStyle(AppColors.tertiaryText)
             }
@@ -2557,10 +2690,10 @@ private struct AnalyticsSection<Content: View>: View {
                         .frame(width: 3, height: subtitle == nil ? 18 : 34)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(title)
+                        Text(AppLocalization.string(title))
                             .font(.headline)
                         if let subtitle {
-                            Text(subtitle)
+                            Text(AppLocalization.string(subtitle))
                                 .font(.caption)
                                 .foregroundStyle(AppColors.secondaryText)
                         }
@@ -2576,7 +2709,9 @@ private struct AnalyticsSection<Content: View>: View {
                     }
                     .frame(width: 44, height: 44)
                     .buttonStyle(.plain)
-                    .accessibilityLabel("全屏查看\(title)")
+                    .accessibilityLabel(
+                        AppLocalization.format("全屏查看%@", AppLocalization.string(title))
+                    )
                 }
             }
             content
@@ -2651,7 +2786,7 @@ private struct AnalyticsEmptyText: View {
     let text: String
 
     var body: some View {
-        Text(text)
+        Text(AppLocalization.string(text))
             .font(.subheadline)
             .foregroundStyle(AppColors.secondaryText)
             .frame(maxWidth: .infinity, minHeight: 80)
@@ -2670,15 +2805,15 @@ private struct AnalyticsMessageState: View {
             Image(systemName: icon)
                 .font(.system(size: 30, weight: .medium))
                 .foregroundStyle(AppColors.chatSendButton)
-            Text(title)
+            Text(AppLocalization.string(title))
                 .font(.headline)
-            Text(message)
+            Text(AppLocalization.string(message))
                 .font(.subheadline)
                 .foregroundStyle(AppColors.secondaryText)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 300)
             if let actionTitle, let action {
-                Button(actionTitle, action: action)
+                Button(AppLocalization.string(actionTitle), action: action)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 18)
@@ -2703,7 +2838,10 @@ private enum AnalyticsValue {
 
     static func hours(_ value: Double?) -> String {
         guard let value else { return "—" }
-        return value.formatted(.number.precision(.fractionLength(1))) + " 小时"
+        return AppLocalization.format(
+            "%@ 小时",
+            value.formatted(.number.precision(.fractionLength(1)))
+        )
     }
 
     static func percent(_ value: Double?) -> String {
@@ -2756,7 +2894,13 @@ private struct AnalyticsDetail: Identifiable {
             title: item.label,
             subtitle: subtitle,
             rows: [
-                AnalyticsDetailRow(label: "订单数", value: "\(AnalyticsValue.count(item.metrics["order_count"]?.current)) 单"),
+                AnalyticsDetailRow(
+                    label: "订单数",
+                    value: AppLocalization.format(
+                        "%@ 单",
+                        AnalyticsValue.count(item.metrics["order_count"]?.current)
+                    )
+                ),
                 AnalyticsDetailRow(label: "净实收", value: AnalyticsValue.currency(item.metrics["net_income"]?.current)),
                 AnalyticsDetailRow(label: "客单价", value: AnalyticsValue.currency(item.metrics["avg_order_value"]?.current)),
                 AnalyticsDetailRow(label: "退款金额", value: AnalyticsValue.currency(item.metrics["refund_amount"]?.current)),
@@ -2828,7 +2972,7 @@ private struct AnalyticsDetailView: View {
                 Section {
                     ForEach(detail.rows) { row in
                         HStack(alignment: .firstTextBaseline, spacing: 16) {
-                            Text(row.label)
+                            Text(AppLocalization.string(row.label))
                                 .foregroundStyle(AppColors.secondaryText)
                             Spacer(minLength: 12)
                             Text(row.value)
@@ -2837,12 +2981,12 @@ private struct AnalyticsDetailView: View {
                         }
                     }
                 } header: {
-                    Text(detail.subtitle)
+                    Text(AppLocalization.string(detail.subtitle))
                 }
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
-            .navigationTitle(detail.title)
+            .navigationTitle(AppLocalization.string(detail.title))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

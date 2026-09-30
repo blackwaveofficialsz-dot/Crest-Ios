@@ -219,40 +219,40 @@ struct LoginView: View {
         case .phone:
             return ""
         case .password:
-            return "已识别账号"
+            return AppLocalization.string("已识别账号")
         case .verification:
             switch verificationPurpose {
             case .login:
-                return "验证码登录"
+                return AppLocalization.string("验证码登录")
             case .register:
-                return "创建个人账号"
+                return AppLocalization.string("创建个人账号")
             case .resetPassword:
-                return "找回密码"
+                return AppLocalization.string("找回密码")
             }
         case .resetPassword:
-            return "重置密码"
+            return AppLocalization.string("重置密码")
         }
     }
 
     private var verificationTitle: String {
         switch verificationPurpose {
         case .login:
-            return "输入验证码"
+            return AppLocalization.string("输入验证码")
         case .register:
-            return "验证手机号"
+            return AppLocalization.string("验证手机号")
         case .resetPassword:
-            return "确认是你"
+            return AppLocalization.string("确认是你")
         }
     }
 
     private var verificationCopy: String {
         switch verificationPurpose {
         case .login:
-            return "验证码已发送至 \(maskedPhone)"
+            return AppLocalization.format("验证码已发送至 %@", maskedPhone)
         case .register:
-            return "完成验证后将直接进入 Crest"
+            return AppLocalization.string("完成验证后将直接进入 Crest")
         case .resetPassword:
-            return "请输入发送至 \(maskedPhone) 的验证码"
+            return AppLocalization.format("请输入发送至 %@ 的验证码", maskedPhone)
         }
     }
 
@@ -299,7 +299,10 @@ struct LoginView: View {
                 await beginVerification(.register)
             }
         } catch {
-            notice = AuthNotice(title: "查询失败", message: error.localizedDescription)
+            notice = AuthNotice(
+                title: AppLocalization.string("查询失败"),
+                message: AppLocalization.string(error.localizedDescription)
+            )
         }
     }
 
@@ -311,7 +314,10 @@ struct LoginView: View {
         do {
             try await session.signIn(phone: phone, password: password)
         } catch {
-            notice = AuthNotice(title: "登录失败", message: error.localizedDescription)
+            notice = AuthNotice(
+                title: AppLocalization.string("登录失败"),
+                message: AppLocalization.string(error.localizedDescription)
+            )
         }
     }
 
@@ -381,7 +387,10 @@ struct LoginView: View {
             storedVerificationChallengeID = ""
             storedResendAvailableAt = 0
             shouldReturnAfterNotice = true
-            notice = AuthNotice(title: "验证码发送失败", message: error.localizedDescription)
+            notice = AuthNotice(
+                title: AppLocalization.string("验证码发送失败"),
+                message: AppLocalization.string(error.localizedDescription)
+            )
             return false
         }
     }
@@ -392,8 +401,8 @@ struct LoginView: View {
 
     private func showVerificationCooldownNotice(remaining: Int) {
         notice = AuthNotice(
-            title: "操作频繁",
-            message: "请稍等 \(remaining) 秒后再试。"
+            title: AppLocalization.string("操作频繁"),
+            message: AppLocalization.format("请稍等 %lld 秒后再试。", Int64(remaining))
         )
     }
 
@@ -402,7 +411,10 @@ struct LoginView: View {
         guard verificationCode.count == 6, !isSendingCode, !isVerifying else { return }
         guard !storedVerificationChallengeID.isEmpty else {
             verificationCode = ""
-            notice = AuthNotice(title: "验证码已失效", message: "请重新获取验证码。")
+            notice = AuthNotice(
+                title: AppLocalization.string("验证码已失效"),
+                message: AppLocalization.string("请重新获取验证码。")
+            )
             focus(after: .verification)
             return
         }
@@ -434,7 +446,10 @@ struct LoginView: View {
             }
         } catch {
             verificationCode = ""
-            notice = AuthNotice(title: "验证码错误", message: error.localizedDescription)
+            notice = AuthNotice(
+                title: AppLocalization.string("验证码错误"),
+                message: AppLocalization.string(error.localizedDescription)
+            )
             focus(after: .verification)
         }
     }
@@ -442,11 +457,17 @@ struct LoginView: View {
     private func submitResetPassword() async {
         guard canSubmitReset else { return }
         guard (7...16).contains(newPassword.count) else {
-            notice = AuthNotice(title: "密码格式不正确", message: "新密码需要 7 至 16 位。")
+            notice = AuthNotice(
+                title: AppLocalization.string("密码格式不正确"),
+                message: AppLocalization.string("新密码需要 7 至 16 位。")
+            )
             return
         }
         guard newPassword == confirmPassword else {
-            notice = AuthNotice(title: "两次密码不一致", message: "请重新确认新密码。")
+            notice = AuthNotice(
+                title: AppLocalization.string("两次密码不一致"),
+                message: AppLocalization.string("请重新确认新密码。")
+            )
             confirmPassword = ""
             focusedField = .confirmPassword
             return
@@ -468,9 +489,15 @@ struct LoginView: View {
             withAnimation(.easeInOut(duration: 0.28)) {
                 step = .password
             }
-            notice = AuthNotice(title: "密码重置成功", message: response.message)
+            notice = AuthNotice(
+                title: AppLocalization.string("密码重置成功"),
+                message: AppLocalization.string(response.message)
+            )
         } catch {
-            notice = AuthNotice(title: "密码重置失败", message: error.localizedDescription)
+            notice = AuthNotice(
+                title: AppLocalization.string("密码重置失败"),
+                message: AppLocalization.string(error.localizedDescription)
+            )
         }
     }
 

@@ -286,13 +286,13 @@ enum APIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidResponse:
-            return "服务器响应异常"
+            return AppLocalization.string("服务器响应异常")
         case .invalidSession:
-            return "登录状态无效，请重新登录"
+            return AppLocalization.string("登录状态无效，请重新登录")
         case .unauthorized(let message):
-            return message
+            return AppLocalization.string(message)
         case .server(let message):
-            return message
+            return AppLocalization.string(message)
         }
     }
 }
@@ -489,7 +489,11 @@ struct APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "工作空间加载失败（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string("工作空间加载失败"),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw APIError.unauthorized(message)
             }
@@ -570,7 +574,11 @@ struct APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string(fallbackError),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw APIError.unauthorized(message)
             }
@@ -608,7 +616,11 @@ struct APIClient {
         response: HTTPURLResponse,
         fallbackError: String
     ) -> APIError {
-        let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(response.statusCode)）"
+        let message = readErrorMessage(from: data) ?? AppLocalization.format(
+            "%@（%lld）",
+            AppLocalization.string(fallbackError),
+            Int64(response.statusCode)
+        )
         if response.statusCode == 401 {
             return .unauthorized(message)
         }

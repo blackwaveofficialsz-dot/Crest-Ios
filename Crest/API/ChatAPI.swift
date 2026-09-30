@@ -249,7 +249,11 @@ extension APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "对话删除失败（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string("对话删除失败"),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw APIError.unauthorized(message)
             }
@@ -280,7 +284,11 @@ extension APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "对话更新失败（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string("对话更新失败"),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw APIError.unauthorized(message)
             }
@@ -351,7 +359,11 @@ extension APIClient {
                 guard (200..<300).contains(http.statusCode) else {
                     var data = Data()
                     for try await byte in bytes { data.append(byte) }
-                    let detail = readErrorMessage(from: data) ?? "消息发送失败（\(http.statusCode)）"
+                    let detail = readErrorMessage(from: data) ?? AppLocalization.format(
+                        "%@（%lld）",
+                        AppLocalization.string("消息发送失败"),
+                        Int64(http.statusCode)
+                    )
                     if http.statusCode == 401 { throw APIError.unauthorized(detail) }
                     throw APIError.server(detail)
                 }
@@ -472,7 +484,11 @@ extension APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string(fallbackError),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 { throw APIError.unauthorized(message) }
             throw APIError.server(message)
         }
@@ -491,7 +507,11 @@ extension APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string(fallbackError),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw APIError.unauthorized(message)
             }

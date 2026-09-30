@@ -47,13 +47,19 @@ struct CrestApp: App {
 private struct AppRoot: View {
     @Environment(\.colorScheme) private var systemColorScheme
     @AppStorage(AppTheme.storageKey) private var selectedTheme = AppTheme.dark.rawValue
+    @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.system.rawValue
 
     @ObservedObject var session: SessionStore
+
+    private var language: AppLanguage {
+        AppLanguage(rawValue: selectedLanguage) ?? .system
+    }
 
     var body: some View {
         RootView()
             .environmentObject(session)
             .environment(\.systemColorScheme, systemColorScheme)
+            .environment(\.locale, language.locale)
             .preferredColorScheme(
                 session.isSignedIn
                     ? AppTheme(rawValue: selectedTheme)?.colorScheme

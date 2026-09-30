@@ -85,7 +85,7 @@ struct PhoneLoginPanel: View {
             }
 
             AuthPrimaryButton(
-                title: isLoading ? "识别中" : "Get start",
+                title: AppLocalization.string(isLoading ? "识别中" : "开始使用"),
                 isLoading: isLoading,
                 isEnabled: canContinue,
                 action: onContinue
@@ -110,11 +110,11 @@ struct PasswordLoginPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            AuthSectionHeader(title: "欢迎回来", copy: formattedPhone)
+            AuthSectionHeader(title: AppLocalization.string("欢迎回来"), copy: formattedPhone)
 
             AuthPasswordInput(
-                label: "密码",
-                prompt: "请输入密码",
+                label: AppLocalization.string("密码"),
+                prompt: AppLocalization.string("请输入密码"),
                 text: $password,
                 isVisible: $isPasswordVisible,
                 focus: .password,
@@ -138,7 +138,7 @@ struct PasswordLoginPanel: View {
             .padding(.horizontal, 3)
 
             AuthPrimaryButton(
-                title: isLoading ? "登录中" : "登录",
+                title: AppLocalization.string(isLoading ? "登录中" : "登录"),
                 isLoading: isLoading,
                 isEnabled: canSubmit,
                 action: onSubmit
@@ -178,7 +178,11 @@ struct VerificationLoginPanel: View {
                                 .controlSize(.small)
                                 .tint(.white.opacity(0.72))
                         } else {
-                            Text(remaining > 0 ? "\(remaining)s 后可重新发送" : "重新发送验证码")
+                            Text(
+                                remaining > 0
+                                    ? AppLocalization.format("%llds 后可重新发送", Int64(remaining))
+                                    : AppLocalization.string("重新发送验证码")
+                            )
                         }
                     }
                     .frame(maxWidth: .infinity, minHeight: 40)
@@ -205,11 +209,14 @@ struct ResetPasswordPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            AuthSectionHeader(title: "设置新密码", copy: "使用新的密码保护你的账号")
+            AuthSectionHeader(
+                title: AppLocalization.string("设置新密码"),
+                copy: AppLocalization.string("使用新的密码保护你的账号")
+            )
 
             AuthPasswordInput(
-                label: "新密码",
-                prompt: "请输入新密码",
+                label: AppLocalization.string("新密码"),
+                prompt: AppLocalization.string("请输入新密码"),
                 text: $newPassword,
                 isVisible: $isNewPasswordVisible,
                 focus: .newPassword,
@@ -220,8 +227,8 @@ struct ResetPasswordPanel: View {
             }
 
             AuthPasswordInput(
-                label: "再次输入新密码",
-                prompt: "请再次输入新密码",
+                label: AppLocalization.string("再次输入新密码"),
+                prompt: AppLocalization.string("请再次输入新密码"),
                 text: $confirmPassword,
                 isVisible: $isConfirmPasswordVisible,
                 focus: .confirmPassword,
@@ -232,7 +239,7 @@ struct ResetPasswordPanel: View {
             .padding(.top, 12)
 
             AuthPrimaryButton(
-                title: isLoading ? "提交中" : "确认",
+                title: AppLocalization.string(isLoading ? "提交中" : "确认"),
                 isLoading: isLoading,
                 isEnabled: canSubmit,
                 action: onSubmit
@@ -376,7 +383,9 @@ private struct AuthPasswordInput: View {
                         .foregroundStyle(.white.opacity(0.67))
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel(isVisible ? "隐藏密码" : "显示密码")
+                .accessibilityLabel(
+                    AppLocalization.string(isVisible ? "隐藏密码" : "显示密码")
+                )
             }
         }
     }

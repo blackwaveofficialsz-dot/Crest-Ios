@@ -8,6 +8,7 @@ struct AppSettingsSheet: View {
     @Environment(\.systemColorScheme) private var systemColorScheme
     @EnvironmentObject private var session: SessionStore
     @AppStorage(AppTheme.storageKey) private var selectedTheme = AppTheme.dark.rawValue
+    @AppStorage(AppLanguage.storageKey) private var selectedLanguage = AppLanguage.system.rawValue
     @State private var settingsError: String?
     @State private var isShowingJoinTeam = false
     @State private var isShowingProfile = false
@@ -24,6 +25,10 @@ struct AppSettingsSheet: View {
 
     private var theme: AppTheme {
         AppTheme(rawValue: selectedTheme) ?? .dark
+    }
+
+    private var language: AppLanguage {
+        AppLanguage(rawValue: selectedLanguage) ?? .system
     }
 
     /// “跟随系统”使用捕获的真实系统主题，其他选项使用用户指定主题。
@@ -67,13 +72,13 @@ struct AppSettingsSheet: View {
                     .padding(.top, 8)
                     .padding(.bottom, 30)
 
-                    settingsSection(title: "账户") {
+                    settingsSection(title: AppLocalization.string("账户")) {
                         Button {
                             isShowingProfile = true
                         } label: {
                             settingsRow(
                                 icon: "person.crop.circle",
-                                title: "个人资料",
+                                title: AppLocalization.string("个人资料"),
                                 value: displayName,
                                 trailingIcon: "chevron.right"
                             )
@@ -93,14 +98,14 @@ struct AppSettingsSheet: View {
                         } label: {
                             settingsRow(
                                 icon: "lock",
-                                title: session.hasPassword ? "修改密码" : "设置密码",
+                                title: AppLocalization.string(session.hasPassword ? "修改密码" : "设置密码"),
                                 trailingIcon: "chevron.right"
                             )
                         }
                         .buttonStyle(.plain)
                     }
 
-                    settingsSection(title: "工作空间") {
+                    settingsSection(title: AppLocalization.string("工作空间")) {
                         if session.workspaces.isEmpty && session.isLoadingWorkspaces {
                             ProgressView()
                                 .tint(AppColors.secondaryText)
@@ -137,14 +142,14 @@ struct AppSettingsSheet: View {
                         } label: {
                             settingsRow(
                                 icon: "person.badge.plus",
-                                title: "加入新团队",
+                                title: AppLocalization.string("加入新团队"),
                                 trailingIcon: "chevron.right"
                             )
                         }
                         .buttonStyle(.plain)
                     }
 
-                    settingsSection(title: "主题") {
+                    settingsSection(title: AppLocalization.string("外观与语言")) {
                         Menu {
                             Picker("外观", selection: $selectedTheme) {
                                 ForEach(AppTheme.allCases) { option in
@@ -155,8 +160,29 @@ struct AppSettingsSheet: View {
                         } label: {
                             settingsRow(
                                 icon: theme.systemImage,
-                                title: "外观",
+                                title: AppLocalization.string("外观"),
                                 value: theme.title,
+                                trailingIcon: "chevron.up.chevron.down"
+                            )
+                        }
+                        .buttonStyle(.plain)
+
+                        Divider()
+                            .overlay(AppColors.border)
+                            .padding(.leading, 58)
+
+                        Menu {
+                            Picker("语言", selection: $selectedLanguage) {
+                                ForEach(AppLanguage.allCases) { option in
+                                    Label(option.title, systemImage: option.systemImage)
+                                        .tag(option.rawValue)
+                                }
+                            }
+                        } label: {
+                            settingsRow(
+                                icon: language.systemImage,
+                                title: AppLocalization.string("语言"),
+                                value: language.title,
                                 trailingIcon: "chevron.up.chevron.down"
                             )
                         }
@@ -214,7 +240,7 @@ struct AppSettingsSheet: View {
                 try await session.loadWorkspaces()
                 try await session.loadAccountProfile()
             } catch {
-                settingsError = error.localizedDescription
+                settingsError = AppLocalization.string(error.localizedDescription)
             }
         }
         .alert(
@@ -226,7 +252,7 @@ struct AppSettingsSheet: View {
         ) {
             Button("好", role: .cancel) {}
         } message: {
-            Text(settingsError ?? "请稍后重试")
+            Text(settingsError ?? AppLocalization.string("请稍后重试"))
         }
     }
 
@@ -296,7 +322,11 @@ struct AppSettingsSheet: View {
                     .foregroundStyle(AppColors.primaryText)
                     .lineLimit(1)
 
-                Text(workspace.workspaceType == .personal ? "个人账号" : workspace.role)
+                Text(
+                    workspace.workspaceType == .personal
+                        ? AppLocalization.string("个人账号")
+                        : workspace.role
+                )
                     .font(.caption)
                     .foregroundStyle(AppColors.secondaryText)
                     .lineLimit(1)
@@ -440,7 +470,7 @@ private struct AvatarCropView: View {
                                 zoom: visibleZoom,
                                 offset: visibleOffset
                             ) else {
-                                errorMessage = "无法处理所选图片"
+                                errorMessage = AppLocalization.string("无法处理所选图片")
                                 return
                             }
                             dismiss()
@@ -462,7 +492,7 @@ private struct AvatarCropView: View {
             ) {
                 Button("好", role: .cancel) {}
             } message: {
-                Text(errorMessage ?? "请重新选择图片")
+                Text(errorMessage ?? AppLocalization.string("请重新选择图片"))
             }
         }
     }
@@ -642,7 +672,7 @@ private struct AccountProfileView: View {
             ) {
                 Button("好", role: .cancel) {}
             } message: {
-                Text(errorMessage ?? "请稍后重试")
+                Text(errorMessage ?? AppLocalization.string("请稍后重试"))
             }
         }
     }
@@ -656,7 +686,7 @@ private struct AccountProfileView: View {
             try await session.updateDisplayName(normalizedDisplayName)
             dismiss()
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppLocalization.string(error.localizedDescription)
         }
     }
 
@@ -672,12 +702,12 @@ private struct AccountProfileView: View {
                 let originalData = try await item.loadTransferable(type: Data.self),
                 let image = UIImage(data: originalData)
             else {
-                errorMessage = "无法读取所选图片"
+                errorMessage = AppLocalization.string("无法读取所选图片")
                 return
             }
             cropSelection = AvatarCropSelection(image: image)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppLocalization.string(error.localizedDescription)
         }
     }
 
@@ -688,7 +718,7 @@ private struct AccountProfileView: View {
         do {
             try await session.updateAvatar(avatarData)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppLocalization.string(error.localizedDescription)
         }
     }
 }
@@ -706,10 +736,10 @@ private struct ChangePasswordView: View {
 
     private var validationMessage: String? {
         if !newPassword.isEmpty && !(7...16).contains(newPassword.count) {
-            return "新密码长度需为 7 至 16 位"
+            return AppLocalization.string("新密码长度需为 7 至 16 位")
         }
         if !confirmation.isEmpty && newPassword != confirmation {
-            return "两次输入的新密码不一致"
+            return AppLocalization.string("两次输入的新密码不一致")
         }
         return nil
     }
@@ -775,7 +805,7 @@ private struct ChangePasswordView: View {
             ) {
                 Button("好", role: .cancel) {}
             } message: {
-                Text(errorMessage ?? "请稍后重试")
+                Text(errorMessage ?? AppLocalization.string("请稍后重试"))
             }
             .alert("密码修改成功", isPresented: $isSuccessAlertPresented) {
                 Button("重新登录") {
@@ -800,7 +830,7 @@ private struct ChangePasswordView: View {
             )
             isSuccessAlertPresented = true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppLocalization.string(error.localizedDescription)
         }
     }
 }

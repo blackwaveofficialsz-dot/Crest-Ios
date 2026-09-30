@@ -36,7 +36,9 @@ struct ChatComposer: View {
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.circle)
                 .disabled(!isStreaming && !canSend)
-                .accessibilityLabel(isStreaming ? "停止本轮" : "发送")
+                .accessibilityLabel(
+                    AppLocalization.string(isStreaming ? "停止本轮" : "发送")
+                )
                 .tint(AppColors.chatSendButton)
                 .padding(.trailing, 2)
                 .padding(.bottom, 4)

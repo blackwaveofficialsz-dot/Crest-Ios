@@ -24,10 +24,10 @@ struct ChatView: View {
     @State private var messages: [ChatMessage] = []
     @State private var draft = ""
     @State private var isWaitingForService = false
-    @State private var streamStatus = "正在连接"
+    @State private var streamStatus = AppLocalization.string("正在连接")
     @State private var streamingMessageID: String?
     @State private var activeSessionID: String?
-    @State private var activeTitle = "新对话"
+    @State private var activeTitle = AppLocalization.string("新对话")
     @State private var history: [ChatSessionSummary] = []
     @State private var isLoadingHistory = false
     @State private var loadingHistoryWorkspaceID: String?
@@ -56,15 +56,15 @@ struct ChatView: View {
     private var suggestions: [ChatSuggestion] {
         if session.tenantID == nil {
             return [
-                ChatSuggestion(icon: "menucard", title: "帮我设计一份菜单结构"),
-                ChatSuggestion(icon: "chart.pie", title: "如何控制餐厅食材成本"),
-                ChatSuggestion(icon: "megaphone", title: "制定新店开业推广计划")
+                ChatSuggestion(icon: "menucard", title: AppLocalization.string("帮我设计一份菜单结构")),
+                ChatSuggestion(icon: "chart.pie", title: AppLocalization.string("如何控制餐厅食材成本")),
+                ChatSuggestion(icon: "megaphone", title: AppLocalization.string("制定新店开业推广计划"))
             ]
         }
         return [
-            ChatSuggestion(icon: "chart.line.uptrend.xyaxis", title: "分析本月经营情况"),
-            ChatSuggestion(icon: "exclamationmark.magnifyingglass", title: "找出最近的异常费用"),
-            ChatSuggestion(icon: "doc.text", title: "生成一份经营摘要")
+            ChatSuggestion(icon: "chart.line.uptrend.xyaxis", title: AppLocalization.string("分析本月经营情况")),
+            ChatSuggestion(icon: "exclamationmark.magnifyingglass", title: AppLocalization.string("找出最近的异常费用")),
+            ChatSuggestion(icon: "doc.text", title: AppLocalization.string("生成一份经营摘要"))
         ]
     }
 
@@ -162,7 +162,9 @@ struct ChatView: View {
             VStack(spacing: 0) {
                 ChatHeader(
                     title: activeTitle,
-                    subtitle: session.tenantID == nil ? "餐饮经营助手" : "经营助手",
+                    subtitle: AppLocalization.string(
+                        session.tenantID == nil ? "餐饮经营助手" : "经营助手"
+                    ),
                     onOpenSidebar: openSidebar,
                     onNewConversation: startNewConversation,
                     onOpenSettings: openSettings
@@ -267,7 +269,7 @@ struct ChatView: View {
                         .tint(AppColors.secondaryText)
                         .frame(maxWidth: .infinity, minHeight: 500)
                 } else if messages.isEmpty {
-                    ChatEmptyState(subtitle: "从一个餐饮经营问题开始")
+                    ChatEmptyState(subtitle: AppLocalization.string("从一个餐饮经营问题开始"))
                 } else {
                     ChatMessageList(
                         messages: messages,
@@ -321,7 +323,7 @@ struct ChatView: View {
                     }
                     .systemGlassCircleButton()
                     .accessibilityLabel("滚动到最底部")
-                    .accessibilityValue(isWaitingForService ? "正在生成回复" : "")
+                    .accessibilityValue(isWaitingForService ? AppLocalization.string("正在生成回复") : "")
                     .accessibilityHint("返回最新消息并恢复自动跟随")
                     .padding(.trailing, 18)
                     .padding(.bottom, 12)
@@ -436,7 +438,7 @@ struct ChatView: View {
         }
         isWaitingForService = true
         streamingMessageID = assistantID
-        streamStatus = "正在连接"
+        streamStatus = AppLocalization.string("正在连接")
         isComposerFocused = false
 
         chatTask?.cancel()
@@ -477,7 +479,7 @@ struct ChatView: View {
                 guard streamingMessageID == assistantID else { return }
                 applyFailure(
                     ChatFailure(
-                        message: error.localizedDescription,
+                        message: AppLocalization.string(error.localizedDescription),
                         code: nil,
                         retryable: true
                     ),
@@ -502,8 +504,8 @@ struct ChatView: View {
                 }
             } catch {
                 presentedAlert = ChatAlert(
-                    title: "停止失败",
-                    message: error.localizedDescription
+                    title: AppLocalization.string("停止失败"),
+                    message: AppLocalization.string(error.localizedDescription)
                 )
             }
         }
@@ -525,7 +527,9 @@ struct ChatView: View {
         }
         isWaitingForService = true
         streamingMessageID = run.assistantMessageID
-        streamStatus = decision == "approve" ? "正在执行已确认操作" : "正在取消操作"
+        streamStatus = AppLocalization.string(
+            decision == "approve" ? "正在执行已确认操作" : "正在取消操作"
+        )
 
         chatTask?.cancel()
         chatTask = Task {
@@ -568,7 +572,7 @@ struct ChatView: View {
                       streamingMessageID == run.assistantMessageID else { return }
                 applyFailure(
                     ChatFailure(
-                        message: error.localizedDescription,
+                        message: AppLocalization.string(error.localizedDescription),
                         code: nil,
                         retryable: true
                     ),
@@ -591,7 +595,7 @@ struct ChatView: View {
             streamingMessageID = nil
             pendingAgentRun = nil
             activeSessionID = nil
-            activeTitle = "新对话"
+            activeTitle = AppLocalization.string("新对话")
         }
         closeSidebar()
     }
@@ -710,8 +714,8 @@ struct ChatView: View {
             } catch {
                 guard workspaceID == session.activeWorkspaceID else { return }
                 presentedAlert = ChatAlert(
-                    title: item.isPinned ? "取消固定失败" : "固定失败",
-                    message: error.localizedDescription
+                    title: AppLocalization.string(item.isPinned ? "取消固定失败" : "固定失败"),
+                    message: AppLocalization.string(error.localizedDescription)
                 )
             }
         }
@@ -722,8 +726,8 @@ struct ChatView: View {
             try? await Task.sleep(for: .milliseconds(250))
             renameDraft = item.title
             presentedAlert = ChatAlert(
-                title: "重命名对话",
-                message: "输入新的对话名称",
+                title: AppLocalization.string("重命名对话"),
+                message: AppLocalization.string("输入新的对话名称"),
                 renameTarget: item
             )
         }
@@ -750,8 +754,8 @@ struct ChatView: View {
             } catch {
                 guard workspaceID == session.activeWorkspaceID else { return }
                 presentedAlert = ChatAlert(
-                    title: "重命名失败",
-                    message: error.localizedDescription
+                    title: AppLocalization.string("重命名失败"),
+                    message: AppLocalization.string(error.localizedDescription)
                 )
             }
         }
@@ -778,8 +782,8 @@ struct ChatView: View {
             // 等待系统长按菜单完成收起，避免 Alert 的展示请求被菜单吞掉。
             try? await Task.sleep(for: .milliseconds(250))
             presentedAlert = ChatAlert(
-                title: "要删除对话吗？",
-                message: "这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。",
+                title: AppLocalization.string("要删除对话吗？"),
+                message: AppLocalization.string("这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。"),
                 deletionTarget: item
             )
         }
@@ -807,8 +811,8 @@ struct ChatView: View {
             } catch {
                 guard workspaceID == session.activeWorkspaceID else { return }
                 presentedAlert = ChatAlert(
-                    title: "删除失败",
-                    message: error.localizedDescription
+                    title: AppLocalization.string("删除失败"),
+                    message: AppLocalization.string(error.localizedDescription)
                 )
             }
         }
@@ -843,8 +847,8 @@ struct ChatView: View {
         } catch {
             guard workspaceID == session.activeWorkspaceID else { return }
             presentedAlert = ChatAlert(
-                title: "历史记录加载失败",
-                message: error.localizedDescription
+                title: AppLocalization.string("历史记录加载失败"),
+                message: AppLocalization.string(error.localizedDescription)
             )
         }
     }
@@ -883,8 +887,8 @@ struct ChatView: View {
             } catch {
                 isLoadingConversation = false
                 presentedAlert = ChatAlert(
-                    title: "对话加载失败",
-                    message: error.localizedDescription
+                    title: AppLocalization.string("对话加载失败"),
+                    message: AppLocalization.string(error.localizedDescription)
                 )
             }
         }
@@ -904,7 +908,7 @@ struct ChatView: View {
         streamingMessageID = nil
         pendingAgentRun = nil
         activeSessionID = nil
-        activeTitle = "新对话"
+        activeTitle = AppLocalization.string("新对话")
         isSearchPresented = false
         isAnalyticsPresented = false
         closeSidebar()

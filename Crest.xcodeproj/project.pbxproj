@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CF4300000000000000000001 /* AppLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF4300000000000000000002 /* AppLocalization.swift */; };
 		CF4200000000000000000001 /* ChatTextPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF4200000000000000000002 /* ChatTextPlayback.swift */; };
 		000000000000000000000110 /* CrestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000010 /* CrestApp.swift */; };
 		000000000000000000000111 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000011 /* RootView.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CF4300000000000000000002 /* AppLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocalization.swift; sourceTree = "<group>"; };
 		CF4200000000000000000002 /* ChatTextPlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextPlayback.swift; sourceTree = "<group>"; };
 		000000000000000000000006 /* Crest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Crest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		000000000000000000000010 /* CrestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrestApp.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 			children = (
 				000000000000000000000018 /* ChatModels.swift */,
 				CF4200000000000000000002 /* ChatTextPlayback.swift */,
+				CF4300000000000000000002 /* AppLocalization.swift */,
 				00000000000000000000001E /* AppTheme.swift */,
 			);
 			path = Models;
@@ -299,6 +302,7 @@
 				000000000000000000000117 /* ChatAPI.swift in Sources */,
 				000000000000000000000118 /* ChatModels.swift in Sources */,
 				CF4200000000000000000001 /* ChatTextPlayback.swift in Sources */,
+				CF4300000000000000000001 /* AppLocalization.swift in Sources */,
 				00000000000000000000011A /* AppSidebar.swift in Sources */,
 				00000000000000000000011B /* LoginComponents.swift in Sources */,
 				00000000000000000000011C /* AnimatedLoginBackground.swift in Sources */,

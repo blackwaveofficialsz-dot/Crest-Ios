@@ -73,7 +73,7 @@ struct InitialPasswordView: View {
             ) {
                 Button("好", role: .cancel) {}
             } message: {
-                Text(errorMessage ?? "请稍后重试")
+                Text(errorMessage ?? AppLocalization.string("请稍后重试"))
             }
             .alert("密码设置成功", isPresented: $isSuccessAlertPresented) {
                 Button("好") { dismiss() }
@@ -92,13 +92,13 @@ struct InitialPasswordView: View {
             try await session.setInitialPassword(password)
             isSuccessAlertPresented = true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = AppLocalization.string(error.localizedDescription)
         }
     }
 
     private func validatePassword() {
         guard (7...16).contains(password.count) else {
-            validationMessage = "密码长度需为 7 至 16 位"
+            validationMessage = AppLocalization.string("密码长度需为 7 至 16 位")
             return
         }
         validationMessage = nil
@@ -107,7 +107,7 @@ struct InitialPasswordView: View {
 
     private func validateConfirmation() -> Bool {
         guard password == confirmation else {
-            validationMessage = "两次输入的密码不一致"
+            validationMessage = AppLocalization.string("两次输入的密码不一致")
             return false
         }
         validationMessage = nil

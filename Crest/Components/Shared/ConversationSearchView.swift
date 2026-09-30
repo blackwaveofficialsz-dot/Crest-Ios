@@ -77,7 +77,7 @@ struct ConversationSearchView: View {
         } else {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 2) {
-                    Text(searchText.isEmpty ? "最近" : "搜索结果")
+                    Text(AppLocalization.string(searchText.isEmpty ? "最近" : "搜索结果"))
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(AppColors.secondaryText)
                         .padding(.horizontal, 18)

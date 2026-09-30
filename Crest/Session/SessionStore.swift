@@ -33,7 +33,9 @@ final class SessionStore: ObservableObject {
     }
 
     var accountDisplayName: String {
-        displayName.isEmpty ? (username.isEmpty ? "Crest 用户" : username) : displayName
+        displayName.isEmpty
+            ? (username.isEmpty ? AppLocalization.string("Crest 用户") : username)
+            : displayName
     }
 
     func signIn(phone: String, password: String) async throws {

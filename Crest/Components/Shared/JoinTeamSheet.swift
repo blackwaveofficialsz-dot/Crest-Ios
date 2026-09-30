@@ -75,7 +75,7 @@ struct JoinTeamSheet: View {
             isCodeFocused = true
         }
         .alert(
-            alertTitle ?? "加入团队",
+            alertTitle ?? AppLocalization.string("加入团队"),
             isPresented: Binding(
                 get: { alertTitle != nil },
                 set: { if !$0 { alertTitle = nil } }
@@ -102,12 +102,12 @@ struct JoinTeamSheet: View {
             defer { isSubmitting = false }
             do {
                 let response = try await session.acceptInvitation(code: code)
-                alertTitle = "已加入团队"
-                alertMessage = response.message
+                alertTitle = AppLocalization.string("已加入团队")
+                alertMessage = AppLocalization.string(response.message)
                 dismissAfterAlert = true
             } catch {
-                alertTitle = "加入团队失败"
-                alertMessage = error.localizedDescription
+                alertTitle = AppLocalization.string("加入团队失败")
+                alertMessage = AppLocalization.string(error.localizedDescription)
                 dismissAfterAlert = false
             }
         }

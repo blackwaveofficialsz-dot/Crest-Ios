@@ -13,11 +13,11 @@ enum AppTheme: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .system:
-            "跟随系统"
+            AppLocalization.string("跟随系统")
         case .light:
-            "浅色"
+            AppLocalization.string("浅色")
         case .dark:
-            "深色"
+            AppLocalization.string("深色")
         }
     }
 

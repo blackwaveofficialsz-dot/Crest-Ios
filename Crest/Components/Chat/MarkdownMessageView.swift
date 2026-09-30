@@ -188,7 +188,7 @@ private struct MarkdownCodeBlock: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
-                Text(language?.isEmpty == false ? language! : "代码")
+                Text(language?.isEmpty == false ? language! : AppLocalization.string("代码"))
                     .font(.caption)
                     .foregroundStyle(AppColors.secondaryText)
 
@@ -208,7 +208,7 @@ private struct MarkdownCodeBlock: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(didCopy ? "已复制" : "复制代码")
+                .accessibilityLabel(AppLocalization.string(didCopy ? "已复制" : "复制代码"))
             }
             .padding(.leading, 12)
             .padding(.trailing, 5)
@@ -307,28 +307,34 @@ struct MarkdownTable: View {
             .scrollIndicators(.hidden)
 
             if totalRowCount != nil {
-                Text("当前展示 \(visibleRows.count) / \(reportedRowCount) 行")
+                Text(
+                    AppLocalization.format(
+                        "当前展示 %lld / %lld 行",
+                        Int64(visibleRows.count),
+                        Int64(reportedRowCount)
+                    )
+                )
                     .font(.caption)
                     .foregroundStyle(AppColors.secondaryText)
             }
 
             if rows.count > previewRowCount {
-                Button(isExpanded ? "收起" : expandButtonTitle) {
+                Button(isExpanded ? AppLocalization.string("收起") : expandButtonTitle) {
                     isExpanded.toggle()
                 }
                 .font(.footnote.weight(.medium))
                 .foregroundStyle(AppColors.chatSendButton)
                 .buttonStyle(.plain)
-                .accessibilityHint(isExpanded ? "只显示前十行" : "显示全部表格行")
+                .accessibilityHint(AppLocalization.string(isExpanded ? "只显示前十行" : "显示全部表格行"))
             }
         }
     }
 
     private var expandButtonTitle: String {
         if reportedRowCount > rows.count {
-            return "展开已返回的 \(rows.count) 行"
+            return AppLocalization.format("展开已返回的 %lld 行", Int64(rows.count))
         }
-        return "展开全部（\(rows.count) 行）"
+        return AppLocalization.format("展开全部（%lld 行）", Int64(rows.count))
     }
 
     private func value(at index: Int, in row: [String]) -> String {

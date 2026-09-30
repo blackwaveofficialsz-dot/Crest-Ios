@@ -157,7 +157,7 @@ struct AppSidebar: View {
                                         onPinSession(item)
                                     } label: {
                                         Label(
-                                            item.isPinned ? "取消固定" : "固定",
+                                            AppLocalization.string(item.isPinned ? "取消固定" : "固定"),
                                             systemImage: item.isPinned ? "pin.slash" : "pin"
                                         )
                                     }
@@ -224,6 +224,9 @@ struct AppSidebar: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 18)
             .frame(height: 48)
+            .contentShape(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+            )
             .background(
                 isContextMenuPreview
                     ? AppColors.surface
@@ -282,7 +285,7 @@ struct AppSidebar: View {
                     .frame(width: 34, height: 34)
                     .clipShape(Circle())
 
-                    Text(username.isEmpty ? "账户" : username)
+                    Text(username.isEmpty ? AppLocalization.string("账户") : username)
                         .font(.body.weight(.medium))
                         .lineLimit(1)
 

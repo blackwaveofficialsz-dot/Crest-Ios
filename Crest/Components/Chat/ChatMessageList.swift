@@ -75,16 +75,10 @@ private struct MessageRow: View {
                         onRetry: { onRetry(message) }
                     )
                 } else if message.content.isEmpty, let loadingLabel {
-                    HStack(spacing: 9) {
-                        ProgressView()
-                            .controlSize(.small)
-                            .tint(AppColors.secondaryText)
-                        Text(loadingLabel)
-                            .font(.footnote)
-                            .foregroundStyle(AppColors.secondaryText)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 5)
+                    CrestWaveThinkingIndicator()
+                        .accessibilityLabel(loadingLabel.isEmpty ? AppLocalization.string("正在生成回复") : loadingLabel)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 5)
                 } else if !displayText.isEmpty {
                     MarkdownMessageView(
                         content: displayText,
@@ -128,6 +122,77 @@ private struct MessageRow: View {
     }
 }
 
+private struct CrestWaveThinkingIndicator: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private let cycleDuration = 1.8
+
+    var body: some View {
+        Group {
+            if reduceMotion {
+                wave(at: 0)
+            } else {
+                TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+                    wave(at: timeline.date.timeIntervalSinceReferenceDate)
+                }
+            }
+        }
+        .frame(width: 48, height: 24, alignment: .leading)
+        .accessibilityElement(children: .ignore)
+    }
+
+    private func wave(at time: TimeInterval) -> some View {
+        let progress = reduceMotion ? 0.22 : time.truncatingRemainder(dividingBy: cycleDuration) / cycleDuration
+        let phase = progress * 2 * Double.pi
+
+        return Canvas(opaque: false, rendersAsynchronously: true) { context, size in
+            let midY = size.height / 2
+
+            func wavePath(offset: CGFloat = 0) -> Path {
+                var path = Path()
+                var x: CGFloat = -2
+
+                while x <= size.width + 2 {
+                    let normalizedX = Double(x / size.width)
+                    let clampedX = min(max(normalizedX, 0), 1)
+                    let edgeTaper = 0.42 + sin(clampedX * Double.pi) * 0.58
+                    let mainWave = sin(normalizedX * 2.25 * Double.pi + phase) * 4.2
+                    let y = midY + offset * CGFloat(edgeTaper) + CGFloat(mainWave)
+
+                    if x <= 0 {
+                        path.move(to: CGPoint(x: x, y: y))
+                    } else {
+                        path.addLine(to: CGPoint(x: x, y: y))
+                    }
+                    x += 1
+                }
+
+                return path
+            }
+
+            let ribbon = wavePath()
+
+            context.stroke(
+                ribbon,
+                with: .color(.white.opacity(0.96)),
+                style: StrokeStyle(lineWidth: 9, lineCap: .round, lineJoin: .round)
+            )
+
+            for index in 0..<3 {
+                context.stroke(
+                    wavePath(offset: CGFloat(index - 1) * 2.5),
+                    with: .color(.black.opacity(0.86)),
+                    style: StrokeStyle(
+                        lineWidth: 0.85,
+                        lineCap: .round,
+                        lineJoin: .round
+                    )
+                )
+            }
+        }
+    }
+}
+
 private struct ChatFailureCard: View {
     let failure: ChatFailure
     let canRetry: Bool
@@ -139,7 +204,7 @@ private struct ChatFailureCard: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.red)
 
-            Text(failure.message)
+            Text(AppLocalization.string(failure.message))
                 .font(.subheadline)
                 .foregroundStyle(AppColors.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -204,11 +269,11 @@ private struct ResponseStatusBadge: View {
 
     private var label: String {
         switch status {
-        case "partial": "结果不完整"
-        case "empty": "暂无数据"
-        case "unavailable": "数据暂不可用"
-        case "failed": "分析失败"
-        default: "结果状态未知"
+        case "partial": AppLocalization.string("结果不完整")
+        case "empty": AppLocalization.string("暂无数据")
+        case "unavailable": AppLocalization.string("数据暂不可用")
+        case "failed": AppLocalization.string("分析失败")
+        default: AppLocalization.string("结果状态未知")
         }
     }
 
@@ -219,7 +284,7 @@ private struct ResponseStatusBadge: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background((status == "failed" ? Color.red : Color.orange).opacity(0.09), in: Capsule())
-            .accessibilityLabel("分析结果：\(label)")
+            .accessibilityLabel(AppLocalization.format("分析结果：%@", label))
     }
 }
 
@@ -283,10 +348,10 @@ private struct StructuredSummary: View {
         switch metric.unit?.lowercased() {
         case "cny": return "¥\(value)"
         case "ratio": return "\(formatter.string(for: decimal * 100) ?? metric.value)%"
-        case "order": return "\(value)单"
-        case "store": return "\(value)家"
-        case "hour": return "\(value)小时"
-        case "person": return "\(value)人"
+        case "order": return AppLocalization.format("%@单", value)
+        case "store": return AppLocalization.format("%@家", value)
+        case "hour": return AppLocalization.format("%@小时", value)
+        case "person": return AppLocalization.format("%@人", value)
         default:
             return metric.unit.map { "\(value) \($0)" } ?? value
         }
@@ -454,9 +519,9 @@ private struct StructuredResponseTable: View {
 
         if column.key == "comparison_status" {
             switch text {
-            case "comparable": return "可比"
-            case "not_comparable": return "不可比"
-            default: return "未知"
+            case "comparable": return AppLocalization.string("可比")
+            case "not_comparable": return AppLocalization.string("不可比")
+            default: return AppLocalization.string("未知")
             }
         }
 
@@ -467,13 +532,13 @@ private struct StructuredResponseTable: View {
         case "cny": return "¥\(formatted)"
         case "ratio":
             return "\(Self.numberFormatter.string(for: number * 100) ?? text)%"
-        case "order": return "\(formatted)单"
-        case "store": return "\(formatted)家"
-        case "hour": return "\(formatted)小时"
-        case "period": return "\(formatted)期"
-        case "product": return "\(formatted)种"
-        case "item": return "\(formatted)件"
-        case "person": return "\(formatted)人"
+        case "order": return AppLocalization.format("%@单", formatted)
+        case "store": return AppLocalization.format("%@家", formatted)
+        case "hour": return AppLocalization.format("%@小时", formatted)
+        case "period": return AppLocalization.format("%@期", formatted)
+        case "product": return AppLocalization.format("%@种", formatted)
+        case "item": return AppLocalization.format("%@件", formatted)
+        case "person": return AppLocalization.format("%@人", formatted)
         default: return formatted
         }
     }
@@ -519,7 +584,7 @@ private struct ResponseActionButtons: View {
                     }
                 }
                 .buttonStyle(.plain)
-                .accessibilityHint("继续完成当前查询")
+            .accessibilityHint(AppLocalization.string("继续完成当前查询"))
             }
         }
     }
@@ -545,13 +610,13 @@ private struct AssistantMessageActions: View {
                     .frame(width: 44, height: 44)
                     .contentTransition(.symbolEffect(.replace))
             }
-            .accessibilityLabel(isCopied ? "已复制" : "复制回复")
+            .accessibilityLabel(AppLocalization.string(isCopied ? "已复制" : "复制回复"))
 
             ShareLink(item: content) {
                 Image(systemName: "square.and.arrow.up")
                     .frame(width: 44, height: 44)
             }
-            .accessibilityLabel("分享回复")
+            .accessibilityLabel(AppLocalization.string("分享回复"))
 
             Button(action: onRetry) {
                 Image(systemName: "arrow.clockwise")

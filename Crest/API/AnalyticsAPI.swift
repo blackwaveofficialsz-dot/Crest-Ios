@@ -125,7 +125,9 @@ struct AnalyticsDimensionRow: Codable, Identifiable {
     let metrics: [String: AnalyticsMetricComparison]
 
     var id: String { storeKey ?? dimKey ?? label }
-    var label: String { storeLabel ?? dimLabel ?? storeKey ?? dimKey ?? "未命名" }
+    var label: String {
+        storeLabel ?? dimLabel ?? storeKey ?? dimKey ?? AppLocalization.string("未命名")
+    }
 
     enum CodingKeys: String, CodingKey {
         case dimKey = "dim_key"
@@ -370,7 +372,11 @@ extension APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "线上经营分析登录失败（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string("线上经营分析登录失败"),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw APIError.unauthorized(message)
             }
@@ -536,7 +542,11 @@ extension APIClient {
             throw APIError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string(fallbackError),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 {
                 throw AnalyticsAPIError.unauthorized(message)
             }
@@ -1148,7 +1158,11 @@ extension APIClient {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw APIError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
-            let message = readErrorMessage(from: data) ?? "\(fallbackError)（\(http.statusCode)）"
+            let message = readErrorMessage(from: data) ?? AppLocalization.format(
+                "%@（%lld）",
+                AppLocalization.string(fallbackError),
+                Int64(http.statusCode)
+            )
             if http.statusCode == 401 { throw AnalyticsAPIError.unauthorized(message) }
             throw APIError.server(message)
         }
