@@ -846,33 +846,39 @@ private fun SettingsSheet(
                     DropdownMenu(
                         expanded = showThemeMenu,
                         onDismissRequest = { showThemeMenu = false },
+                        modifier = Modifier.width(188.dp),
                         shape = RoundedCornerShape(20.dp),
-                        containerColor = MaterialTheme.colorScheme.surface,
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.97f),
                         tonalElevation = 0.dp,
                         shadowElevation = 18.dp,
                     ) {
                         ThemeMode.entries.forEach { mode ->
-                            DropdownMenuItem(
-                                text = { Text(mode.title, color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    CrestIcon(
-                                        when (mode) {
-                                            ThemeMode.SYSTEM -> CrestIconKind.HALF_CIRCLE
-                                            ThemeMode.LIGHT -> CrestIconKind.THEME
-                                            ThemeMode.DARK -> CrestIconKind.MOON
-                                        },
-                                        Modifier.size(19.dp),
-                                        MaterialTheme.colorScheme.onSurface,
-                                    )
-                                },
-                                trailingIcon = if (theme.mode == mode) ({
-                                    CrestIcon(CrestIconKind.CHECK, Modifier.size(18.dp), MaterialTheme.colorScheme.secondary)
-                                }) else null,
-                                onClick = {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().height(40.dp).clickable {
                                     showThemeMenu = false
                                     theme.updateMode(mode)
-                                },
-                            )
+                                }.padding(horizontal = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Box(Modifier.width(18.dp), contentAlignment = Alignment.CenterStart) {
+                                    if (theme.mode == mode) CrestIcon(
+                                        CrestIconKind.CHECK,
+                                        Modifier.size(14.dp),
+                                        MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
+                                CrestIcon(
+                                    when (mode) {
+                                        ThemeMode.SYSTEM -> CrestIconKind.HALF_CIRCLE
+                                        ThemeMode.LIGHT -> CrestIconKind.THEME
+                                        ThemeMode.DARK -> CrestIconKind.MOON
+                                    },
+                                    Modifier.size(18.dp),
+                                    MaterialTheme.colorScheme.secondary,
+                                )
+                                Spacer(Modifier.width(10.dp))
+                                Text(mode.title, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                            }
                         }
                     }
                 }

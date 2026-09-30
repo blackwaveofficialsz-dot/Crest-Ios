@@ -59,7 +59,7 @@ private val LightColors = lightColorScheme(
     surfaceVariant = Color(0xFFF3F3F3),
     onSurfaceVariant = Color(0xFF5D5D5D),
     outline = Color(0xFFE5E5E5),
-    error = Color(0xFFBA1A1A),
+    error = Color(0xFFFF3B30),
 )
 
 private val DarkColors = darkColorScheme(
@@ -74,7 +74,7 @@ private val DarkColors = darkColorScheme(
     surfaceVariant = Color(0xFF303030),
     onSurfaceVariant = Color(0xFFB4B4B4),
     outline = Color(0xFF424242),
-    error = Color(0xFFFFB4AB),
+    error = Color(0xFFFF453A),
 )
 
 private val CrestTypography = Typography().run {
