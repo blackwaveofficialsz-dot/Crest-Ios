@@ -57,12 +57,10 @@ enum AppLocalization {
     }
 
     static func string(_ key: String) -> String {
-        String(
-            localized: String.LocalizationValue(key),
-            table: "Localizable",
-            bundle: .main,
-            locale: locale
-        )
+        let localization = locale.identifier.lowercased().hasPrefix("zh") ? "zh-Hans" : "en"
+        let bundle = Bundle.main.path(forResource: localization, ofType: "lproj")
+            .flatMap(Bundle.init(path:)) ?? .main
+        return bundle.localizedString(forKey: key, value: key, table: "Localizable")
     }
 
     static func format(_ key: String, _ arguments: CVarArg...) -> String {

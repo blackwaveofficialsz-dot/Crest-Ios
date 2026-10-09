@@ -1,5 +1,7 @@
 package com.blackwave.crest.feature.auth
 
+import com.blackwave.crest.ui.localization.L
+
 import android.content.Context
 import android.app.Activity
 import android.os.Build
@@ -27,7 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
+import com.blackwave.crest.ui.components.CrestAlertDialog as AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -112,14 +114,14 @@ private class AuthController(context: Context, private val session: SessionStore
                 else -> nextPurpose = VerificationPurpose.REGISTER
             }
         } catch (failure: Exception) {
-            error = failure.userMessage("手机号状态查询失败")
+            error = failure.userMessage(L("手机号状态查询失败"))
         } finally {
             isBusy = false
         }
         nextPurpose?.let { beginVerification(it) }
     }
 
-    suspend fun loginWithPassword() = runBusy("登录失败") { session.signIn(phone, password) }
+    suspend fun loginWithPassword() = runBusy(L("登录失败")) { session.signIn(phone, password) }
 
     suspend fun beginVerification(nextPurpose: VerificationPurpose) {
         val remaining = remainingSeconds()
@@ -134,7 +136,7 @@ private class AuthController(context: Context, private val session: SessionStore
             return
         }
         if (remaining > 0) {
-            error = "操作频繁，请稍等 $remaining 秒后再试。"
+            error = L("操作频繁，请稍等 %lld 秒后再试。", remaining)
             return
         }
         purpose = nextPurpose
@@ -143,7 +145,7 @@ private class AuthController(context: Context, private val session: SessionStore
         sendCode()
     }
 
-    suspend fun sendCode() = runBusy("验证码发送失败") {
+    suspend fun sendCode() = runBusy(L("验证码发送失败")) {
         val startedAt = System.currentTimeMillis()
         persistChallenge("", startedAt + 60_000)
         try {
@@ -156,9 +158,9 @@ private class AuthController(context: Context, private val session: SessionStore
         }
     }
 
-    suspend fun verifyCode() = runBusy("验证码校验失败") {
+    suspend fun verifyCode() = runBusy(L("验证码校验失败")) {
         val challenge = preferences.getString(KEY_CHALLENGE, "").orEmpty()
-        if (challenge.isBlank()) throw IllegalStateException("验证码已失效，请重新获取验证码。")
+        if (challenge.isBlank()) throw IllegalStateException(L("验证码已失效，请重新获取验证码。"))
         val confirmation = session.api.confirmPhoneCode(challenge, code)
         preferences.edit { remove(KEY_CHALLENGE) }
         when (purpose) {
@@ -173,11 +175,11 @@ private class AuthController(context: Context, private val session: SessionStore
         }
     }
 
-    suspend fun submitResetPassword() = runBusy("密码重置失败") {
-        if (newPassword.length !in 7..16) throw IllegalArgumentException("新密码需要 7 至 16 位。")
-        if (newPassword != confirmPassword) throw IllegalArgumentException("两次输入的密码不一致。")
+    suspend fun submitResetPassword() = runBusy(L("密码重置失败")) {
+        if (newPassword.length !in 7..16) throw IllegalArgumentException(L("新密码需要 7 至 16 位。"))
+        if (newPassword != confirmPassword) throw IllegalArgumentException(L("两次输入的密码不一致。"))
         val token = preferences.getString(KEY_RESET_TOKEN, "").orEmpty()
-        if (token.isBlank()) throw IllegalStateException("重置凭据已失效，请重新获取验证码。")
+        if (token.isBlank()) throw IllegalStateException(L("重置凭据已失效，请重新获取验证码。"))
         val response = session.api.resetPassword(token, newPassword)
         preferences.edit { remove(KEY_RESET_TOKEN) }
         password = ""
@@ -299,15 +301,15 @@ fun AuthScreen(session: SessionStore) {
     controller.error?.let { message ->
         AlertDialog(
             onDismissRequest = { controller.error = null },
-            confirmButton = { TextButton(onClick = { controller.error = null }) { Text("好") } },
-            title = { Text("操作失败") }, text = { Text(message) },
+            confirmButton = { TextButton(onClick = { controller.error = null }) { Text(L("好")) } },
+            title = { Text(L("操作失败")) }, text = { Text(message) },
         )
     }
     controller.notice?.let { message ->
         AlertDialog(
             onDismissRequest = { controller.notice = null },
-            confirmButton = { TextButton(onClick = { controller.notice = null }) { Text("好") } },
-            title = { Text("操作成功") }, text = { Text(message) },
+            confirmButton = { TextButton(onClick = { controller.notice = null }) { Text(L("好")) } },
+            title = { Text(L("操作成功")) }, text = { Text(message) },
         )
     }
 }
@@ -326,9 +328,9 @@ private fun AuthTopBar(step: AuthStep, onBack: () -> Unit) {
         Spacer(Modifier.weight(1f))
         Text(
             when (step) {
-                AuthStep.PASSWORD -> "已识别账号"
-                AuthStep.VERIFICATION -> "验证码登录"
-                AuthStep.RESET_PASSWORD -> "重置密码"
+                AuthStep.PASSWORD -> L("已识别账号")
+                AuthStep.VERIFICATION -> L("验证码登录")
+                AuthStep.RESET_PASSWORD -> L("重置密码")
                 AuthStep.PHONE -> ""
             },
             color = Color.White.copy(.62f), fontSize = 12.sp,
@@ -346,18 +348,18 @@ private fun PhoneStep(controller: AuthController) {
         fontFamily = CrestRoundedFontFamily,
     )
     Text(
-        "纷繁之上，洞察经营", modifier = Modifier.padding(top = 8.dp, bottom = 26.dp),
+        L("纷繁之上，洞察经营"), modifier = Modifier.padding(top = 8.dp, bottom = 26.dp),
         color = Color.White.copy(.72f), fontSize = 14.sp, fontWeight = FontWeight.Medium,
     )
     AuthInputField {
         Text("+86", color = Color.White.copy(.72f), fontSize = 16.sp)
         Box(Modifier.width(1.dp).height(20.dp).background(Color.White.copy(.18f)))
         AuthTextField(
-            controller.phone, controller::updatePhone, "请输入手机号", Modifier.weight(1f), KeyboardType.Phone,
+            controller.phone, controller::updatePhone, L("请输入手机号"), Modifier.weight(1f), KeyboardType.Phone,
         )
     }
     AuthPrimaryButton(
-        if (controller.isBusy) "识别中" else "Get start", controller.isBusy,
+        if (controller.isBusy) L("识别中") else "Get start", controller.isBusy,
         controller.phone.length == 11, Modifier.padding(top = 14.dp), controller::continueWithPhone,
     )
 }
@@ -366,15 +368,15 @@ private fun PhoneStep(controller: AuthController) {
 private fun PasswordStep(controller: AuthController) {
     val scope = rememberCoroutineScope()
     var visible by remember { mutableStateOf(false) }
-    AuthSectionHeader("欢迎回来", formatPhone(controller.phone))
-    AuthPasswordField(controller.password, { controller.password = it }, "请输入密码", visible, { visible = !visible })
+    AuthSectionHeader(L("欢迎回来"), formatPhone(controller.phone))
+    AuthPasswordField(controller.password, { controller.password = it }, L("请输入密码"), visible, { visible = !visible })
     Row(Modifier.fillMaxWidth().height(44.dp), verticalAlignment = Alignment.CenterVertically) {
-        AuthLink("验证码登录") { scope.launch { controller.beginVerification(VerificationPurpose.LOGIN) } }
+        AuthLink(L("验证码登录")) { scope.launch { controller.beginVerification(VerificationPurpose.LOGIN) } }
         Spacer(Modifier.weight(1f))
-        AuthLink("忘记密码") { scope.launch { controller.beginVerification(VerificationPurpose.RESET_PASSWORD) } }
+        AuthLink(L("忘记密码")) { scope.launch { controller.beginVerification(VerificationPurpose.RESET_PASSWORD) } }
     }
     AuthPrimaryButton(
-        if (controller.isBusy) "登录中" else "登录", controller.isBusy,
+        if (controller.isBusy) L("登录中") else L("登录"), controller.isBusy,
         controller.password.isNotBlank(), onClick = controller::loginWithPassword,
     )
 }
@@ -391,22 +393,22 @@ private fun AuthLink(title: String, onClick: () -> Unit) {
 private fun VerificationStep(controller: AuthController) {
     val scope = rememberCoroutineScope()
     val title = when (controller.purpose) {
-        VerificationPurpose.LOGIN -> "输入验证码"
-        VerificationPurpose.REGISTER -> "验证手机号"
-        VerificationPurpose.RESET_PASSWORD -> "确认是你"
+        VerificationPurpose.LOGIN -> L("输入验证码")
+        VerificationPurpose.REGISTER -> L("验证手机号")
+        VerificationPurpose.RESET_PASSWORD -> L("确认是你")
     }
     val copy = when (controller.purpose) {
-        VerificationPurpose.LOGIN -> "验证码已发送至 +86 ${maskedPhone(controller.phone)}"
-        VerificationPurpose.REGISTER -> "完成验证后将直接进入 Crest"
-        VerificationPurpose.RESET_PASSWORD -> "请输入发送至 +86 ${maskedPhone(controller.phone)} 的验证码"
+        VerificationPurpose.LOGIN -> L("验证码已发送至 %@", "+86 ${maskedPhone(controller.phone)}")
+        VerificationPurpose.REGISTER -> L("完成验证后将直接进入 Crest")
+        VerificationPurpose.RESET_PASSWORD -> L("请输入发送至 %@ 的验证码", "+86 ${maskedPhone(controller.phone)}")
     }
     AuthSectionHeader(title, copy)
     VerificationCodeField(controller.code) { controller.code = it.filter(Char::isDigit).take(6) }
     Text(
         when {
-            controller.isBusy -> "正在处理…"
-            controller.cooldownSeconds > 0 -> "${controller.cooldownSeconds}s 后可重新发送"
-            else -> "重新发送验证码"
+            controller.isBusy -> L("正在处理…")
+            controller.cooldownSeconds > 0 -> L("%llds 后可重新发送", controller.cooldownSeconds)
+            else -> L("重新发送验证码")
         },
         modifier = Modifier.fillMaxWidth().height(40.dp)
             .clickable(enabled = controller.cooldownSeconds == 0 && !controller.isBusy) { scope.launch { controller.sendCode() } }
@@ -421,14 +423,14 @@ private fun VerificationStep(controller: AuthController) {
 private fun ResetPasswordStep(controller: AuthController) {
     var newVisible by remember { mutableStateOf(false) }
     var confirmVisible by remember { mutableStateOf(false) }
-    AuthSectionHeader("设置新密码", "使用新的密码保护你的账号")
-    AuthPasswordField(controller.newPassword, { controller.newPassword = it.take(16) }, "请输入新密码", newVisible, { newVisible = !newVisible })
+    AuthSectionHeader(L("设置新密码"), L("使用新的密码保护你的账号"))
+    AuthPasswordField(controller.newPassword, { controller.newPassword = it.take(16) }, L("请输入新密码"), newVisible, { newVisible = !newVisible })
     AuthPasswordField(
-        controller.confirmPassword, { controller.confirmPassword = it.take(16) }, "请再次输入新密码",
+        controller.confirmPassword, { controller.confirmPassword = it.take(16) }, L("请再次输入新密码"),
         confirmVisible, { confirmVisible = !confirmVisible }, Modifier.padding(top = 12.dp),
     )
     AuthPrimaryButton(
-        if (controller.isBusy) "提交中" else "确认", controller.isBusy,
+        if (controller.isBusy) L("提交中") else L("确认"), controller.isBusy,
         controller.newPassword.length in 7..16 && controller.confirmPassword.isNotBlank(),
         Modifier.padding(top = 16.dp), controller::submitResetPassword,
     )

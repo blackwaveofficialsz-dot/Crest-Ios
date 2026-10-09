@@ -16,8 +16,25 @@ import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Before
+import org.junit.After
+import com.blackwave.crest.ui.localization.AppLocalization
+import java.util.Locale
 
 class ChatReplyRenderingTest {
+    private lateinit var previousLocale: Locale
+    @Before fun useChineseUi() {
+        previousLocale = AppLocalization.systemLocale
+        AppLocalization.systemLocale = Locale.SIMPLIFIED_CHINESE
+    }
+    @After fun restoreLocale() { AppLocalization.systemLocale = previousLocale }
+
+    @Test fun structuredStatusFollowsEnglishUiWithoutTranslatingUserContent() {
+        AppLocalization.systemLocale = Locale.ENGLISH
+        assertEquals("Comparable", formatTableValue(JsonPrimitive("comparable"), ChatResponseColumn("comparison_status", "状态")))
+        assertEquals("自定义门店", formatTableValue(JsonPrimitive("自定义门店"), ChatResponseColumn("name", "名称")))
+    }
+
     @Test fun markdownMatchesIosBlockOrderAndStreamingTail() {
         val blocks = MarkdownBlockParser.parse("# 标题\n\n**摘要**\n- 第一项\n- 第二项\n> 提示\n\n```sql\nselect 1\n```\n| 名称 | 数值 |\n| --- | --- |\n| A | 1 |")
         assertEquals(6, blocks.size)

@@ -1,0 +1,6678 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+  "%@ · 按日统计": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@ · 按日统计"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · Daily"
+          }
+        }
+      }
+    },
+  "%@ 单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@ 单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ orders"
+          }
+        }
+      }
+    },
+  "%@ 小时": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@ 小时"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ hours"
+          }
+        }
+      }
+    },
+  "%@ 至 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@ 至 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ to %@"
+          }
+        }
+      }
+    },
+  "%@人": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@人"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ people"
+          }
+        }
+      }
+    },
+  "%@件": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@件"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ items"
+          }
+        }
+      }
+    },
+  "%@单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ orders"
+          }
+        }
+      }
+    },
+  "%@家": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@家"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ stores"
+          }
+        }
+      }
+    },
+  "%@小时": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@小时"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ hours"
+          }
+        }
+      }
+    },
+  "%@期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ periods"
+          }
+        }
+      }
+    },
+  "%@种": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@种"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ products"
+          }
+        }
+      }
+    },
+  "%lld 家低于基准": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%lld 家低于基准"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld stores below baseline"
+          }
+        }
+      }
+    },
+  "%lld 家门店": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%lld 家门店"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld stores"
+          }
+        }
+      }
+    },
+  "%llds 后可重新发送": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%llds 后可重新发送"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resend in %llds"
+          }
+        }
+      }
+    },
+  "7 至 16 位密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "7 至 16 位密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password, 7–16 characters"
+          }
+        }
+      }
+    },
+  "7 至 16 位新密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "7 至 16 位新密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New password, 7–16 characters"
+          }
+        }
+      }
+    },
+  "Crest 用户": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Crest 用户"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crest user"
+          }
+        }
+      }
+    },
+  "¥%@万": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "¥%@万"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CN¥%@0k"
+          }
+        }
+      }
+    },
+  "上月": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "上月"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last month"
+          }
+        }
+      }
+    },
+  "不可比": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "不可比"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not comparable"
+          }
+        }
+      }
+    },
+  "两次密码不一致": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "两次密码不一致"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passwords do not match"
+          }
+        }
+      }
+    },
+  "两次输入的密码不一致": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "两次输入的密码不一致"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passwords do not match"
+          }
+        }
+      }
+    },
+  "两次输入的新密码不一致": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "两次输入的新密码不一致"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New passwords do not match"
+          }
+        }
+      }
+    },
+  "个人账号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "个人账号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personal account"
+          }
+        }
+      }
+    },
+  "个人账号创建失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "个人账号创建失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not create personal account"
+          }
+        }
+      }
+    },
+  "个人资料": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "个人资料"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        }
+      }
+    },
+  "个人资料修改失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "个人资料修改失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not update profile"
+          }
+        }
+      }
+    },
+  "个人资料加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "个人资料加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load profile"
+          }
+        }
+      }
+    },
+  "为了保护账号安全，请使用新密码重新登录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "为了保护账号安全，请使用新密码重新登录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For account security, sign in again with your new password"
+          }
+        }
+      }
+    },
+  "事件游标与响应内容不一致": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "事件游标与响应内容不一致"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event cursor does not match the response"
+          }
+        }
+      }
+    },
+  "产品": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "产品"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Products"
+          }
+        }
+      }
+    },
+  "产品分析": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "产品分析"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Product analysis"
+          }
+        }
+      }
+    },
+  "产品分析加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "产品分析加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load product analysis"
+          }
+        }
+      }
+    },
+  "产品趋势加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "产品趋势加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load product trends"
+          }
+        }
+      }
+    },
+  "产品趋势增量加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "产品趋势增量加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not update product trends"
+          }
+        }
+      }
+    },
+  "产品销售趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "产品销售趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Product sales trend"
+          }
+        }
+      }
+    },
+  "人效": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "人效"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Labor"
+          }
+        }
+      }
+    },
+  "人效分析": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "人效分析"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Labor analysis"
+          }
+        }
+      }
+    },
+  "人效分析加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "人效分析加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load labor analysis"
+          }
+        }
+      }
+    },
+  "人效日明细": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "人效日明细"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily labor details"
+          }
+        }
+      }
+    },
+  "人数": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "人数"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "People"
+          }
+        }
+      }
+    },
+  "今天想一起处理什么？": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "今天想一起处理什么？"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would you like to work on today?"
+          }
+        }
+      }
+    },
+  "从一个餐饮经营问题开始": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "从一个餐饮经营问题开始"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start with a restaurant operations question"
+          }
+        }
+      }
+    },
+  "代码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "代码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code"
+          }
+        }
+      }
+    },
+  "使用": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "使用"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use"
+          }
+        }
+      }
+    },
+  "使用新的密码保护你的账号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "使用新的密码保护你的账号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secure your account with a new password"
+          }
+        }
+      }
+    },
+  "保存": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "保存"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+  "修改头像": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "修改头像"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change photo"
+          }
+        }
+      }
+    },
+  "修改密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "修改密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change password"
+          }
+        }
+      }
+    },
+  "偏离 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "偏离 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Variance %@"
+          }
+        }
+      }
+    },
+  "偏离率": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "偏离率"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Variance"
+          }
+        }
+      }
+    },
+  "偏离率（%）": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "偏离率（%）"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Variance (%)"
+          }
+        }
+      }
+    },
+  "停止回复失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "停止回复失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not stop the response"
+          }
+        }
+      }
+    },
+  "停止失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "停止失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not stop"
+          }
+        }
+      }
+    },
+  "停止本轮": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "停止本轮"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop response"
+          }
+        }
+      }
+    },
+  "全屏查看%@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "全屏查看%@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View %@ full screen"
+          }
+        }
+      }
+    },
+  "全部门店": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "全部门店"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All stores"
+          }
+        }
+      }
+    },
+  "全部门店订单与实收概览": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "全部门店订单与实收概览"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orders and net receipts across all stores"
+          }
+        }
+      }
+    },
+  "六位验证码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "六位验证码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Six-digit verification code"
+          }
+        }
+      }
+    },
+  "共 %@ 单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "共 %@ 单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ orders total"
+          }
+        }
+      }
+    },
+  "关注": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "关注"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attention"
+          }
+        }
+      }
+    },
+  "关闭侧边栏": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "关闭侧边栏"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close sidebar"
+          }
+        }
+      }
+    },
+  "关闭全屏": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "关闭全屏"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close full screen"
+          }
+        }
+      }
+    },
+  "关闭设置": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "关闭设置"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close settings"
+          }
+        }
+      }
+    },
+  "关闭详情": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "关闭详情"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close details"
+          }
+        }
+      }
+    },
+  "再次输入密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "再次输入密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter password again"
+          }
+        }
+      }
+    },
+  "再次输入新密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "再次输入新密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm new password"
+          }
+        }
+      }
+    },
+  "净实收 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "净实收 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Net receipts %@"
+          }
+        }
+      }
+    },
+  "净实收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "净实收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Net receipts"
+          }
+        }
+      }
+    },
+  "净营收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "净营收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Net revenue"
+          }
+        }
+      }
+    },
+  "分享回复": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "分享回复"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share response"
+          }
+        }
+      }
+    },
+  "分析失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "分析失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analysis failed"
+          }
+        }
+      }
+    },
+  "分析本月经营情况": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "分析本月经营情况"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyze this month's business performance"
+          }
+        }
+      }
+    },
+  "分析结果：%@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "分析结果：%@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analysis result: %@"
+          }
+        }
+      }
+    },
+  "切换到团队工作空间": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "切换到团队工作空间"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch to a team workspace"
+          }
+        }
+      }
+    },
+  "创建个人账号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "创建个人账号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create personal account"
+          }
+        }
+      }
+    },
+  "删除": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "删除"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+  "删除失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "删除失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not delete"
+          }
+        }
+      }
+    },
+  "制定新店开业推广计划": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "制定新店开业推广计划"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan a new restaurant opening campaign"
+          }
+        }
+      }
+    },
+  "刷新历史记录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "刷新历史记录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh history"
+          }
+        }
+      }
+    },
+  "刷新经营分析": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "刷新经营分析"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh analytics"
+          }
+        }
+      }
+    },
+  "加入团队": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "加入团队"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join team"
+          }
+        }
+      }
+    },
+  "加入团队失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "加入团队失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not join team"
+          }
+        }
+      }
+    },
+  "加入新团队": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "加入新团队"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join a new team"
+          }
+        }
+      }
+    },
+  "历史记录加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "历史记录加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load history"
+          }
+        }
+      }
+    },
+  "原因提示": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "原因提示"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reason"
+          }
+        }
+      }
+    },
+  "参与销售商品": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "参与销售商品"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Products sold"
+          }
+        }
+      }
+    },
+  "发起新对话": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "发起新对话"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation"
+          }
+        }
+      }
+    },
+  "发送": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "发送"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send"
+          }
+        }
+      }
+    },
+  "取消": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "取消"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+  "取消固定": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "取消固定"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unpin"
+          }
+        }
+      }
+    },
+  "取消固定失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "取消固定失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not unpin"
+          }
+        }
+      }
+    },
+  "只显示前十行": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "只显示前十行"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show first ten rows"
+          }
+        }
+      }
+    },
+  "可比": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "可比"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comparable"
+          }
+        }
+      }
+    },
+  "周期净实收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "周期净实收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Period net receipts"
+          }
+        }
+      }
+    },
+  "周期订单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "周期订单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Period orders"
+          }
+        }
+      }
+    },
+  "商品数": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "商品数"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Products"
+          }
+        }
+      }
+    },
+  "商品销额不等同于财务净实收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "商品销额不等同于财务净实收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Product sales are not the same as net receipts"
+          }
+        }
+      }
+    },
+  "回复中断，请重新发送": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "回复中断，请重新发送"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Response interrupted. Please send again"
+          }
+        }
+      }
+    },
+  "回复消息格式不匹配": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "回复消息格式不匹配"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Response message format mismatch"
+          }
+        }
+      }
+    },
+  "回复片段无法关联到当前消息": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "回复片段无法关联到当前消息"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Response fragment could not be linked to this message"
+          }
+        }
+      }
+    },
+  "回答生成失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "回答生成失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not generate response"
+          }
+        }
+      }
+    },
+  "固定": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "固定"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pin"
+          }
+        }
+      }
+    },
+  "固定失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "固定失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not pin"
+          }
+        }
+      }
+    },
+  "基准 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "基准 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baseline %@"
+          }
+        }
+      }
+    },
+  "基准": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "基准"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baseline"
+          }
+        }
+      }
+    },
+  "基准营收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "基准营收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baseline revenue"
+          }
+        }
+      }
+    },
+  "复制代码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "复制代码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy code"
+          }
+        }
+      }
+    },
+  "复制回复": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "复制回复"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy response"
+          }
+        }
+      }
+    },
+  "外观": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "外观"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance"
+          }
+        }
+      }
+    },
+  "外观与语言": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "外观与语言"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance & Language"
+          }
+        }
+      }
+    },
+  "头像上传失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "头像上传失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not upload photo"
+          }
+        }
+      }
+    },
+  "头像加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "头像加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load photo"
+          }
+        }
+      }
+    },
+  "头像处理失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "头像处理失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not process photo"
+          }
+        }
+      }
+    },
+  "好": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "好"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+  "如何控制餐厅食材成本": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "如何控制餐厅食材成本"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How can I control food costs?"
+          }
+        }
+      }
+    },
+  "完善密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "完善密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set a password"
+          }
+        }
+      }
+    },
+  "完成": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "完成"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+  "完成验证后将直接进入 Crest": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "完成验证后将直接进入 Crest"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After verification, you will enter Crest"
+          }
+        }
+      }
+    },
+  "实际 %@ · 计划 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际 %@ · 计划 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual %@ · Planned %@"
+          }
+        }
+      }
+    },
+  "实际 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual %@"
+          }
+        }
+      }
+    },
+  "实际": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual"
+          }
+        }
+      }
+    },
+  "实际小时产出": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际小时产出"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual output per hour"
+          }
+        }
+      }
+    },
+  "实际工时": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际工时"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual hours"
+          }
+        }
+      }
+    },
+  "实际工时、计划工时与小时产出": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际工时、计划工时与小时产出"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual and planned hours and output per hour"
+          }
+        }
+      }
+    },
+  "实际每小时产出": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际每小时产出"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual output per hour"
+          }
+        }
+      }
+    },
+  "实际营收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "实际营收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual revenue"
+          }
+        }
+      }
+    },
+  "客单价 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "客单价 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Average order value %@"
+          }
+        }
+      }
+    },
+  "客单价": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "客单价"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Average order value"
+          }
+        }
+      }
+    },
+  "密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password"
+          }
+        }
+      }
+    },
+  "密码修改失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码修改失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not change password"
+          }
+        }
+      }
+    },
+  "密码修改成功": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码修改成功"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password changed"
+          }
+        }
+      }
+    },
+  "密码已设置完成": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码已设置完成"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password set"
+          }
+        }
+      }
+    },
+  "密码格式不正确": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码格式不正确"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid password format"
+          }
+        }
+      }
+    },
+  "密码设置失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码设置失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not set password"
+          }
+        }
+      }
+    },
+  "密码设置成功": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码设置成功"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password set"
+          }
+        }
+      }
+    },
+  "密码重置失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码重置失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not reset password"
+          }
+        }
+      }
+    },
+  "密码重置成功": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码重置成功"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password reset"
+          }
+        }
+      }
+    },
+  "密码长度需为 7 至 16 位": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "密码长度需为 7 至 16 位"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password must be 7–16 characters"
+          }
+        }
+      }
+    },
+  "对话删除失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "对话删除失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not delete conversation"
+          }
+        }
+      }
+    },
+  "对话加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "对话加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load conversation"
+          }
+        }
+      }
+    },
+  "对话历史加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "对话历史加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load conversation history"
+          }
+        }
+      }
+    },
+  "对话名称": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "对话名称"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversation name"
+          }
+        }
+      }
+    },
+  "对话更新失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "对话更新失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not update conversation"
+          }
+        }
+      }
+    },
+  "导出失败：%@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "导出失败：%@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export failed: %@"
+          }
+        }
+      }
+    },
+  "导出当前经营分析": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "导出当前经营分析"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export current analytics"
+          }
+        }
+      }
+    },
+  "小时产出": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "小时产出"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Output per hour"
+          }
+        }
+      }
+    },
+  "小时产出趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "小时产出趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Output per hour trend"
+          }
+        }
+      }
+    },
+  "展开全部（%lld 行）": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "展开全部（%lld 行）"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show all (%lld rows)"
+          }
+        }
+      }
+    },
+  "展开已返回的 %lld 行": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "展开已返回的 %lld 行"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show %lld returned rows"
+          }
+        }
+      }
+    },
+  "工作空间": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "工作空间"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workspace"
+          }
+        }
+      }
+    },
+  "工作空间切换失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "工作空间切换失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not switch workspace"
+          }
+        }
+      }
+    },
+  "工作空间加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "工作空间加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load workspaces"
+          }
+        }
+      }
+    },
+  "工时趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "工时趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hours trend"
+          }
+        }
+      }
+    },
+  "左右拖动查看日期，双指缩放，点按查看每日订单详情": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "左右拖动查看日期，双指缩放，点按查看每日订单详情"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag to see more dates, pinch to zoom, tap for daily order details"
+          }
+        }
+      }
+    },
+  "已加入团队": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "已加入团队"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joined team"
+          }
+        }
+      }
+    },
+  "已复制": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "已复制"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied"
+          }
+        }
+      }
+    },
+  "已复制到剪贴板": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "已复制到剪贴板"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied to clipboard"
+          }
+        }
+      }
+    },
+  "已识别账号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "已识别账号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account found"
+          }
+        }
+      }
+    },
+  "帮我设计一份菜单结构": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "帮我设计一份菜单结构"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Help me design a menu"
+          }
+        }
+      }
+    },
+  "应用筛选": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "应用筛选"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply filters"
+          }
+        }
+      }
+    },
+  "开始使用": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "开始使用"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get started"
+          }
+        }
+      }
+    },
+  "开始日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "开始日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start date"
+          }
+        }
+      }
+    },
+  "当前周期与上期经营表现": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前周期与上期经营表现"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This period versus the previous period"
+          }
+        }
+      }
+    },
+  "当前周期暂无产品销售数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前周期暂无产品销售数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No product sales data for this period"
+          }
+        }
+      }
+    },
+  "当前周期暂无人效明细": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前周期暂无人效明细"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No labor details for this period"
+          }
+        }
+      }
+    },
+  "当前周期暂无渠道数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前周期暂无渠道数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No channel data for this period"
+          }
+        }
+      }
+    },
+  "当前周期暂无订单数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前周期暂无订单数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No order data for this period"
+          }
+        }
+      }
+    },
+  "当前密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current password"
+          }
+        }
+      }
+    },
+  "当前展示 %lld / %lld 行": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前展示 %lld / %lld 行"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Showing %lld of %lld rows"
+          }
+        }
+      }
+    },
+  "当前检测日没有发现需要关注的门店营收波动。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前检测日没有发现需要关注的门店营收波动。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No store revenue changes need attention on this date."
+          }
+        }
+      }
+    },
+  "当前榜单合计": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前榜单合计"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current ranking total"
+          }
+        }
+      }
+    },
+  "当前统计范围": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "当前统计范围"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current reporting scope"
+          }
+        }
+      }
+    },
+  "忘记密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "忘记密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forgot password?"
+          }
+        }
+      }
+    },
+  "快捷日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "快捷日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick dates"
+          }
+        }
+      }
+    },
+  "总销量": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "总销量"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Units sold"
+          }
+        }
+      }
+    },
+  "手机号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "手机号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phone number"
+          }
+        }
+      }
+    },
+  "手机号状态查询失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "手机号状态查询失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not check phone number"
+          }
+        }
+      }
+    },
+  "打开侧边栏": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "打开侧边栏"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open sidebar"
+          }
+        }
+      }
+    },
+  "找出最近的异常费用": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "找出最近的异常费用"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find unusual recent expenses"
+          }
+        }
+      }
+    },
+  "找回密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "找回密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset password"
+          }
+        }
+      }
+    },
+  "报警": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "报警"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts"
+          }
+        }
+      }
+    },
+  "报警偏离率": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "报警偏离率"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alert variance"
+          }
+        }
+      }
+    },
+  "报警数": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "报警数"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts"
+          }
+        }
+      }
+    },
+  "拒绝": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "拒绝"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reject"
+          }
+        }
+      }
+    },
+  "按偏离绝对值排序": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "按偏离绝对值排序"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorted by absolute variance"
+          }
+        }
+      }
+    },
+  "按商品销售额排名，共 %lld 项": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "按商品销售额排名，共 %lld 项"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranked by product sales · %lld items"
+          }
+        }
+      }
+    },
+  "按日净实收趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "按日净实收趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily net receipts trend"
+          }
+        }
+      }
+    },
+  "按订单量排序": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "按订单量排序"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorted by order volume"
+          }
+        }
+      }
+    },
+  "排班计划基准": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "排班计划基准"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scheduled staffing baseline"
+          }
+        }
+      }
+    },
+  "提交中": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "提交中"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Submitting"
+          }
+        }
+      }
+    },
+  "提交确认失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "提交确认失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not confirm submission"
+          }
+        }
+      }
+    },
+  "搜索对话内容": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "搜索对话内容"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search conversations"
+          }
+        }
+      }
+    },
+  "搜索结果": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "搜索结果"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search results"
+          }
+        }
+      }
+    },
+  "操作失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "操作失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Operation failed"
+          }
+        }
+      }
+    },
+  "操作频繁": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "操作频繁"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many attempts"
+          }
+        }
+      }
+    },
+  "收起": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "收起"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collapse"
+          }
+        }
+      }
+    },
+  "数据暂不可用": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "数据暂不可用"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data temporarily unavailable"
+          }
+        }
+      }
+    },
+  "数量占比": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "数量占比"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unit share"
+          }
+        }
+      }
+    },
+  "新密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New password"
+          }
+        }
+      }
+    },
+  "新密码长度需为 7 至 16 位": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新密码长度需为 7 至 16 位"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New password must be 7–16 characters"
+          }
+        }
+      }
+    },
+  "新密码需要 7 至 16 位。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新密码需要 7 至 16 位。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New password must be 7–16 characters."
+          }
+        }
+      }
+    },
+  "新对话": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation"
+          }
+        }
+      }
+    },
+  "新对话事件 eventId 格式不正确": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件 eventId 格式不正确"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid eventId in new conversation event"
+          }
+        }
+      }
+    },
+  "新对话事件 runId 不一致": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件 runId 不一致"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "runId mismatch in new conversation event"
+          }
+        }
+      }
+    },
+  "新对话事件 threadId 不一致": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件 threadId 不一致"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "threadId mismatch in new conversation event"
+          }
+        }
+      }
+    },
+  "新对话事件不是有效 JSON": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件不是有效 JSON"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation event is not valid JSON"
+          }
+        }
+      }
+    },
+  "新对话事件缺少 eventId": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件缺少 eventId"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation event is missing eventId"
+          }
+        }
+      }
+    },
+  "新对话事件缺少 runId": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件缺少 runId"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation event is missing runId"
+          }
+        }
+      }
+    },
+  "新对话事件缺少 threadId": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件缺少 threadId"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation event is missing threadId"
+          }
+        }
+      }
+    },
+  "新对话事件缺少 type": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件缺少 type"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation event is missing type"
+          }
+        }
+      }
+    },
+  "新对话事件缺少有效 sequence": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话事件缺少有效 sequence"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New conversation event is missing a valid sequence"
+          }
+        }
+      }
+    },
+  "新对话接口未返回事件流": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "新对话接口未返回事件流"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversation endpoint returned no event stream"
+          }
+        }
+      }
+    },
+  "方向": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "方向"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Direction"
+          }
+        }
+      }
+    },
+  "无对比": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "无对比"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No comparison"
+          }
+        }
+      }
+    },
+  "无法关闭经营分析缓存": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "无法关闭经营分析缓存"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not close analytics cache"
+          }
+        }
+      }
+    },
+  "无法处理所选图片": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "无法处理所选图片"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not process selected image"
+          }
+        }
+      }
+    },
+  "无法安全保存登录状态，请重试": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "无法安全保存登录状态，请重试"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not securely save sign-in state. Please try again"
+          }
+        }
+      }
+    },
+  "无法打开经营分析缓存": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "无法打开经营分析缓存"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not open analytics cache"
+          }
+        }
+      }
+    },
+  "无法读取所选图片": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "无法读取所选图片"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read selected image"
+          }
+        }
+      }
+    },
+  "日均订单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "日均订单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Average daily orders"
+          }
+        }
+      }
+    },
+  "日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date"
+          }
+        }
+      }
+    },
+  "日期范围": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "日期范围"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date range"
+          }
+        }
+      }
+    },
+  "昨日": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "昨日"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yesterday"
+          }
+        }
+      }
+    },
+  "昵称": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "昵称"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display name"
+          }
+        }
+      }
+    },
+  "昵称为 1 至 30 个字符": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "昵称为 1 至 30 个字符"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display name must be 1–30 characters"
+          }
+        }
+      }
+    },
+  "昵称修改失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "昵称修改失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not update display name"
+          }
+        }
+      }
+    },
+  "显示全部表格行": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "显示全部表格行"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show all table rows"
+          }
+        }
+      }
+    },
+  "显示密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "显示密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show password"
+          }
+        }
+      }
+    },
+  "显著": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "显著"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Significant"
+          }
+        }
+      }
+    },
+  "暂无上期对比": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂无上期对比"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No previous period to compare"
+          }
+        }
+      }
+    },
+  "暂无对话记录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂无对话记录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No conversations yet"
+          }
+        }
+      }
+    },
+  "暂无数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂无数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No data"
+          }
+        }
+      }
+    },
+  "暂无营收报警": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂无营收报警"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No revenue alerts"
+          }
+        }
+      }
+    },
+  "暂无计划": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂无计划"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plan"
+          }
+        }
+      }
+    },
+  "暂时无法加载": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂时无法加载"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unable to load"
+          }
+        }
+      }
+    },
+  "暂未读取到可选门店": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "暂未读取到可选门店"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No stores available yet"
+          }
+        }
+      }
+    },
+  "最大偏离": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最大偏离"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Largest variance"
+          }
+        }
+      }
+    },
+  "最新净实收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最新净实收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest net receipts"
+          }
+        }
+      }
+    },
+  "最新小时产出": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最新小时产出"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest output per hour"
+          }
+        }
+      }
+    },
+  "最新销售额": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最新销售额"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest sales"
+          }
+        }
+      }
+    },
+  "最近": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent"
+          }
+        }
+      }
+    },
+  "最近30天 · %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天 · %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 30 days · %@"
+          }
+        }
+      }
+    },
+  "最近30天 · 实际工时与计划工时": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天 · 实际工时与计划工时"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 30 days · Actual and planned hours"
+          }
+        }
+      }
+    },
+  "最近30天 · 按日净实收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天 · 按日净实收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 30 days · Daily net receipts"
+          }
+        }
+      }
+    },
+  "最近30天 · 按日订单量": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天 · 按日订单量"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 30 days · Daily orders"
+          }
+        }
+      }
+    },
+  "最近30天": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天产品销售趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天产品销售趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Product sales trend · Last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天实际与计划工时趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天实际与计划工时趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual vs planned hours · Last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天小时产出趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天小时产出趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Output per hour trend · Last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天按日订单趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天按日订单趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily orders trend · Last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天暂无产品趋势数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天暂无产品趋势数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No product trend data for the last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天暂无人效趋势数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天暂无人效趋势数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No labor trend data for the last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天暂无工时趋势数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天暂无工时趋势数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hours trend data for the last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天暂无营收趋势数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天暂无营收趋势数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No revenue trend data for the last 30 days"
+          }
+        }
+      }
+    },
+  "最近30天暂无订单趋势数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "最近30天暂无订单趋势数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No order trend data for the last 30 days"
+          }
+        }
+      }
+    },
+  "服务器响应异常": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "服务器响应异常"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unexpected server response"
+          }
+        }
+      }
+    },
+  "未命名": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "未命名"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Untitled"
+          }
+        }
+      }
+    },
+  "未知": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "未知"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown"
+          }
+        }
+      }
+    },
+  "本月": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "本月"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This month"
+          }
+        }
+      }
+    },
+  "查询失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "查询失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Query failed"
+          }
+        }
+      }
+    },
+  "检测日 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "检测日 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As of %@"
+          }
+        }
+      }
+    },
+  "榜单销售额": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "榜单销售额"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranked sales"
+          }
+        }
+      }
+    },
+  "模块": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "模块"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Module"
+          }
+        }
+      }
+    },
+  "欢迎回来": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "欢迎回来"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome back"
+          }
+        }
+      }
+    },
+  "正在取消操作": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在取消操作"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelling operation"
+          }
+        }
+      }
+    },
+  "正在处理": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在处理"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Processing"
+          }
+        }
+      }
+    },
+  "正在执行已确认操作": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在执行已确认操作"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running confirmed action"
+          }
+        }
+      }
+    },
+  "正在查询数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在查询数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Querying data"
+          }
+        }
+      }
+    },
+  "正在生成回复": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在生成回复"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generating response"
+          }
+        }
+      }
+    },
+  "正在读取经营数据": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在读取经营数据"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading business data"
+          }
+        }
+      }
+    },
+  "正在连接": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在连接"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting"
+          }
+        }
+      }
+    },
+  "每日明细": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "每日明细"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily details"
+          }
+        }
+      }
+    },
+  "浅色": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "浅色"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        }
+      }
+    },
+  "消息发送失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "消息发送失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not send message"
+          }
+        }
+      }
+    },
+  "消息处理失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "消息处理失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not process message"
+          }
+        }
+      }
+    },
+  "深色": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "深色"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dark"
+          }
+        }
+      }
+    },
+  "清除搜索内容": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "清除搜索内容"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear search"
+          }
+        }
+      }
+    },
+  "渠道": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "渠道"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Channel"
+          }
+        }
+      }
+    },
+  "渠道表现": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "渠道表现"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Channel performance"
+          }
+        }
+      }
+    },
+  "滚动到最底部": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "滚动到最底部"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scroll to bottom"
+          }
+        }
+      }
+    },
+  "点按图表查看每日小时产出详情": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "点按图表查看每日小时产出详情"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap chart for daily output details"
+          }
+        }
+      }
+    },
+  "点按图表查看每日工时详情": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "点按图表查看每日工时详情"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap chart for daily hours details"
+          }
+        }
+      }
+    },
+  "点按图表查看每日销售详情": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "点按图表查看每日销售详情"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap chart for daily sales details"
+          }
+        }
+      }
+    },
+  "点按图表查看门店报警详情": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "点按图表查看门店报警详情"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap chart for store alert details"
+          }
+        }
+      }
+    },
+  "状态": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "状态"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
+  "生成一份经营摘要": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "生成一份经营摘要"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarize business performance"
+          }
+        }
+      }
+    },
+  "登录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "登录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in"
+          }
+        }
+      }
+    },
+  "登录中": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "登录中"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing in"
+          }
+        }
+      }
+    },
+  "登录失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "登录失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not sign in"
+          }
+        }
+      }
+    },
+  "登录状态刷新失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "登录状态刷新失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not refresh sign-in state"
+          }
+        }
+      }
+    },
+  "登录状态无效，请重新登录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "登录状态无效，请重新登录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign-in expired. Please sign in again"
+          }
+        }
+      }
+    },
+  "看板": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "看板"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overview"
+          }
+        }
+      }
+    },
+  "确认": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "确认"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm"
+          }
+        }
+      }
+    },
+  "确认执行": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "确认执行"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm action"
+          }
+        }
+      }
+    },
+  "确认是你": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "确认是你"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify your identity"
+          }
+        }
+      }
+    },
+  "筛选": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "筛选"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter"
+          }
+        }
+      }
+    },
+  "筛选经营分析": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "筛选经营分析"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter analytics"
+          }
+        }
+      }
+    },
+  "简体中文": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "简体中文"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simplified Chinese"
+          }
+        }
+      }
+    },
+  "类型": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "类型"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        }
+      }
+    },
+  "纷繁之上，洞察经营": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "纷繁之上，洞察经营"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clarity for restaurant operations"
+          }
+        }
+      }
+    },
+  "线上经营分析会话已失效，请重新配置测试账号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "线上经营分析会话已失效，请重新配置测试账号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online analytics session expired. Configure the test account again"
+          }
+        }
+      }
+    },
+  "线上经营分析登录失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "线上经营分析登录失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not sign in to online analytics"
+          }
+        }
+      }
+    },
+  "经营分析 V2 增量协议无效": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析 V2 增量协议无效"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid analytics V2 incremental protocol"
+          }
+        }
+      }
+    },
+  "经营分析": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Business analytics"
+          }
+        }
+      }
+    },
+  "经营分析只读取当前团队的门店、订单和人效数据，个人空间不会访问任何租户数据。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析只读取当前团队的门店、订单和人效数据，个人空间不会访问任何租户数据。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analytics reads stores, orders, and labor data only for your current team. Personal space cannot access tenant data."
+          }
+        }
+      }
+    },
+  "经营分析增量协议无效": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析增量协议无效"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid analytics incremental protocol"
+          }
+        }
+      }
+    },
+  "经营分析日期范围不能超过 365 天": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析日期范围不能超过 365 天"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analytics date range cannot exceed 365 days"
+          }
+        }
+      }
+    },
+  "经营分析日期范围无效": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析日期范围无效"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid analytics date range"
+          }
+        }
+      }
+    },
+  "经营分析日缓存不完整": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营分析日缓存不完整"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily analytics cache is incomplete"
+          }
+        }
+      }
+    },
+  "经营助手": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营助手"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Business assistant"
+          }
+        }
+      }
+    },
+  "经营概览加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营概览加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load business overview"
+          }
+        }
+      }
+    },
+  "经营看板": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "经营看板"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Business overview"
+          }
+        }
+      }
+    },
+  "结束日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "结束日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End date"
+          }
+        }
+      }
+    },
+  "结束日期不能早于开始日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "结束日期不能早于开始日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End date cannot be before start date"
+          }
+        }
+      }
+    },
+  "结果不完整": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "结果不完整"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete result"
+          }
+        }
+      }
+    },
+  "结果状态未知": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "结果状态未知"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown result status"
+          }
+        }
+      }
+    },
+  "给 Crest 发消息": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "给 Crest 发消息"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message Crest"
+          }
+        }
+      }
+    },
+  "继续完成当前查询": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "继续完成当前查询"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue current query"
+          }
+        }
+      }
+    },
+  "自定义": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "自定义"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom"
+          }
+        }
+      }
+    },
+  "自定义日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "自定义日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom dates"
+          }
+        }
+      }
+    },
+  "范围下限": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "范围下限"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower bound"
+          }
+        }
+      }
+    },
+  "营收上扬": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "营收上扬"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenue increase"
+          }
+        }
+      }
+    },
+  "营收报警": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "营收报警"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenue alerts"
+          }
+        }
+      }
+    },
+  "营收报警加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "营收报警加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load revenue alerts"
+          }
+        }
+      }
+    },
+  "营收趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "营收趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenue trend"
+          }
+        }
+      }
+    },
+  "营收趋势加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "营收趋势加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load revenue trend"
+          }
+        }
+      }
+    },
+  "营收趋势增量加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "营收趋势增量加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not update revenue trend"
+          }
+        }
+      }
+    },
+  "要删除对话吗？": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "要删除对话吗？"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this conversation?"
+          }
+        }
+      }
+    },
+  "计划 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "计划 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned %@"
+          }
+        }
+      }
+    },
+  "计划": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "计划"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned"
+          }
+        }
+      }
+    },
+  "计划小时产出": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "计划小时产出"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned output per hour"
+          }
+        }
+      }
+    },
+  "计划工时": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "计划工时"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned hours"
+          }
+        }
+      }
+    },
+  "计划达成 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "计划达成 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan attainment %@"
+          }
+        }
+      }
+    },
+  "订单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "订单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orders"
+          }
+        }
+      }
+    },
+  "订单数": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "订单数"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orders"
+          }
+        }
+      }
+    },
+  "订单统计": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "订单统计"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Order statistics"
+          }
+        }
+      }
+    },
+  "订单趋势": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "订单趋势"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Order trend"
+          }
+        }
+      }
+    },
+  "设置": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "设置"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+  "设置密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "设置密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set password"
+          }
+        }
+      }
+    },
+  "设置新密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "设置新密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set new password"
+          }
+        }
+      }
+    },
+  "识别中": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "识别中"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking"
+          }
+        }
+      }
+    },
+  "语言": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "语言"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+  "请再次输入新密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请再次输入新密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter your new password again"
+          }
+        }
+      }
+    },
+  "请稍后重试": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请稍后重试"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please try again later"
+          }
+        }
+      }
+    },
+  "请稍等 %lld 秒后再试。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请稍等 %lld 秒后再试。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please try again in %lld seconds."
+          }
+        }
+      }
+    },
+  "请输入发送至 %@ 的验证码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请输入发送至 %@ 的验证码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the code sent to %@"
+          }
+        }
+      }
+    },
+  "请输入密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请输入密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter password"
+          }
+        }
+      }
+    },
+  "请输入手机号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请输入手机号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter phone number"
+          }
+        }
+      }
+    },
+  "请输入新密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请输入新密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter new password"
+          }
+        }
+      }
+    },
+  "请重新确认新密码。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请重新确认新密码。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please confirm your new password again."
+          }
+        }
+      }
+    },
+  "请重新获取验证码。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请重新获取验证码。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please request a new verification code."
+          }
+        }
+      }
+    },
+  "请重新选择图片": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "请重新选择图片"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select an image again"
+          }
+        }
+      }
+    },
+  "调整头像": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "调整头像"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust photo"
+          }
+        }
+      }
+    },
+  "账户": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "账户"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account"
+          }
+        }
+      }
+    },
+  "账户设置": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "账户设置"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account settings"
+          }
+        }
+      }
+    },
+  "跟随系统": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "跟随系统"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follow system"
+          }
+        }
+      }
+    },
+  "轻微": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "轻微"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minor"
+          }
+        }
+      }
+    },
+  "较上期 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "较上期 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "vs previous %@"
+          }
+        }
+      }
+    },
+  "输入当前密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "输入当前密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter current password"
+          }
+        }
+      }
+    },
+  "输入新的对话名称": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "输入新的对话名称"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a new conversation name"
+          }
+        }
+      }
+    },
+  "输入昵称": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "输入昵称"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter display name"
+          }
+        }
+      }
+    },
+  "输入邮件中的邀请码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "输入邮件中的邀请码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the invitation code from your email"
+          }
+        }
+      }
+    },
+  "输入验证码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "输入验证码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter verification code"
+          }
+        }
+      }
+    },
+  "近 7 天": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "近 7 天"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 7 days"
+          }
+        }
+      }
+    },
+  "返回": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "返回"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
+  "返回最新消息并恢复自动跟随": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "返回最新消息并恢复自动跟随"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return to latest message"
+          }
+        }
+      }
+    },
+  "这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This conversation and its activity history will be deleted."
+          }
+        }
+      }
+    },
+  "退出登录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "退出登录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign out"
+          }
+        }
+      }
+    },
+  "退出登录失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "退出登录失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not sign out"
+          }
+        }
+      }
+    },
+  "退款金额": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "退款金额"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refund amount"
+          }
+        }
+      }
+    },
+  "选中净实收": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "选中净实收"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected net receipts"
+          }
+        }
+      }
+    },
+  "选中日期": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "选中日期"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected date"
+          }
+        }
+      }
+    },
+  "选中订单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "选中订单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected orders"
+          }
+        }
+      }
+    },
+  "选中销售额": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "选中销售额"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected sales"
+          }
+        }
+      }
+    },
+  "选中门店": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "选中门店"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected store"
+          }
+        }
+      }
+    },
+  "选择工作空间": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "选择工作空间"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose workspace"
+          }
+        }
+      }
+    },
+  "邀请码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "邀请码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitation code"
+          }
+        }
+      }
+    },
+  "邀请码区分大小写，验证成功后即可加入对应工作空间。": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "邀请码区分大小写，验证成功后即可加入对应工作空间。"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitation codes are case-sensitive. Verify to join the workspace."
+          }
+        }
+      }
+    },
+  "重命名": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重命名"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
+          }
+        }
+      }
+    },
+  "重命名失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重命名失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not rename"
+          }
+        }
+      }
+    },
+  "重命名对话": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重命名对话"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename conversation"
+          }
+        }
+      }
+    },
+  "重新加载": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重新加载"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload"
+          }
+        }
+      }
+    },
+  "重新发送验证码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重新发送验证码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resend code"
+          }
+        }
+      }
+    },
+  "重新提问": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重新提问"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask again"
+          }
+        }
+      }
+    },
+  "重新登录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重新登录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in again"
+          }
+        }
+      }
+    },
+  "重置密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重置密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset password"
+          }
+        }
+      }
+    },
+  "重试回复": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "重试回复"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry response"
+          }
+        }
+      }
+    },
+  "销售排行": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "销售排行"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sales ranking"
+          }
+        }
+      }
+    },
+  "销售额": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "销售额"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sales"
+          }
+        }
+      }
+    },
+  "销售额占比": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "销售额占比"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sales share"
+          }
+        }
+      }
+    },
+  "销量 %@ · 占比 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "销量 %@ · 占比 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Units %@ · Share %@"
+          }
+        }
+      }
+    },
+  "销量 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "销量 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Units sold %@"
+          }
+        }
+      }
+    },
+  "销量": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "销量"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Units sold"
+          }
+        }
+      }
+    },
+  "门店": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "门店"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stores"
+          }
+        }
+      }
+    },
+  "门店范围": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "门店范围"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store scope"
+          }
+        }
+      }
+    },
+  "门店范围加载失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "门店范围加载失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load store scope"
+          }
+        }
+      }
+    },
+  "门店营收报警偏离率": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "门店营收报警偏离率"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store revenue alert variance"
+          }
+        }
+      }
+    },
+  "门店订单": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "门店订单"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store orders"
+          }
+        }
+      }
+    },
+  "隐藏密码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "隐藏密码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide password"
+          }
+        }
+      }
+    },
+  "需要关注": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "需要关注"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs attention"
+          }
+        }
+      }
+    },
+  "餐饮经营助手": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "餐饮经营助手"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurant operations assistant"
+          }
+        }
+      }
+    },
+  "验证手机号": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证手机号"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify phone number"
+          }
+        }
+      }
+    },
+  "验证码": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verification code"
+          }
+        }
+      }
+    },
+  "验证码发送失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码发送失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not send verification code"
+          }
+        }
+      }
+    },
+  "验证码已发送至 %@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码已发送至 %@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code sent to %@"
+          }
+        }
+      }
+    },
+  "验证码已失效": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码已失效"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code expired"
+          }
+        }
+      }
+    },
+  "验证码校验失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码校验失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code verification failed"
+          }
+        }
+      }
+    },
+  "验证码登录": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码登录"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with code"
+          }
+        }
+      }
+    },
+  "验证码登录失败": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码登录失败"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not sign in with code"
+          }
+        }
+      }
+    },
+  "验证码错误": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "验证码错误"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incorrect code"
+          }
+        }
+      }
+    },
+  "高于基准": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "高于基准"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Above baseline"
+          }
+        }
+      }
+    },
+  "English": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "English"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "English"
+          }
+        }
+      }
+    },
+  "%@（%lld）": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@（%lld）"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (%lld)"
+          }
+        }
+      }
+    },
+  "%@k": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%@k"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CN¥%@K"
+          }
+        }
+      }
+    },
+  "¥%@k": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "¥%@k"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CN¥%@K"
+          }
+        }
+      }
+    },
+  "¥%@": {
+    "localizations": {
+      "zh-Hans": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "¥%@"
+        }
+      },
+      "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CN¥%@"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

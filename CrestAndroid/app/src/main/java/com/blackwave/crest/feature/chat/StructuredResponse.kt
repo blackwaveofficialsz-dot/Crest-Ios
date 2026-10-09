@@ -1,5 +1,8 @@
 package com.blackwave.crest.feature.chat
 
+import com.blackwave.crest.ui.localization.L
+import com.blackwave.crest.ui.localization.AppLocalization
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -7,7 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import com.blackwave.crest.core.model.ChatResponseColumn
 import com.blackwave.crest.core.model.ChatResponseMetric
 import com.blackwave.crest.core.model.ChatResponsePart
+import com.blackwave.crest.ui.components.CrestIcon
+import com.blackwave.crest.ui.components.CrestIconKind
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -51,11 +56,10 @@ internal fun StructuredPart(part: ChatResponsePart) {
             if (!part.title.isNullOrEmpty()) Text(part.title, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
             part.items.orEmpty().forEach { insight ->
                 Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-                    Text(
-                        when (insight.statementType) { "recommendation" -> "✦"; "hypothesis" -> "?"; else -> "✓" },
-                        modifier = Modifier.width(18.dp),
+                    CrestIcon(
+                        when (insight.statementType) { "recommendation" -> CrestIconKind.LIGHTBULB; "hypothesis" -> CrestIconKind.QUESTION_CIRCLE; else -> CrestIconKind.CHECK_CIRCLE },
+                        modifier = Modifier.size(18.dp),
                         color = if (insight.statementType == "recommendation") Color(0xFFFF9800) else MaterialTheme.colorScheme.secondary,
-                        fontSize = 15.sp,
                     )
                     Text(insight.text, fontSize = 14.sp, lineHeight = 19.sp)
                 }
@@ -72,7 +76,7 @@ internal fun StructuredPart(part: ChatResponsePart) {
                     .border(1.dp, accent.copy(alpha = .2f), RoundedCornerShape(14.dp)).padding(14.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(if (part.severity == "error") "!" else "ⓘ", color = accent, fontSize = 16.sp)
+                CrestIcon(if (part.severity == "error") CrestIconKind.ERROR_FILLED else CrestIconKind.INFO_FILLED, Modifier.size(18.dp), accent)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (!part.title.isNullOrEmpty()) Text(part.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     Text(part.message.orEmpty(), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -137,9 +141,9 @@ internal fun formatTableValue(value: JsonElement?, column: ChatResponseColumn): 
     val text = displayText(value)
     if (text == "—") return text
     if (column.key == "comparison_status") return when (text) {
-        "comparable" -> "可比"
-        "not_comparable" -> "不可比"
-        else -> "未知"
+        "comparable" -> L("可比")
+        "not_comparable" -> L("不可比")
+        else -> L("未知")
     }
     if (column.dataType != "decimal" && column.dataType != "integer") return text
     val decimal = text.toBigDecimalOrNull() ?: return text
@@ -147,13 +151,13 @@ internal fun formatTableValue(value: JsonElement?, column: ChatResponseColumn): 
     return when (column.unit?.lowercase()) {
         "cny" -> "¥$formatted"
         "ratio" -> "${formatNumber(decimal * BigDecimal(100))}%"
-        "order" -> "${formatted}单"
-        "store" -> "${formatted}家"
-        "hour" -> "${formatted}小时"
-        "period" -> "${formatted}期"
-        "product" -> "${formatted}种"
-        "item" -> "${formatted}件"
-        "person" -> "${formatted}人"
+        "order" -> L("%@单", formatted)
+        "store" -> L("%@家", formatted)
+        "hour" -> L("%@小时", formatted)
+        "period" -> L("%@期", formatted)
+        "product" -> L("%@种", formatted)
+        "item" -> L("%@件", formatted)
+        "person" -> L("%@人", formatted)
         else -> formatted
     }
 }
@@ -164,15 +168,15 @@ internal fun formatMetric(metric: ChatResponseMetric): String {
     return when (metric.unit?.lowercase()) {
         "cny" -> "¥$formatted"
         "ratio" -> "${formatNumber(decimal * BigDecimal(100))}%"
-        "order" -> "${formatted}单"
-        "store" -> "${formatted}家"
-        "hour" -> "${formatted}小时"
-        "person" -> "${formatted}人"
+        "order" -> L("%@单", formatted)
+        "store" -> L("%@家", formatted)
+        "hour" -> L("%@小时", formatted)
+        "person" -> L("%@人", formatted)
         null -> formatted
         else -> "$formatted ${metric.unit}"
     }
 }
 
-private fun formatNumber(number: BigDecimal): String = NumberFormat.getNumberInstance().apply {
+private fun formatNumber(number: BigDecimal): String = NumberFormat.getNumberInstance(AppLocalization.locale).apply {
     maximumFractionDigits = 4
 }.format(number)

@@ -1,0 +1,13 @@
+{
+  "name": "crest-harmony-contract-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Development-only protocol checks; HarmonyOS application dependencies live in oh-package.json5.",
+  "scripts": {
+    "sync:strings": "node scripts/sync-ios-strings.cjs",
+    "test": "tsc -p tests/tsconfig.json && node --test tests/*.test.cjs",
+    "check:project": "node scripts/check-project.cjs",
+    "build:hap": "bash scripts/build-hap.sh"
+  },
+  "devDependencies": { "typescript": "5.9.3" }
+}

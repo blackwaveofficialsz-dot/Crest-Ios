@@ -15,7 +15,7 @@ struct ChatEmptyState: View {
                 .font(.system(size: 28, weight: .semibold, design: .rounded))
                 .multilineTextAlignment(.center)
 
-            Text(subtitle)
+            Text(AppLocalization.string(subtitle))
                 .font(.subheadline)
                 .foregroundStyle(AppColors.secondaryText)
                 .padding(.top, 8)

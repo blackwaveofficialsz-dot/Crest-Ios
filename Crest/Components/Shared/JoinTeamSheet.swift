@@ -88,7 +88,7 @@ struct JoinTeamSheet: View {
                 }
             }
         } message: {
-            Text(alertMessage)
+            Text(AppLocalization.string(alertMessage))
         }
     }
 

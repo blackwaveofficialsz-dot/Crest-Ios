@@ -1,12 +1,23 @@
 package com.blackwave.crest.feature.home
 
+import com.blackwave.crest.ui.localization.L
+import com.blackwave.crest.ui.localization.AppLocalization
+import com.blackwave.crest.ui.localization.LanguageMode
+import androidx.compose.ui.platform.LocalContext
+
 import android.graphics.BitmapFactory
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -28,6 +39,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -35,18 +48,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.blackwave.crest.ui.components.CrestAlertDialog as AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
@@ -68,18 +85,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -111,13 +142,13 @@ fun HomeScreen(
 ) {
     val controller = remember(user.userId, user.activeWorkspaceId) { ChatController(session) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val orientation = androidx.compose.ui.platform.LocalConfiguration.current.orientation
     val scope = rememberCoroutineScope()
     var destination by rememberSaveable { mutableStateOf(HomeDestination.CHAT) }
     var showSettings by remember { mutableStateOf(false) }
     var showInitialPassword by rememberSaveable(user.userId, user.activeWorkspaceId) {
         mutableStateOf(user.tenantId == null && !user.hasPassword)
     }
-    var accountError by remember { mutableStateOf<String?>(null) }
     var accountNotice by remember { mutableStateOf<String?>(null) }
     var copyToastCount by remember { mutableStateOf(0) }
     var showCopyToast by remember { mutableStateOf(false) }
@@ -131,6 +162,9 @@ fun HomeScreen(
     }
 
     DisposableEffect(controller) { onDispose(controller::close) }
+
+    // Full-width drawer anchors change with chart rotation; never expose the drawer on return.
+    LaunchedEffect(orientation) { drawerState.close() }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -154,11 +188,11 @@ fun HomeScreen(
     ) {
         Box(Modifier.fillMaxSize().safeDrawingPadding()) {
             Column(Modifier.fillMaxSize()) {
-                AppHeader(
+                if (destination == HomeDestination.CHAT) AppHeader(
                     title = when (destination) {
-                        HomeDestination.CHAT -> controller.activeTitle
-                        HomeDestination.SEARCH -> "搜索对话"
-                        HomeDestination.ANALYTICS -> "经营分析"
+                        HomeDestination.CHAT -> if (controller.activeSessionId == null) L("新对话") else controller.activeTitle
+                        HomeDestination.SEARCH -> L("搜索对话")
+                        HomeDestination.ANALYTICS -> L("经营分析")
                     },
                     onMenu = { scope.launch { drawerState.open() } },
                     onNewChat = {
@@ -167,7 +201,7 @@ fun HomeScreen(
                     },
                     onOpenSettings = { showSettings = true },
                 )
-                HorizontalDivider(
+                if (destination == HomeDestination.CHAT) HorizontalDivider(
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline.copy(alpha = 0.75f),
                 )
@@ -178,7 +212,7 @@ fun HomeScreen(
                         onCopy = { copyToastCount++ },
                         playbackAllowed = drawerState.isClosed && !showSettings,
                     )
-                    HomeDestination.SEARCH -> SearchScreen(controller) {
+                    HomeDestination.SEARCH -> SearchScreen(controller, onOpenSidebar = { scope.launch { drawerState.open() } }) {
                         controller.openSession(it)
                         destination = HomeDestination.CHAT
                     }
@@ -186,6 +220,7 @@ fun HomeScreen(
                         session = session,
                         user = user,
                         onOpenSettings = { showSettings = true },
+                        onOpenSidebar = { scope.launch { drawerState.open() } },
                     )
                 }
             }
@@ -213,7 +248,7 @@ fun HomeScreen(
                             CrestIcon(CrestIconKind.CHECK, Modifier.size(11.dp), MaterialTheme.colorScheme.surface)
                         }
                         Spacer(Modifier.width(6.dp))
-                        Text("已复制到剪贴板", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                        Text(L("已复制到剪贴板"), fontSize = 15.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             }
@@ -236,26 +271,16 @@ fun HomeScreen(
             onSubmit = { _, newPassword -> session.setInitialPassword(newPassword) },
             onSuccess = {
                 showInitialPassword = false
-                accountNotice = "密码设置成功"
+                accountNotice = L("密码设置成功")
             },
-            onError = { accountError = it },
-        )
-    }
-
-    accountError?.let { message ->
-        AlertDialog(
-            onDismissRequest = { accountError = null },
-            confirmButton = { TextButton(onClick = { accountError = null }) { Text("好") } },
-            title = { Text("密码设置失败") },
-            text = { Text(message) },
         )
     }
 
     accountNotice?.let { message ->
         AlertDialog(
             onDismissRequest = { accountNotice = null },
-            confirmButton = { TextButton(onClick = { accountNotice = null }) { Text("好") } },
-            title = { Text("操作成功") },
+            confirmButton = { TextButton(onClick = { accountNotice = null }) { Text(L("好")) } },
+            title = { Text(L("操作成功")) },
             text = { Text(message) },
         )
     }
@@ -263,8 +288,8 @@ fun HomeScreen(
     controller.operationError?.let { message ->
         AlertDialog(
             onDismissRequest = { controller.operationError = null },
-            confirmButton = { TextButton(onClick = { controller.operationError = null }) { Text("好") } },
-            title = { Text("操作失败") },
+            confirmButton = { TextButton(onClick = { controller.operationError = null }) { Text(L("好")) } },
+            title = { Text(L("操作失败")) },
             text = { Text(message) },
         )
     }
@@ -291,10 +316,10 @@ private fun AppHeader(
             modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CrestCircleButton(CrestIconKind.MENU, "打开侧边栏", onMenu)
+            CrestCircleButton(CrestIconKind.MENU, L("打开侧边栏"), onMenu)
             Spacer(Modifier.weight(1f))
-            CrestCircleButton(CrestIconKind.EDIT, "新对话", onNewChat)
-            CrestCircleButton(CrestIconKind.PERSON, "账户", onOpenSettings)
+            CrestCircleButton(CrestIconKind.EDIT, L("新对话"), onNewChat)
+            CrestCircleButton(CrestIconKind.PERSON, L("账户"), onOpenSettings)
         }
     }
 }
@@ -313,7 +338,9 @@ private fun CrestCircleButton(kind: CrestIconKind, label: String, onClick: () ->
             )
             .background(MaterialTheme.colorScheme.surface.copy(alpha = .68f), CircleShape)
             .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .38f), CircleShape)
-            .clickable(onClick = onClick),
+            .clip(CircleShape)
+            .semantics { contentDescription = label }
+            .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         CrestIcon(kind, Modifier.size(22.dp), MaterialTheme.colorScheme.onBackground)
@@ -340,13 +367,18 @@ private fun CrestDrawer(
     } else {
         Color(0xFFF9F9F9)
     }
+    val backdropBlur by animateDpAsState(
+        targetValue = if (menuTarget != null) 12.dp else 0.dp,
+        animationSpec = tween(180),
+        label = "history backdrop blur",
+    )
 
     ModalDrawerSheet(
         modifier = Modifier.fillMaxSize(),
         drawerShape = RoundedCornerShape(0.dp),
         drawerContainerColor = sidebarColor,
     ) {
-        Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+        Column(Modifier.fillMaxSize().blur(backdropBlur).safeDrawingPadding()) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 18.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -358,14 +390,14 @@ private fun CrestDrawer(
                     fontFamily = CrestRoundedFontFamily,
                 )
                 Spacer(Modifier.weight(1f))
-                CrestCircleButton(CrestIconKind.CLOSE, "关闭侧边栏", onClose)
+                CrestCircleButton(CrestIconKind.CLOSE, L("关闭侧边栏"), onClose)
             }
-            DrawerAction(CrestIconKind.EDIT, "发起新对话") {
+            DrawerAction(CrestIconKind.EDIT, L("发起新对话")) {
                 controller.newChat()
                 onDestination(HomeDestination.CHAT)
             }
-            DrawerAction(CrestIconKind.SEARCH, "搜索对话内容") { onDestination(HomeDestination.SEARCH) }
-            if (showAnalytics) DrawerAction(CrestIconKind.ANALYTICS, "经营分析") { onDestination(HomeDestination.ANALYTICS) }
+            DrawerAction(CrestIconKind.SEARCH, L("搜索对话内容")) { onDestination(HomeDestination.SEARCH) }
+            if (showAnalytics) DrawerAction(CrestIconKind.ANALYTICS, L("经营分析")) { onDestination(HomeDestination.ANALYTICS) }
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
                 color = MaterialTheme.colorScheme.outline,
@@ -374,7 +406,7 @@ private fun CrestDrawer(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("最近", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(L("最近"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.weight(1f))
                 Box(
                     modifier = Modifier.size(44.dp).clickable(enabled = !controller.isLoadingHistory) { controller.loadHistory() },
@@ -391,7 +423,7 @@ private fun CrestDrawer(
                         ErrorState(controller.historyError!!, controller::loadHistory, Modifier.align(Alignment.Center))
                     controller.sessions.isEmpty() ->
                         Text(
-                            "暂无对话记录",
+                            L("暂无对话记录"),
                             modifier = Modifier.align(Alignment.Center),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -421,7 +453,7 @@ private fun CrestDrawer(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 AccountAvatar(avatarData, username.take(1).uppercase(), 34.dp)
-                Text(username.ifBlank { "账户" }, modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium, maxLines = 1)
+                Text(username.ifBlank { L("账户") }, modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium, maxLines = 1)
                 Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
                     CrestIcon(CrestIconKind.SETTINGS, Modifier.size(22.dp), MaterialTheme.colorScheme.onBackground)
                 }
@@ -441,7 +473,7 @@ private fun CrestDrawer(
             onRename = {
                 menuTarget = null
                 scope.launch {
-                    delay(180)
+                    delay(90)
                     renameDraft = item.title
                     renameTarget = item
                 }
@@ -449,7 +481,7 @@ private fun CrestDrawer(
             onDelete = {
                 menuTarget = null
                 scope.launch {
-                    delay(180)
+                    delay(90)
                     deleteTarget = item
                 }
             },
@@ -466,18 +498,18 @@ private fun CrestDrawer(
                         controller.rename(item, renameDraft)
                         renameTarget = null
                     },
-                ) { Text("保存", color = MaterialTheme.colorScheme.secondary) }
+                ) { Text(L("保存"), color = MaterialTheme.colorScheme.secondary) }
             },
-            dismissButton = { TextButton(onClick = { renameTarget = null }) { Text("取消", color = MaterialTheme.colorScheme.secondary) } },
-            title = { Text("重命名对话") },
+            dismissButton = { TextButton(onClick = { renameTarget = null }) { Text(L("取消"), color = MaterialTheme.colorScheme.secondary) } },
+            title = { Text(L("重命名对话")) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("输入新的对话名称")
+                    Text(L("输入新的对话名称"))
                     OutlinedTextField(
                         value = renameDraft,
                         onValueChange = { renameDraft = it },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("对话名称") },
+                        placeholder = { Text(L("对话名称")) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
                     )
@@ -496,11 +528,11 @@ private fun CrestDrawer(
                 TextButton(onClick = {
                     controller.delete(item)
                     deleteTarget = null
-                }) { Text("确认", color = MaterialTheme.colorScheme.error) }
+                }) { Text(L("确认"), color = MaterialTheme.colorScheme.error) }
             },
-            dismissButton = { TextButton(onClick = { deleteTarget = null }) { Text("取消", color = MaterialTheme.colorScheme.secondary) } },
-            title = { Text("要删除对话吗？") },
-            text = { Text("这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。") },
+            dismissButton = { TextButton(onClick = { deleteTarget = null }) { Text(L("取消"), color = MaterialTheme.colorScheme.secondary) } },
+            title = { Text(L("要删除对话吗？")) },
+            text = { Text(L("这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。")) },
             shape = RoundedCornerShape(28.dp),
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
@@ -545,8 +577,8 @@ private fun SessionDrawerRow(
             .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClickLabel = "打开对话",
-                onLongClickLabel = "更多操作",
+                onClickLabel = L("打开对话"),
+                onLongClickLabel = L("更多操作"),
                 onClick = onOpen,
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -591,31 +623,66 @@ private fun HistoryContextMenuDialog(
     onDelete: () -> Unit,
 ) {
     val surface = MaterialTheme.colorScheme.surface
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+    val dark = surface.luminance() < 0.5f
+    val glass = surface.copy(alpha = if (dark) 0.92f else 0.88f)
+    val glassEdge = BorderStroke(
+        1.dp,
+        Brush.verticalGradient(
+            listOf(
+                Color.White.copy(alpha = if (dark) 0.32f else 0.86f),
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+            ),
+        ),
+    )
+    val visible = remember { MutableTransitionState(false) }
+    var afterClose by remember { mutableStateOf<(() -> Unit)?>(null) }
+    LaunchedEffect(Unit) { visible.targetState = true }
+    LaunchedEffect(visible.isIdle, visible.currentState) {
+        if (visible.isIdle && !visible.currentState) {
+            afterClose?.invoke()
+            afterClose = null
+        }
+    }
+    fun closeThen(action: () -> Unit) {
+        if (afterClose == null) {
+            afterClose = action
+            visible.targetState = false
+        }
+    }
+    Dialog(onDismissRequest = { closeThen(onDismiss) }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        AnimatedVisibility(
+            visibleState = visible,
+            enter = fadeIn(tween(170)) + scaleIn(
+                initialScale = 0.93f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium),
+            ),
+            exit = fadeOut(tween(120)) + scaleOut(targetScale = 0.97f, animationSpec = tween(120)),
         ) {
-            Surface(
-                shape = RoundedCornerShape(24.dp),
-                color = surface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.55f)),
-                shadowElevation = 16.dp,
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                SessionRowContent(item, selected)
-            }
-            Surface(
-                shape = RoundedCornerShape(22.dp),
-                color = surface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)),
-                shadowElevation = 20.dp,
-            ) {
-                Column {
-                    HistoryMenuAction(if (item.isPinned) "取消固定" else "固定", CrestIconKind.PIN, onClick = onPin)
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.65f))
-                    HistoryMenuAction("重命名", CrestIconKind.EDIT, onClick = onRename)
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.65f))
-                    HistoryMenuAction("删除", CrestIconKind.DELETE, destructive = true, onClick = onDelete)
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = glass,
+                    border = glassEdge,
+                    shadowElevation = 16.dp,
+                ) {
+                    SessionRowContent(item, selected)
+                }
+                Surface(
+                    shape = RoundedCornerShape(22.dp),
+                    color = glass,
+                    border = glassEdge,
+                    shadowElevation = 20.dp,
+                ) {
+                    Column {
+                        HistoryMenuAction(if (item.isPinned) L("取消固定") else L("固定"), CrestIconKind.PIN) { closeThen(onPin) }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.65f))
+                        HistoryMenuAction(L("重命名"), CrestIconKind.EDIT) { closeThen(onRename) }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.65f))
+                        HistoryMenuAction(L("删除"), CrestIconKind.DELETE, destructive = true) { closeThen(onDelete) }
+                    }
                 }
             }
         }
@@ -640,21 +707,37 @@ private fun HistoryMenuAction(
 }
 
 @Composable
-private fun SearchScreen(controller: ChatController, onOpen: (String) -> Unit) {
+private fun SearchScreen(controller: ChatController, onOpenSidebar: () -> Unit, onOpen: (String) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
+    val focus = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val listState = rememberLazyListState()
+    LaunchedEffect(Unit) { focus.requestFocus() }
+    LaunchedEffect(listState.isScrollInProgress) { if (listState.isScrollInProgress) keyboard?.hide() }
     val results = remember(query, controller.sessions.toList()) {
         val keyword = query.trim()
         if (keyword.isEmpty()) controller.sessions.toList()
         else controller.sessions.filter { it.title.contains(keyword, ignoreCase = true) }
     }
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("输入对话名称") },
-            singleLine = true,
-        )
+    Column(Modifier.fillMaxSize().imePadding()) {
+        Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            CrestCircleButton(CrestIconKind.MENU, L("打开侧边栏")) { keyboard?.hide(); onOpenSidebar() }
+            Row(Modifier.weight(1f).height(44.dp).background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)).padding(horizontal = 14.dp),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                CrestIcon(CrestIconKind.SEARCH, Modifier.size(18.dp), MaterialTheme.colorScheme.onSurfaceVariant)
+                BasicTextField(query, { query = it }, Modifier.weight(1f).focusRequester(focus).semantics { contentDescription = L("搜索对话内容") },
+                    singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrectEnabled = false, imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
+                    decorationBox = { inner -> Box { if (query.isEmpty()) Text(L("搜索对话内容"), color = MaterialTheme.colorScheme.onSurfaceVariant); inner() } })
+                if (query.isNotEmpty()) Box(Modifier.size(30.dp).clip(CircleShape)
+                    .semantics { contentDescription = L("清除搜索内容") }.clickable(role = Role.Button) { query = ""; focus.requestFocus() }, contentAlignment = Alignment.Center) {
+                    CrestIcon(CrestIconKind.CLOSE, Modifier.size(14.dp), MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outline)
+        Text(L(if (query.trim().isEmpty()) "最近" else "搜索结果"), Modifier.padding(horizontal = 18.dp, vertical = 12.dp), fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         when {
             controller.isLoadingHistory && controller.sessions.isEmpty() ->
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -662,23 +745,15 @@ private fun SearchScreen(controller: ChatController, onOpen: (String) -> Unit) {
                 ErrorState(controller.historyError!!, controller::loadHistory)
             results.isEmpty() ->
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("没有匹配的对话", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(L("没有匹配的对话"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-            else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            else -> LazyColumn(state = listState, contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 items(results, key = { it.sessionId }) { item ->
-                    Surface(
-                        modifier = Modifier.fillMaxWidth().clickable { onOpen(item.sessionId) },
-                        shape = MaterialTheme.shapes.large,
-                        tonalElevation = 1.dp,
-                    ) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(item.title, fontWeight = FontWeight.Medium)
-                            Text(
-                                if (item.isPinned) "已置顶" else item.updatedAt,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                    val active = item.sessionId == controller.activeSessionId
+                    Box(Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(25.dp))
+                        .background(if (active) MaterialTheme.colorScheme.surface else Color.Transparent)
+                        .semantics { selected = active }.clickable { keyboard?.hide(); onOpen(item.sessionId) }.padding(horizontal = 14.dp), contentAlignment = Alignment.CenterStart) {
+                        Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
             }
@@ -703,11 +778,18 @@ private fun SettingsSheet(
     var showPassword by remember { mutableStateOf(false) }
     var showJoinTeam by remember { mutableStateOf(false) }
     var showThemeMenu by remember { mutableStateOf(false) }
+    var showLanguageMenu by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val themeBackdropBlur by animateDpAsState(
+        targetValue = if (showThemeMenu || showLanguageMenu) 2.dp else 0.dp,
+        animationSpec = tween(180),
+        label = "theme backdrop blur",
+    )
 
     LaunchedEffect(Unit) {
         session.loadWorkspaces()
         runCatching { session.loadAccountProfile() }
-            .onFailure { error = it.userMessage("个人资料加载失败") }
+            .onFailure { error = it.userMessage(L("个人资料加载失败")) }
     }
 
     ModalBottomSheet(
@@ -717,10 +799,15 @@ private fun SettingsSheet(
         containerColor = MaterialTheme.colorScheme.background,
         scrimColor = Color.Black.copy(alpha = 0.45f),
         shape = RoundedCornerShape(topStart = 45.dp, topEnd = 45.dp),
+        properties = ModalBottomSheetProperties(
+            isAppearanceLightStatusBars = MaterialTheme.colorScheme.background.luminance() > .5f,
+            isAppearanceLightNavigationBars = MaterialTheme.colorScheme.background.luminance() > .5f,
+        ),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .blur(themeBackdropBlur)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
                 .padding(top = 18.dp, bottom = 26.dp),
@@ -731,7 +818,7 @@ private fun SettingsSheet(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "设置",
+                    L("设置"),
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
@@ -767,21 +854,21 @@ private fun SettingsSheet(
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-            SettingsSection("账户") {
+            SettingsSection(L("账户")) {
                 SettingsRow(
                     icon = CrestIconKind.PERSON,
-                    title = "个人资料",
-                    value = user.displayName.ifBlank { "未设置昵称" },
+                    title = L("个人资料"),
+                    value = user.displayName.ifBlank { L("未设置昵称") },
                     onClick = { showProfile = true },
                 )
                 SettingsDivider()
                 SettingsRow(
                     icon = CrestIconKind.LOCK,
-                    title = if (user.hasPassword) "修改密码" else "设置密码",
+                    title = if (user.hasPassword) L("修改密码") else L("设置密码"),
                     onClick = { showPassword = true },
                 )
             }
-            SettingsSection("工作空间") {
+            SettingsSection(L("工作空间")) {
                 when {
                     session.isLoadingWorkspaces && session.workspaces.isEmpty() -> Box(
                         modifier = Modifier.fillMaxWidth().height(58.dp),
@@ -796,7 +883,7 @@ private fun SettingsSheet(
                     }
                     session.workspaces.isEmpty() -> SettingsRow(
                         icon = CrestIconKind.TEAM,
-                        title = "暂无可用工作空间",
+                        title = L("暂无可用工作空间"),
                     )
                     else -> session.workspaces.forEachIndexed { index, workspace ->
                         if (index > 0) SettingsDivider()
@@ -804,7 +891,7 @@ private fun SettingsSheet(
                             icon = if (workspace.workspaceId == user.activeWorkspaceId) CrestIconKind.PERSON else CrestIconKind.ANALYTICS,
                             title = workspace.name,
                             subtitle = if (workspace.workspaceId == user.activeWorkspaceId) {
-                                if (user.workspaceType == "tenant") user.role else "个人账号"
+                                if (user.workspaceType == "tenant") user.role else L("个人账号")
                             } else null,
                             selected = workspace.workspaceId == user.activeWorkspaceId,
                             loading = switchingId == workspace.workspaceId,
@@ -815,7 +902,7 @@ private fun SettingsSheet(
                                         session.switchWorkspace(workspace.workspaceId)
                                         onDismiss()
                                     } catch (failure: Exception) {
-                                        error = failure.userMessage("工作空间切换失败")
+                                        error = failure.userMessage(L("工作空间切换失败"))
                                     } finally {
                                         switchingId = null
                                     }
@@ -827,11 +914,11 @@ private fun SettingsSheet(
                 SettingsDivider()
                 SettingsRow(
                     icon = CrestIconKind.TEAM,
-                    title = "加入新团队",
+                    title = L("加入新团队"),
                     onClick = { showJoinTeam = true },
                 )
             }
-            SettingsSection("主题") {
+            SettingsSection(L("外观与语言")) {
                 Box {
                     SettingsRow(
                         icon = when (theme.mode) {
@@ -839,18 +926,27 @@ private fun SettingsSheet(
                             ThemeMode.LIGHT -> CrestIconKind.THEME
                             ThemeMode.DARK -> CrestIconKind.MOON
                         },
-                        title = "外观",
-                        value = theme.mode.title,
+                        title = L("外观"),
+                        value = L(theme.mode.title),
                         onClick = { showThemeMenu = true },
                     )
                     DropdownMenu(
                         expanded = showThemeMenu,
                         onDismissRequest = { showThemeMenu = false },
-                        modifier = Modifier.width(188.dp),
+                        modifier = Modifier.width(188.dp).border(
+                            1.dp,
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) 0.28f else 0.85f),
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.55f),
+                                ),
+                            ),
+                            RoundedCornerShape(20.dp),
+                        ),
                         shape = RoundedCornerShape(20.dp),
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.97f),
+                        containerColor = MaterialTheme.colorScheme.surface,
                         tonalElevation = 0.dp,
-                        shadowElevation = 18.dp,
+                        shadowElevation = 0.dp,
                     ) {
                         ThemeMode.entries.forEach { mode ->
                             Row(
@@ -877,7 +973,30 @@ private fun SettingsSheet(
                                     MaterialTheme.colorScheme.secondary,
                                 )
                                 Spacer(Modifier.width(10.dp))
-                                Text(mode.title, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                                Text(L(mode.title), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
+                            }
+                        }
+                    }
+                }
+                SettingsDivider()
+                Box {
+                    SettingsRow(icon = CrestIconKind.GLOBE, title = L("语言"), value = L(AppLocalization.mode.title), onClick = { showLanguageMenu = true })
+                    DropdownMenu(
+                        expanded = showLanguageMenu,
+                        onDismissRequest = { showLanguageMenu = false },
+                        modifier = Modifier.width(188.dp).border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp)),
+                        shape = RoundedCornerShape(20.dp), containerColor = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 0.dp, shadowElevation = 0.dp,
+                    ) {
+                        LanguageMode.entries.forEach { language ->
+                            Row(Modifier.fillMaxWidth().height(44.dp).clickable {
+                                showLanguageMenu = false
+                                AppLocalization.update(context, language)
+                            }.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Box(Modifier.width(28.dp)) {
+                                    if (language == AppLocalization.mode) CrestIcon(CrestIconKind.CHECK, Modifier.size(14.dp))
+                                }
+                                Text(L(language.title), fontSize = 15.sp)
                             }
                         }
                     }
@@ -896,18 +1015,19 @@ private fun SettingsSheet(
                 ) {
                     CrestIcon(CrestIconKind.EXIT, Modifier.size(20.dp), MaterialTheme.colorScheme.error)
                     Spacer(Modifier.width(8.dp))
-                    Text("退出登录", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Medium)
+                    Text(L("退出登录"), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Medium)
                 }
             }
         }
     }
 
     if (showProfile) {
-        DisplayNameDialog(
-            initialValue = user.displayName.ifBlank { user.username },
+        ProfileDialog(
+            initialDisplayName = user.displayName.ifBlank { user.username },
+            avatarData = session.avatarData,
             onDismiss = { showProfile = false },
             onSave = { value -> session.updateDisplayName(value) },
-            onError = { error = it },
+            onAvatarUpload = { bytes -> session.updateAvatar(bytes) },
         )
     }
 
@@ -919,11 +1039,11 @@ private fun SettingsSheet(
                 if (user.hasPassword) session.changePassword(oldPassword, newPassword)
                 else session.setInitialPassword(newPassword)
             },
-            onSuccess = {
+            onSuccess = { requiresRelogin ->
                 showPassword = false
-                notice = if (user.hasPassword) "密码修改成功" else "密码设置成功"
+                if (requiresRelogin) { onDismiss(); session.signOut() }
+                else notice = L("密码设置成功")
             },
-            onError = { error = it },
         )
     }
 
@@ -931,19 +1051,15 @@ private fun SettingsSheet(
         JoinTeamDialog(
             onDismiss = { showJoinTeam = false },
             onSubmit = { session.acceptInvitation(it) },
-            onSuccess = { message ->
-                showJoinTeam = false
-                notice = message.ifBlank { "已加入团队" }
-            },
-            onError = { error = it },
+            onSuccess = { showJoinTeam = false },
         )
     }
 
     error?.let { message ->
         AlertDialog(
             onDismissRequest = { error = null },
-            confirmButton = { TextButton(onClick = { error = null }) { Text("好") } },
-            title = { Text("操作失败") },
+            confirmButton = { TextButton(onClick = { error = null }) { Text(L("好")) } },
+            title = { Text(L("操作失败")) },
             text = { Text(message) },
         )
     }
@@ -951,59 +1067,11 @@ private fun SettingsSheet(
     notice?.let { message ->
         AlertDialog(
             onDismissRequest = { notice = null },
-            confirmButton = { TextButton(onClick = { notice = null }) { Text("好") } },
-            title = { Text("操作成功") },
+            confirmButton = { TextButton(onClick = { notice = null }) { Text(L("好")) } },
+            title = { Text(L("操作成功")) },
             text = { Text(message) },
         )
     }
-}
-
-@Composable
-private fun DisplayNameDialog(
-    initialValue: String,
-    onDismiss: () -> Unit,
-    onSave: suspend (String) -> Unit,
-    onError: (String) -> Unit,
-) {
-    val scope = rememberCoroutineScope()
-    var value by remember(initialValue) { mutableStateOf(initialValue) }
-    var isSubmitting by remember { mutableStateOf(false) }
-    val normalized = value.trim()
-
-    AlertDialog(
-        onDismissRequest = { if (!isSubmitting) onDismiss() },
-        confirmButton = {
-            TextButton(
-                enabled = normalized.length in 1..30 && !isSubmitting,
-                onClick = {
-                    scope.launch {
-                        isSubmitting = true
-                        try {
-                            onSave(normalized)
-                            onDismiss()
-                        } catch (failure: Exception) {
-                            onError(failure.userMessage("昵称修改失败"))
-                        } finally {
-                            isSubmitting = false
-                        }
-                    }
-                },
-            ) { Text(if (isSubmitting) "保存中…" else "保存") }
-        },
-        dismissButton = { TextButton(enabled = !isSubmitting, onClick = onDismiss) { Text("取消") } },
-        title = { Text("个人资料") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = value,
-                    onValueChange = { if (it.length <= 30) value = it },
-                    label = { Text("昵称") },
-                    supportingText = { Text("1 至 30 个字符") },
-                    singleLine = true,
-                )
-            }
-        },
-    )
 }
 
 @Composable
@@ -1011,114 +1079,230 @@ private fun PasswordDialog(
     hasPassword: Boolean,
     onDismiss: () -> Unit,
     onSubmit: suspend (String, String) -> Unit,
-    onSuccess: () -> Unit,
-    onError: (String) -> Unit,
+    onSuccess: (Boolean) -> Unit,
 ) {
+    val changingPassword = remember { hasPassword }
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmation by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
-    val valid = (!hasPassword || oldPassword.isNotEmpty()) &&
-        newPassword.length in 7..16 && newPassword == confirmation
+    var error by remember { mutableStateOf<String?>(null) }
+    var succeeded by remember { mutableStateOf(false) }
+    val valid = canSubmitPassword(changingPassword, oldPassword, newPassword, confirmation)
 
-    AlertDialog(
-        onDismissRequest = { if (!isSubmitting) onDismiss() },
-        confirmButton = {
-            TextButton(
-                enabled = valid && !isSubmitting,
-                onClick = {
-                    scope.launch {
-                        isSubmitting = true
-                        try {
-                            onSubmit(oldPassword, newPassword)
-                            onSuccess()
-                        } catch (failure: Exception) {
-                            onError(failure.userMessage(if (hasPassword) "密码修改失败" else "密码设置失败"))
-                        } finally {
-                            isSubmitting = false
+    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    Dialog(
+        onDismissRequest = { if (!isSubmitting && !succeeded) onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+          Surface(
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.97f),
+            shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
+            color = if (dark) Color(0xFF1C1C1E) else Color(0xFFF4F3F9),
+          ) {
+            Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    SettingsToolbarCircle(CrestIconKind.CLOSE, enabled = !isSubmitting && !succeeded, onClick = onDismiss)
+                    Text(if (changingPassword) L("修改密码") else L("设置密码"), fontWeight = FontWeight.SemiBold)
+                    SettingsToolbarCircle(
+                        CrestIconKind.CHECK,
+                        enabled = valid && !isSubmitting && !succeeded,
+                        tint = MaterialTheme.colorScheme.secondary,
+                    ) {
+                        if (!isSubmitting && valid && !succeeded) {
+                          isSubmitting = true
+                          focusManager.clearFocus()
+                          scope.launch {
+                            try {
+                                onSubmit(oldPassword, newPassword)
+                                if (changingPassword) succeeded = true else onSuccess(false)
+                            } catch (failure: Exception) {
+                                if (failure is kotlinx.coroutines.CancellationException) throw failure
+                                error = failure.userMessage(if (changingPassword) L("密码修改失败") else L("密码设置失败"))
+                            } finally {
+                                isSubmitting = false
+                            }
+                          }
                         }
                     }
-                },
-            ) { Text(if (isSubmitting) "提交中…" else "完成") }
-        },
-        dismissButton = { TextButton(enabled = !isSubmitting, onClick = onDismiss) { Text("取消") } },
-        title = { Text(if (hasPassword) "修改密码" else "设置密码") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (hasPassword) {
-                    OutlinedTextField(
-                        value = oldPassword,
-                        onValueChange = { oldPassword = it },
-                        label = { Text("当前密码") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                    )
                 }
-                OutlinedTextField(
-                    value = newPassword,
-                    onValueChange = { if (it.length <= 16) newPassword = it },
-                    label = { Text("新密码（7 至 16 位）") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    singleLine = true,
-                )
-                OutlinedTextField(
-                    value = confirmation,
-                    onValueChange = { if (it.length <= 16) confirmation = it },
-                    label = { Text("再次输入新密码") },
-                    isError = confirmation.isNotEmpty() && confirmation != newPassword,
-                    supportingText = {
-                        if (confirmation.isNotEmpty() && confirmation != newPassword) Text("两次输入的密码不一致")
-                    },
-                    visualTransformation = PasswordVisualTransformation(),
-                    singleLine = true,
-                )
+                if (isSubmitting) CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp).size(20.dp), strokeWidth = 2.dp)
+                if (changingPassword) {
+                    SettingsFieldLabel(L("当前密码"))
+                    Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface) {
+                        SettingsFormInput(oldPassword, { oldPassword = it }, L("输入当前密码"), password = true, enabled = !isSubmitting)
+                    }
+                }
+                SettingsFieldLabel(L("新密码"))
+                Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface) {
+                    Column {
+                        SettingsFormInput(newPassword, { newPassword = it }, L("7 至 16 位新密码"), password = true, enabled = !isSubmitting)
+                        HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.55f))
+                        SettingsFormInput(confirmation, { confirmation = it }, L("再次输入新密码"), password = true, enabled = !isSubmitting)
+                    }
+                }
+                passwordValidationMessage(newPassword, confirmation)?.let {
+                    Text(L(it), modifier = Modifier.padding(start = 12.dp, top = 8.dp), color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                }
             }
-        },
-    )
+          }
+        }
+    }
+    error?.let { message -> AlertDialog(onDismissRequest = { error = null },
+        title = { Text(L(if (changingPassword) "密码修改失败" else "密码设置失败")) }, text = { Text(message) },
+        confirmButton = { TextButton(onClick = { error = null }) { Text(L("好")) } }) }
+    if (succeeded) AlertDialog(onDismissRequest = {}, title = { Text(L("密码修改成功")) },
+        text = { Text(L("为了保护账号安全，请使用新密码重新登录")) },
+        confirmButton = { TextButton(onClick = { onSuccess(true) }) { Text(L("重新登录")) } })
 }
 
 @Composable
 private fun JoinTeamDialog(
     onDismiss: () -> Unit,
     onSubmit: suspend (String) -> String,
-    onSuccess: (String) -> Unit,
-    onError: (String) -> Unit,
+    onSuccess: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var code by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val canJoin = code.trim().isNotEmpty() && !isSubmitting && successMessage == null
+    val windowHeight = androidx.compose.ui.platform.LocalWindowInfo.current.containerSize.height
+    val sheetHeight = with(androidx.compose.ui.platform.LocalDensity.current) { (windowHeight / 2).toDp() }
+    val submit: () -> Unit = {
+        if (canJoin) {
+            isSubmitting = true
+            focusManager.clearFocus()
+            scope.launch {
+                try { successMessage = onSubmit(code.trim()).ifBlank { L("已加入团队") } }
+                catch (failure: Exception) {
+                    if (failure is kotlinx.coroutines.CancellationException) throw failure
+                    error = failure.userMessage(L("加入团队失败"))
+                } finally { isSubmitting = false }
+            }
+        }
+    }
 
-    AlertDialog(
-        onDismissRequest = { if (!isSubmitting) onDismiss() },
-        confirmButton = {
-            TextButton(
-                enabled = code.trim().isNotEmpty() && !isSubmitting,
-                onClick = {
-                    scope.launch {
-                        isSubmitting = true
-                        try {
-                            onSuccess(onSubmit(code.trim()))
-                        } catch (failure: Exception) {
-                            onError(failure.userMessage("加入团队失败"))
-                        } finally {
-                            isSubmitting = false
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    Dialog(
+        onDismissRequest = { if (!isSubmitting && successMessage == null) onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(Modifier.fillMaxSize().imePadding(), contentAlignment = Alignment.BottomCenter) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(0.96f).height(sheetHeight),
+                shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+                color = MaterialTheme.colorScheme.background,
+            ) {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
+                    Box(Modifier.align(Alignment.CenterHorizontally).padding(top = 7.dp).size(36.dp, 5.dp).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = .3f), CircleShape))
+                    Box(Modifier.fillMaxWidth().padding(top = 8.dp).height(44.dp), contentAlignment = Alignment.Center) {
+                        TextButton(modifier = Modifier.align(Alignment.CenterStart).background(MaterialTheme.colorScheme.surface, CircleShape),
+                            enabled = !isSubmitting && successMessage == null, onClick = onDismiss) { Text(L("取消")) }
+                        Text(L("加入新团队"), fontWeight = FontWeight.SemiBold)
+                    }
+                    Text(L("邀请码"), Modifier.padding(top = 20.dp, bottom = 12.dp), fontWeight = FontWeight.SemiBold)
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        color = MaterialTheme.colorScheme.surface,
+                    ) {
+                        SettingsFormInput(code, { code = it }, L("输入邮件中的邀请码"), modifier = Modifier.focusRequester(focusRequester), enabled = !isSubmitting, fieldHeight = 52.dp,
+                            imeAction = ImeAction.Send, keyboardActions = KeyboardActions(onSend = { submit() }))
+                    }
+                    Text(
+                        L("邀请码区分大小写，验证成功后即可加入对应工作空间。"),
+                        modifier = Modifier.padding(top = 8.dp),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 20.dp).height(52.dp).clip(CircleShape)
+                            .background(if (canJoin || isSubmitting) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface.copy(alpha = .12f))
+                            .clickable(enabled = canJoin, role = Role.Button, onClick = submit),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (isSubmitting) CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
+                        else {
+                            val tint = if (canJoin) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                            CrestIcon(CrestIconKind.TEAM, Modifier.size(20.dp), tint)
+                            Spacer(Modifier.width(8.dp))
+                            Text(L("加入团队"), color = tint, fontWeight = FontWeight.SemiBold)
                         }
                     }
-                },
-            ) { Text(if (isSubmitting) "加入中…" else "加入") }
-        },
-        dismissButton = { TextButton(enabled = !isSubmitting, onClick = onDismiss) { Text("取消") } },
-        title = { Text("加入新团队") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("输入邀请邮件中的邀请码，邀请码区分大小写。")
-                OutlinedTextField(
-                    value = code,
-                    onValueChange = { code = it },
-                    label = { Text("邀请码") },
-                    singleLine = true,
-                )
+                }
+            }
+        }
+    }
+    error?.let { message -> AlertDialog(onDismissRequest = { error = null }, title = { Text(L("加入团队失败")) }, text = { Text(message) },
+        confirmButton = { TextButton(onClick = { error = null }) { Text(L("好")) } }) }
+    successMessage?.let { message -> AlertDialog(onDismissRequest = onSuccess, title = { Text(L("已加入团队")) }, text = { Text(message) },
+        confirmButton = { TextButton(onClick = onSuccess) { Text(L("好")) } }) }
+}
+
+@Composable
+private fun SettingsToolbarCircle(
+    icon: CrestIconKind,
+    enabled: Boolean,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: () -> Unit,
+) {
+    Surface(onClick = onClick, enabled = enabled, modifier = Modifier.size(40.dp).semantics { contentDescription = L(if (icon == CrestIconKind.CLOSE) "取消" else "完成") }, shape = CircleShape, color = MaterialTheme.colorScheme.surface) {
+        Box(contentAlignment = Alignment.Center) {
+            CrestIcon(icon, Modifier.size(18.dp), tint.copy(alpha = if (enabled) 1f else 0.35f))
+        }
+    }
+}
+
+@Composable
+private fun SettingsFieldLabel(label: String) {
+    Text(
+        label,
+        modifier = Modifier.padding(start = 12.dp, top = 24.dp, bottom = 10.dp),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontSize = 14.sp,
+    )
+}
+
+@Composable
+private fun SettingsFormInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    password: Boolean = false,
+    enabled: Boolean = true,
+    imeAction: ImeAction = ImeAction.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    fieldHeight: androidx.compose.ui.unit.Dp = 48.dp,
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        enabled = enabled,
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrectEnabled = false,
+            keyboardType = if (password) KeyboardType.Password else KeyboardType.Text, imeAction = imeAction),
+        keyboardActions = keyboardActions,
+        visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+        modifier = Modifier.fillMaxWidth().height(fieldHeight).padding(horizontal = 16.dp).then(modifier),
+        decorationBox = { inner ->
+            Box(contentAlignment = Alignment.CenterStart) {
+                if (value.isEmpty()) Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
+                inner()
             }
         },
     )
@@ -1224,7 +1408,7 @@ private fun SettingsDivider() {
 }
 
 @Composable
-private fun AccountAvatar(
+internal fun AccountAvatar(
     data: ByteArray?,
     initials: String,
     size: androidx.compose.ui.unit.Dp,
@@ -1263,6 +1447,6 @@ private fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier 
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(message, color = MaterialTheme.colorScheme.error)
-        Button(onClick = onRetry) { Text("重试") }
+        Button(onClick = onRetry) { Text(L("重试")) }
     }
 }

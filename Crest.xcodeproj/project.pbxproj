@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CF4300000000000000000003 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = CF4300000000000000000004 /* Localizable.xcstrings */; };
 		CF4300000000000000000001 /* AppLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF4300000000000000000002 /* AppLocalization.swift */; };
 		CF4200000000000000000001 /* ChatTextPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF4200000000000000000002 /* ChatTextPlayback.swift */; };
 		000000000000000000000110 /* CrestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000010 /* CrestApp.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CF4300000000000000000004 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		CF4300000000000000000002 /* AppLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocalization.swift; sourceTree = "<group>"; };
 		CF4200000000000000000002 /* ChatTextPlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextPlayback.swift; sourceTree = "<group>"; };
 		000000000000000000000006 /* Crest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Crest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +120,7 @@
 				00000000000000000000000C /* API */,
 				00000000000000000000000D /* Session */,
 				000000000000000000000020 /* Assets.xcassets */,
+				CF4300000000000000000004 /* Localizable.xcstrings */,
 				000000000000000000000021 /* Preview Assets.xcassets */,
 			);
 			path = Crest;
@@ -281,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				000000000000000000000120 /* Assets.xcassets in Resources */,
+				CF4300000000000000000003 /* Localizable.xcstrings in Resources */,
 				000000000000000000000121 /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1022,7 +1022,10 @@ private struct AnalyticsDashboardContent: View {
                         AnalyticsDetailLinkRow(
                             title: channel.label,
                             primary: AnalyticsValue.currency(channel.value("net_income")),
-                            secondary: "\(AnalyticsValue.count(channel.value("order_count"))) 单"
+                            secondary: AppLocalization.format(
+                                "%@ 单",
+                                AnalyticsValue.count(channel.value("order_count"))
+                            )
                         )
                     }
                     .buttonStyle(.plain)
@@ -1232,23 +1235,23 @@ private struct AnalyticsDashboardContent: View {
             if abs(amount) >= 10 {
                 return AppLocalization.format(
                     "¥%@万",
-                    amount.formatted(.number.precision(.fractionLength(0)))
+                    amount.formatted(.number.precision(.fractionLength(0)).locale(AppLocalization.locale))
                 )
             }
             return AppLocalization.format(
                 "¥%@万",
-                amount.formatted(.number.precision(.fractionLength(1)))
+                amount.formatted(.number.precision(.fractionLength(1)).locale(AppLocalization.locale))
             )
         }
         if abs(value) >= 1_000 {
             return AppLocalization.format(
                 "¥%@k",
-                (value / 1_000).formatted(.number.precision(.fractionLength(0)))
+                (value / 1_000).formatted(.number.precision(.fractionLength(0)).locale(AppLocalization.locale))
             )
         }
         return AppLocalization.format(
             "¥%@",
-            value.formatted(.number.precision(.fractionLength(0)))
+            value.formatted(.number.precision(.fractionLength(0)).locale(AppLocalization.locale))
         )
     }
 }
@@ -1462,7 +1465,7 @@ private struct AnalyticsOrdersContent: View {
                         AnalyticsChartTooltip(
                             title: AnalyticsChartAxis.shortLabel(selectedPoint.period),
                             rows: [
-                                "\(AnalyticsValue.count(selectedPoint.orderCount)) 单",
+                                AppLocalization.format("%@ 单", AnalyticsValue.count(selectedPoint.orderCount)),
                                 AppLocalization.format(
                                     "净实收 %@",
                                     AnalyticsValue.currency(selectedPoint.netIncome)
@@ -1798,7 +1801,7 @@ private struct AnalyticsLaborContent: View {
             return AppLocalization.string("暂无计划")
         }
         return (response.summary.actualHours / response.summary.plannedHours)
-            .formatted(.percent.precision(.fractionLength(1)))
+            .formatted(.percent.precision(.fractionLength(1)).locale(AppLocalization.locale))
     }
 
     private var selectedOutputPoint: AnalyticsLaborPoint? {
@@ -2828,31 +2831,31 @@ private struct AnalyticsMessageState: View {
 private enum AnalyticsValue {
     static func currency(_ value: Double?) -> String {
         guard let value else { return "—" }
-        return "¥" + value.formatted(.number.precision(.fractionLength(0)).grouping(.automatic))
+        return "¥" + value.formatted(.number.precision(.fractionLength(0)).grouping(.automatic).locale(AppLocalization.locale))
     }
 
     static func count(_ value: Double?) -> String {
         guard let value else { return "—" }
-        return value.formatted(.number.precision(.fractionLength(0)).grouping(.automatic))
+        return value.formatted(.number.precision(.fractionLength(0)).grouping(.automatic).locale(AppLocalization.locale))
     }
 
     static func hours(_ value: Double?) -> String {
         guard let value else { return "—" }
         return AppLocalization.format(
             "%@ 小时",
-            value.formatted(.number.precision(.fractionLength(1)))
+            value.formatted(.number.precision(.fractionLength(1)).locale(AppLocalization.locale))
         )
     }
 
     static func percent(_ value: Double?) -> String {
         guard let value else { return "—" }
         let normalized = abs(value) > 1 ? value / 100 : value
-        return normalized.formatted(.percent.precision(.fractionLength(1)))
+        return normalized.formatted(.percent.precision(.fractionLength(1)).locale(AppLocalization.locale))
     }
 
     static func signedPercent(_ value: Double) -> String {
         let normalized = abs(value) > 1 ? value / 100 : value
-        let text = normalized.formatted(.percent.precision(.fractionLength(1)))
+        let text = normalized.formatted(.percent.precision(.fractionLength(1)).locale(AppLocalization.locale))
         return normalized > 0 ? "+\(text)" : text
     }
 }

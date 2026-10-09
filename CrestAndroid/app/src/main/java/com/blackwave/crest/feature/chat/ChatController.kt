@@ -1,5 +1,7 @@
 package com.blackwave.crest.feature.chat
 
+import com.blackwave.crest.ui.localization.L
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,8 @@ private data class PendingRun(
 class ChatController(private val session: SessionStore) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var streamJob: Job? = null
+    private var conversationJob: Job? = null
+    private var conversationGeneration = 0
     private var pendingRun: PendingRun? = null
     private var streamFlushJob: Job? = null
     private var pendingStreamMessageId: String? = null
@@ -47,7 +51,7 @@ class ChatController(private val session: SessionStore) {
 
     var activeSessionId by mutableStateOf<String?>(null)
         private set
-    var activeTitle by mutableStateOf("新对话")
+    var activeTitle by mutableStateOf(L("新对话"))
         private set
     var isLoadingHistory by mutableStateOf(false)
         private set
@@ -59,7 +63,7 @@ class ChatController(private val session: SessionStore) {
         private set
     var isStreaming by mutableStateOf(false)
         private set
-    var streamStatus by mutableStateOf("正在连接")
+    var streamStatus by mutableStateOf(L("正在连接"))
         private set
     var activeRunId by mutableStateOf<String?>(null)
         private set
@@ -80,42 +84,53 @@ class ChatController(private val session: SessionStore) {
     }
 
     fun newChat() {
+        conversationGeneration++
+        conversationJob?.cancel()
+        isLoadingConversation = false
         streamJob?.cancel()
         discardPendingStreamText()
         activeSessionId = null
-        activeTitle = "新对话"
+        activeTitle = L("新对话")
         messages.clear()
         conversationError = null
         pendingRun = null
         isStreaming = false
+        activeRunId = null
         completedMessageId = null
     }
 
     fun openSession(sessionId: String) {
         if (sessionId == activeSessionId && messages.isNotEmpty()) return
+        val generation = ++conversationGeneration
         streamJob?.cancel()
+        conversationJob?.cancel()
         discardPendingStreamText()
+        pendingRun = null
+        isStreaming = false
+        activeRunId = null
         completedMessageId = null
-        scope.launch {
+        conversationJob = scope.launch {
             isLoadingConversation = true
             conversationError = null
             try {
                 val detail = session.authenticated { session.api.chatSessionDetail(sessionId, it) }
+                if (generation != conversationGeneration) return@launch
                 activeSessionId = detail.sessionId
                 activeTitle = detail.title
                 messages.clear()
                 messages.addAll(detail.messages.mapNotNull { it.toChatMessage() })
+            } catch (cancel: CancellationException) { throw cancel
             } catch (error: Exception) {
-                conversationError = error.userMessage("对话加载失败")
+                if (generation == conversationGeneration) conversationError = error.userMessage(L("对话加载失败"))
             } finally {
-                isLoadingConversation = false
+                if (generation == conversationGeneration) isLoadingConversation = false
             }
         }
     }
 
     fun send(text: String, interaction: ChatInteraction? = null) {
         val content = text.trim()
-        if (content.isEmpty() || isStreaming) return
+        if (content.isEmpty() || isStreaming || isLoadingConversation) return
 
         val sessionId = activeSessionId ?: UUID.randomUUID().toString().also { activeSessionId = it }
         val userMessageId = UUID.randomUUID().toString()
@@ -159,7 +174,7 @@ class ChatController(private val session: SessionStore) {
         streamJob = scope.launch {
             isStreaming = true
             completedMessageId = null
-            streamStatus = if (decision == "approve") "正在执行已确认操作" else "正在取消操作"
+            streamStatus = if (decision == "approve") L("正在执行已确认操作") else L("正在取消操作")
             activeRunId = run.runId
             try {
                 session.authenticated { token ->
@@ -181,7 +196,7 @@ class ChatController(private val session: SessionStore) {
             } catch (_: CancellationException) {
                 return@launch
             } catch (error: Exception) {
-                applyFailure(run.assistantMessageId, error.userMessage("操作继续失败"))
+                applyFailure(run.assistantMessageId, error.userMessage(L("操作继续失败")))
             } finally {
                 finishRun(run.assistantMessageId)
             }
@@ -194,10 +209,10 @@ class ChatController(private val session: SessionStore) {
         flushPendingStreamText()
         isStreaming = false
         activeRunId = null
-        streamStatus = "已停止"
+        streamStatus = L("已停止")
         scope.launch {
             runCatching { session.authenticated { session.api.cancelAgentRun(runId, it) } }
-                .onFailure { operationError = it.userMessage("停止回复失败") }
+                .onFailure { operationError = it.userMessage(L("停止回复失败")) }
         }
     }
 
@@ -211,7 +226,7 @@ class ChatController(private val session: SessionStore) {
                 if (index >= 0) sessions[index] = updated
                 sortSessions()
             } catch (error: Exception) {
-                operationError = error.userMessage("置顶设置失败")
+                operationError = error.userMessage(L("置顶设置失败"))
             }
         }
     }
@@ -229,7 +244,7 @@ class ChatController(private val session: SessionStore) {
                 if (activeSessionId == updated.sessionId) activeTitle = updated.title
                 sortSessions()
             } catch (error: Exception) {
-                operationError = error.userMessage("对话重命名失败")
+                operationError = error.userMessage(L("对话重命名失败"))
             }
         }
     }
@@ -241,7 +256,7 @@ class ChatController(private val session: SessionStore) {
                 sessions.removeAll { it.sessionId == item.sessionId }
                 if (activeSessionId == item.sessionId) newChat()
             } catch (error: Exception) {
-                operationError = error.userMessage("对话删除失败")
+                operationError = error.userMessage(L("对话删除失败"))
             }
         }
     }
@@ -253,7 +268,7 @@ class ChatController(private val session: SessionStore) {
         streamJob = scope.launch {
             isStreaming = true
             completedMessageId = null
-            streamStatus = "正在连接"
+            streamStatus = L("正在连接")
             activeRunId = run.runId
             try {
                 session.authenticated { token ->
@@ -273,7 +288,7 @@ class ChatController(private val session: SessionStore) {
             } catch (_: CancellationException) {
                 return@launch
             } catch (error: Exception) {
-                applyFailure(run.assistantMessageId, error.userMessage("消息发送失败"))
+                applyFailure(run.assistantMessageId, error.userMessage(L("消息发送失败")))
             } finally {
                 finishRun(run.assistantMessageId)
             }
@@ -358,7 +373,7 @@ class ChatController(private val session: SessionStore) {
                 sessions.firstOrNull { it.sessionId == id }?.let { activeTitle = it.title }
             }
         } catch (error: Exception) {
-            historyError = error.userMessage("对话历史加载失败")
+            historyError = error.userMessage(L("对话历史加载失败"))
         } finally {
             isLoadingHistory = false
         }

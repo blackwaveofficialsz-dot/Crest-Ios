@@ -342,6 +342,7 @@ private struct StructuredSummary: View {
     private func formattedMetric(_ metric: ChatResponseMetric) -> String {
         guard let decimal = Decimal(string: metric.value) else { return metric.value }
         let formatter = NumberFormatter()
+        formatter.locale = AppLocalization.locale
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 4
         let value = formatter.string(for: decimal) ?? metric.value
@@ -543,12 +544,13 @@ private struct StructuredResponseTable: View {
         }
     }
 
-    private static let numberFormatter: NumberFormatter = {
+    private static var numberFormatter: NumberFormatter {
         let formatter = NumberFormatter()
+        formatter.locale = AppLocalization.locale
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 4
         return formatter
-    }()
+    }
 }
 
 private struct ResponseActionButtons: View {

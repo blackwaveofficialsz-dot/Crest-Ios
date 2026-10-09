@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", "module": "CommonJS", "strict": true,
+    "rootDir": "../entry/src/main/ets/core", "outDir": "../work/test-core",
+    "noEmitOnError": true, "skipLibCheck": true
+  },
+  "include": ["../entry/src/main/ets/core/**/*.ts"]
+}

@@ -1,5 +1,7 @@
 package com.blackwave.crest.feature.chat
 
+import com.blackwave.crest.ui.localization.L
+
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
@@ -140,15 +142,15 @@ fun ChatScreen(
             SuggestionBar(
                 suggestions = if (isTenant) {
                     listOf(
-                        SuggestionItem("分析本月经营情况", CrestIconKind.LINE_UP),
-                        SuggestionItem("找出最近的异常费用", CrestIconKind.ALERT_SEARCH),
-                        SuggestionItem("生成一份经营摘要", CrestIconKind.DOCUMENT),
+                        SuggestionItem(L("分析本月经营情况"), CrestIconKind.LINE_UP),
+                        SuggestionItem(L("找出最近的异常费用"), CrestIconKind.ALERT_SEARCH),
+                        SuggestionItem(L("生成一份经营摘要"), CrestIconKind.DOCUMENT),
                     )
                 } else {
                     listOf(
-                        SuggestionItem("帮我设计一份菜单结构", CrestIconKind.MENU_CARD),
-                        SuggestionItem("如何控制餐厅食材成本", CrestIconKind.CHART_PIE),
-                        SuggestionItem("制定新店开业推广计划", CrestIconKind.MEGAPHONE),
+                        SuggestionItem(L("帮我设计一份菜单结构"), CrestIconKind.MENU_CARD),
+                        SuggestionItem(L("如何控制餐厅食材成本"), CrestIconKind.CHART_PIE),
+                        SuggestionItem(L("制定新店开业推广计划"), CrestIconKind.MEGAPHONE),
                     )
                 },
                 onSelect = { draft = it.title },
@@ -193,7 +195,7 @@ private fun EmptyConversation(modifier: Modifier = Modifier) {
                 )
             }
             Text(
-                "今天想一起处理什么？",
+                L("今天想一起处理什么？"),
                 modifier = Modifier.padding(top = 22.dp),
                 fontSize = 28.sp,
                 lineHeight = 34.sp,
@@ -202,7 +204,7 @@ private fun EmptyConversation(modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center,
             )
             Text(
-                "从一个餐饮经营问题开始",
+                L("从一个餐饮经营问题开始"),
                 modifier = Modifier.padding(top = 8.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp,
@@ -276,7 +278,7 @@ private fun ChatComposer(
             decorationBox = { inner ->
                 Box(contentAlignment = Alignment.CenterStart) {
                     if (draft.isEmpty()) {
-                        Text("给 Crest 发消息", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                        Text(L("给 Crest 发消息"), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
                     }
                     inner()
                 }
@@ -314,7 +316,7 @@ private fun ConversationError(message: String, onRetry: () -> Unit, modifier: Mo
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(message, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-        Button(onClick = onRetry) { Text("重新加载") }
+        Button(onClick = onRetry) { Text(L("重新加载")) }
     }
 }
 
@@ -383,8 +385,8 @@ private fun MessageRow(
                         Text(approval.toolLabel, fontWeight = FontWeight.SemiBold)
                         Text(approval.message, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            OutlinedButton(onClick = { onApproval("reject") }) { Text("拒绝") }
-                            Button(onClick = { onApproval("approve") }) { Text("确认执行") }
+                            OutlinedButton(onClick = { onApproval("reject") }) { Text(L("拒绝")) }
+                            Button(onClick = { onApproval("approve") }) { Text(L("确认执行")) }
                         }
                     }
                 }
@@ -462,10 +464,10 @@ private fun FailureCard(
         color = MaterialTheme.colorScheme.error.copy(alpha = 0.08f),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("处理失败", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
+            Text(L("处理失败"), fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
             Text(message, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (retryable) {
-                OutlinedButton(enabled = enabled, onClick = onRetry) { Text("重新提问") }
+                OutlinedButton(enabled = enabled, onClick = onRetry) { Text(L("重新提问")) }
             }
         }
     }
@@ -488,12 +490,12 @@ private fun AssistantMessageActions(
         }
     }
     Row {
-        Box(Modifier.size(48.dp).semantics { contentDescription = if (copied) "已复制" else "复制回复" }.clickable(
+        Box(Modifier.size(48.dp).semantics { contentDescription = if (copied) L("已复制") else L("复制回复") }.clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
         ) {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("Crest 回复", content)
+            val clip = ClipData.newPlainText(L("Crest 回复"), content)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 clip.description.extras = PersistableBundle().apply {
                     putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
@@ -504,7 +506,7 @@ private fun AssistantMessageActions(
             copyCount++
             onCopy()
         }, contentAlignment = Alignment.Center) {
-            Crossfade(targetState = copied, animationSpec = tween(if (copied) 150 else 180), label = "复制状态") { isCopied ->
+            Crossfade(targetState = copied, animationSpec = tween(if (copied) 150 else 180), label = L("复制状态")) { isCopied ->
                 CrestIcon(
                     if (isCopied) CrestIconKind.CHECK else CrestIconKind.COPY,
                     Modifier.size(17.dp),
@@ -512,7 +514,7 @@ private fun AssistantMessageActions(
                 )
             }
         }
-        Box(Modifier.size(48.dp).semantics { contentDescription = "分享回复" }.clickable(
+        Box(Modifier.size(48.dp).semantics { contentDescription = L("分享回复") }.clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
         ) {
@@ -524,7 +526,7 @@ private fun AssistantMessageActions(
         }, contentAlignment = Alignment.Center) {
             CrestIcon(CrestIconKind.SHARE, Modifier.size(17.dp), MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Box(Modifier.size(48.dp).semantics { contentDescription = "重试回复" }.clickable(
+        Box(Modifier.size(48.dp).semantics { contentDescription = L("重试回复") }.clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
             enabled = canRetry,
@@ -563,9 +565,9 @@ private fun ResponseActionButtons(
 }
 
 private fun responseStatusLabel(status: String?): String = when (status) {
-    "partial" -> "结果不完整"
-    "empty" -> "暂无数据"
-    "unavailable" -> "数据暂不可用"
-    "failed" -> "分析失败"
-    else -> "结果状态未知"
+    "partial" -> L("结果不完整")
+    "empty" -> L("暂无数据")
+    "unavailable" -> L("数据暂不可用")
+    "failed" -> L("分析失败")
+    else -> L("结果状态未知")
 }

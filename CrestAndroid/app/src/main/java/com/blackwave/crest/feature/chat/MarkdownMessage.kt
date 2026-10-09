@@ -1,5 +1,7 @@
 package com.blackwave.crest.feature.chat
 
+import com.blackwave.crest.ui.localization.L
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -175,9 +177,9 @@ private fun MarkdownCodeBlock(language: String?, code: String) {
             .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp)),
     ) {
         Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 5.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(language?.ifEmpty { "代码" } ?: "代码", modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(language?.ifEmpty { L("代码") } ?: L("代码"), modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Box(
-                Modifier.size(32.dp).semantics { contentDescription = if (copied) "已复制" else "复制代码" }.clickable {
+                Modifier.size(32.dp).semantics { contentDescription = if (copied) L("已复制") else L("复制代码") }.clickable {
                     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
                         .setPrimaryClip(ClipData.newPlainText("code", code))
                     copied = true
@@ -246,9 +248,9 @@ internal fun MarkdownTable(
                 if (rowIndex < shown.size) HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             }
         }
-        if (totalRowCount != null) Text("当前展示 ${shown.size} / $reported 行", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (totalRowCount != null) Text(L("当前展示 %lld / %lld 行", shown.size, reported), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (rows.size > previewRowCount) TextButton(onClick = { expanded = !expanded }) {
-            Text(if (expanded) "收起" else if (reported > rows.size) "展开已返回的 ${rows.size} 行" else "展开全部（${rows.size} 行）")
+            Text(if (expanded) L("收起") else if (reported > rows.size) L("展开已返回的 %lld 行", rows.size) else L("展开全部（%lld 行）", rows.size))
         }
     }
 }

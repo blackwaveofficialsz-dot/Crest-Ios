@@ -1,5 +1,12 @@
 package com.blackwave.crest.core.network
 
+import com.blackwave.crest.core.model.AnalyticsStoreScope
+import com.blackwave.crest.core.model.AnalyticsRevenueTrend
+import com.blackwave.crest.core.model.AnalyticsProducts
+import com.blackwave.crest.core.model.AnalyticsProductTrend
+import com.blackwave.crest.core.model.AnalyticsLabor
+import com.blackwave.crest.core.model.AnalyticsAlerts
+
 import com.blackwave.crest.BuildConfig
 import com.blackwave.crest.core.model.ChatAgentResponse
 import com.blackwave.crest.core.model.AcceptInvitationResponse
@@ -44,6 +51,7 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -167,6 +175,27 @@ class ApiClient(
         fallback = "昵称修改失败",
     )
 
+    suspend fun uploadAccountAvatar(imageData: ByteArray, accessToken: String): AccountProfile {
+        val body = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "file",
+                "avatar.jpg",
+                imageData.toRequestBody("image/jpeg".toMediaType()),
+            )
+            .build()
+        val request = Request.Builder()
+            .url(url("api/v1/auth/profile/avatar"))
+            .header("Authorization", "Bearer $accessToken")
+            .put(body)
+            .build()
+        return client.newCall(request).await().use { response ->
+            if (!response.isSuccessful) throw errorFrom(response, "头像上传失败")
+            val content = response.body?.string() ?: throw ApiException(message = "头像上传失败")
+            json.decodeFromString(content)
+        }
+    }
+
     suspend fun setInitialPassword(
         newPassword: String,
         accessToken: String,
@@ -227,18 +256,59 @@ class ApiClient(
         dateTo: String,
         refresh: Boolean,
         accessToken: String,
+        storeKeys: List<String> = emptyList(),
     ): AnalyticsOverview = get(
         path = "api/v1/analytics/operations/overview",
         accessToken = accessToken,
         fallback = "经营概览加载失败",
-        query = listOf(
-            "date_from" to dateFrom,
-            "date_to" to dateTo,
+        query = analyticsPeriod(dateFrom, dateTo, storeKeys) + listOf(
             "compare" to "previous",
             "granularity" to "day",
             "order_breakdown" to "channel",
             "refresh" to refresh.toString(),
         ),
+    )
+
+    suspend fun analyticsStoreScope(accessToken: String): AnalyticsStoreScope = get(
+        "api/v1/analytics/store-scope-tree", accessToken, "门店范围加载失败",
+    )
+
+    suspend fun analyticsProducts(dateFrom: String, dateTo: String, storeKeys: List<String>, accessToken: String): AnalyticsProducts = get(
+        "api/v1/analytics/operations/products", accessToken, "产品分析加载失败",
+        analyticsPeriod(dateFrom, dateTo, storeKeys) + listOf("compare" to "previous", "granularity" to "day", "limit" to "30"),
+    )
+
+    suspend fun analyticsLabor(dateFrom: String, dateTo: String, storeKeys: List<String>, accessToken: String): AnalyticsLabor = get(
+        "api/v1/analytics/operations/labor", accessToken, "人效分析加载失败",
+        analyticsPeriod(dateFrom, dateTo, storeKeys) + listOf("compare" to "previous", "granularity" to "day"),
+    )
+
+    suspend fun analyticsAlerts(businessDate: String, accessToken: String): AnalyticsAlerts = get(
+        "api/v1/analytics/revenue-alerts", accessToken, "营收报警加载失败", listOf("business_date" to businessDate),
+    )
+
+    suspend fun analyticsRevenueTrend(dateFrom: String, dateTo: String, storeKeys: List<String>, accessToken: String): AnalyticsRevenueTrend = get(
+        "api/v1/analytics/trends/revenue", accessToken, "营收趋势加载失败",
+        analyticsPeriod(dateFrom, dateTo, storeKeys) + listOf("store_key" to "ALL", "source_type" to "all", "granularity" to "day", "include_current" to "false"),
+    )
+
+    suspend fun analyticsProductTrend(productKey: String, dateFrom: String, dateTo: String, storeKeys: List<String>, accessToken: String): AnalyticsProductTrend = get(
+        "api/v1/analytics/products/trend", accessToken, "产品趋势加载失败",
+        analyticsPeriod(dateFrom, dateTo, storeKeys) + listOf(
+            "product_key" to productKey, "dim_key" to (storeKeys.singleOrNull() ?: "ALL"),
+            "dim_type" to if (storeKeys.size == 1) "shop" else "all", "granularity" to "day", "include_current" to "false",
+        ),
+    )
+
+    private fun analyticsPeriod(from: String, to: String, stores: List<String>) =
+        listOf("date_from" to from, "date_to" to to) + stores.distinct().sorted().map { "store_keys" to it }
+
+    suspend fun analyticsRevenueDelta(body: JsonObject, accessToken: String): com.blackwave.crest.core.model.AnalyticsDelta = post(
+        "api/v1/analytics/trends/revenue/delta", body, "营收趋势增量加载失败", accessToken,
+    )
+
+    suspend fun analyticsProductDelta(body: JsonObject, accessToken: String): com.blackwave.crest.core.model.AnalyticsDelta = post(
+        "api/v1/analytics/products/trend/delta", body, "产品趋势增量加载失败", accessToken,
     )
 
     suspend fun switchWorkspace(
