@@ -24,7 +24,8 @@
 
 - 用户打开侧栏后抓取 `work/crest-sidebar-live.jpeg`，与当前 iOS `work/crest-ios-sidebar-current.png` 及 `AppSidebar.swift` 对照。发现鸿蒙搜索、分析、最近标题和历史行逐项偏低；底部账户栏为突兀的白色卡片，关闭按钮缺少明显圆形玻璃底。
 - 仅调整现有 `HomePage.ets` 侧栏布局：取消额外的列间距并按当前模拟器可视宽度收紧导航行；历史行 44 vp、行距 2 vp；列表占满底部账户栏以上的空间；账户栏沿用侧栏底色，去掉硬分隔；关闭按钮恢复可见圆形背景。保留按钮 44 vp 命中区，不改历史写操作逻辑。
-- 新 Debug HAP 已构建、覆盖安装并启动。`npm test` **129 / 129 通过**，`npm run check:project` **26 个源码文件通过**。日志见 `CrestHarmony/work/sidebar-build8.log`、`sidebar-tests8.log`、`sidebar-check8.log`。**安装后的新版侧栏尚需用户再次打开、实屏复核，当前不标记 iOS 视觉对照通过。**
+- 用户重新打开新版侧栏后的浅色实屏 `work/crest-sidebar-final.jpeg` 显示：导航三行与 iOS 基本对齐、历史行距和底部账户栏已明显改善，但分隔线、“最近”和首条历史记录分别约提前 29、39、55 像素（按两张截图等高缩放比较）。进一步只给分隔线增加上下间距、给“最近”行增加高度，不再挪动已对齐的导航行。
+- 校正版 Debug HAP 已构建、覆盖安装并启动；`npm test` **129 / 129 通过**，`npm run check:project` **26 个源码文件通过**（此前同批次）。最新日志见 `CrestHarmony/work/sidebar-build9.log`、`sidebar-tests9.log`；首次修正日志见 `sidebar-build8.log`、`sidebar-tests8.log`、`sidebar-check8.log`。**末次校正版侧栏仍待用户重新打开后的实屏复核，不标记 iOS 视觉对照通过。**
 
 ## 第六批：布局变形复核（2026-10-09）
 

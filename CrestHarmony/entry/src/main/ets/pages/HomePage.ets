@@ -287,11 +287,11 @@ export struct HomePage {
       this.sideRow('edit', this.t('发起新对话'), () => this.fresh(), 36)
       this.sideRow('search', this.t('搜索对话内容'), () => { this.destination = 'search'; this.sidebar = false; this.search = ''; this.chat.loadHistory(); }, 48, true)
       if (this.session.user?.tenant_id) { this.sideRow('chart', this.t('经营分析'), () => { this.destination = 'analytics'; this.sidebar = false; }, 48, true) }
-      Divider().color(Palette.border(this.dark))
+      Divider().color(Palette.border(this.dark)).margin({ top: 10, bottom: 4 })
       Row() {
         Text(this.t('最近')).fontSize(14).fontWeight(FontWeight.Medium).fontColor(Palette.secondary(this.dark)).layoutWeight(1)
         IconButton({ kind: 'retry', label: this.t('刷新最近对话'), glass: false, iconSize: 14, isEnabled: !this.chat.historyLoading, action: () => this.chat.loadHistory() })
-      }.height(36).padding({ left: 14, top: 14 }).width('100%')
+      }.height(42).padding({ left: 14, top: 14 }).width('100%')
       this.history(this.chat.sessions)
       Row({ space: 12 }) {
         if (this.session.avatar) { Image(this.session.avatar).width(34).height(34).borderRadius(17).objectFit(ImageFit.Cover) }
