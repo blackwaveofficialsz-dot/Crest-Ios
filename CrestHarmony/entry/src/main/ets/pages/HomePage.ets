@@ -26,6 +26,7 @@ export struct HomePage {
   @State sidebarDrag: number = 0; @State drawerWidth: number = 360;
   private sidebarGestureAccepted: boolean = false;
   @State panel: string = 'settings'; @State draft: string = ''; @State search: string = '';
+  @State composerFocused: boolean = false;
   @State form: string = ''; @State oldPassword: string = ''; @State confirmation: string = '';
   @State sheetError: string = ''; @State busy: boolean = false;
   @State completion: string = ''; @State completionTitle: string = ''; @State completionMessage: string = '';
@@ -170,13 +171,15 @@ export struct HomePage {
       if (this.chat.operationError) { Text(this.chat.operationError).fontSize(12).fontColor(Palette.error(this.dark)).padding({ left: 20, right: 20 }) }
       Row({ space: 8 }) {
         TextArea({ placeholder: this.t('给 Crest 发消息'), text: this.draft }).id('chatComposer').onChange((value: string) => this.draft = value)
+          .onFocus(() => this.composerFocused = true).onBlur(() => this.composerFocused = false)
           .fontSize(16).fontColor(Palette.text(this.dark)).placeholderColor(this.dark ? '#8E8E93' : '#C7C7CC')
-          .backgroundColor(Color.Transparent).padding({ left: 8, right: 8, top: 0, bottom: 0 })
+          .backgroundColor(Color.Transparent).padding({ left: 9, right: 8, top: 10, bottom: 4 })
           .constraintSize({ minHeight: 38, maxHeight: 132 }).layoutWeight(1).maxLength(16000)
-        IconButton({ kind: this.chat.streaming ? 'stop' : 'send', label: this.chat.streaming ? this.t('停止回复') : this.t('发送'), glass: false, filled: true,
+        IconButton({ kind: this.chat.streaming ? 'stop' : 'send', label: this.chat.streaming ? this.t('停止回复') : this.t('发送'), glass: false, filled: true, iconSize: 16,
           isEnabled: this.chat.streaming || (this.canSend() && !!this.draft.trim()), action: () => { if (this.chat.streaming) this.chat.stop(); else this.send(this.draft); } })
-      }.padding(7).backgroundColor(Palette.input(this.dark))
-        .border({ width: 1, color: Palette.border(this.dark) }).borderRadius(28).margin({ left: 25, right: 25, bottom: 8 })
+      }.padding({ left: 7, right: 6, top: 3, bottom: 2 }).backgroundColor(Palette.input(this.dark))
+        .border({ width: 1, color: this.composerFocused ? (this.dark ? '#CCB4B4B4' : '#CC5D5D5D') : Palette.border(this.dark) })
+        .borderRadius(26).margin({ left: 25, right: 25, bottom: 11 })
     }.width('100%')
   }
   @Builder private chatPage() {
@@ -237,7 +240,7 @@ export struct HomePage {
     Row({ space: 12 }) {
       CrestIcon({ kind: icon, iconSize: 18, color: destructive ? Palette.error(this.dark) : Palette.text(this.dark) })
       Text(label).fontSize(16).fontColor(destructive ? Palette.error(this.dark) : Palette.text(this.dark)).layoutWeight(1)
-    }.height(44).width('100%')
+    }.height(44).padding({ left: 16, right: 16 }).width('100%')
   }
   @Builder private contextMenu(item: Conversation) {
     Menu() {
@@ -254,13 +257,15 @@ export struct HomePage {
     }.padding({ left: 18, right: 18 }).height(48).width(this.drawerWidth - 20)
       .borderRadius(24).backgroundColor(Palette.surface(this.dark)).backgroundBlurStyle(BlurStyle.Thin)
   }
-  @Builder private history(items: Conversation[]) {
-    if (this.chat.historyLoading && !items.length) { StateMessage({ title: this.t('正在加载历史记录'), busy: true }) }
+  @Builder private history(searchOnly: boolean = false) {
+    if (this.chat.historyLoading && !this.chat.sessions.length) { StateMessage({ title: this.t('正在加载历史记录'), busy: true }) }
     else if (this.chat.historyError) { StateMessage({ title: this.t('历史记录加载失败'), detail: this.chat.historyError, action: this.t('重试'), onAction: () => this.chat.loadHistory() }) }
-    else if (!items.length) { StateMessage({ title: this.search ? this.t('没有找到相关对话') : this.t('暂无历史记录'), detail: this.search ? this.t('试试其他对话标题') : this.t('开始一段新的对话吧') }) }
+    else if (!this.chat.sessions.length || (searchOnly && !this.chat.sessions.some((item: Conversation) => item.title.toLowerCase().includes(this.search.trim().toLowerCase())))) {
+      StateMessage({ title: searchOnly ? this.t('没有找到相关对话') : this.t('暂无历史记录'), detail: searchOnly ? this.t('试试其他对话标题') : this.t('开始一段新的对话吧') })
+    }
     else {
       List({ space: 2 }) {
-        ForEach(items, (item: Conversation) => {
+        ForEach(searchOnly ? this.chat.sessions.filter((item: Conversation) => item.title.toLowerCase().includes(this.search.trim().toLowerCase())) : this.chat.sessions, (item: Conversation) => {
           ListItem() {
             Row({ space: 8 }) {
               Text(item.title || this.t('新对话')).fontSize(16).fontWeight(item.session_id === this.chat.activeId ? FontWeight.Medium : FontWeight.Regular)
@@ -270,7 +275,10 @@ export struct HomePage {
               .backgroundColor(item.session_id === this.chat.activeId ? (this.dark ? '#08ECECEC' : '#080D0D0D') : Color.Transparent)
               .onClick(() => this.choose(item)).bindContextMenu(this.contextMenu(item), ResponseType.LongPress, { preview: this.historyPreview(item) })
           }
-        }, (item: Conversation) => item.session_id)
+        }, (item: Conversation) => JSON.stringify([item.session_id, item.is_pinned, item.title]))
+        if (this.sidebar) {
+          ListItem() { Column().height(96) }
+        }
       }.width('100%').layoutWeight(1)
     }
   }
@@ -292,14 +300,23 @@ export struct HomePage {
         Text(this.t('最近')).fontSize(14).fontWeight(FontWeight.Medium).fontColor(Palette.secondary(this.dark)).layoutWeight(1)
         IconButton({ kind: 'retry', label: this.t('刷新最近对话'), glass: false, iconSize: 14, isEnabled: !this.chat.historyLoading, action: () => this.chat.loadHistory() })
       }.height(42).padding({ left: 14, top: 14 }).width('100%')
-      this.history(this.chat.sessions)
-      Row({ space: 12 }) {
-        if (this.session.avatar) { Image(this.session.avatar).width(34).height(34).borderRadius(17).objectFit(ImageFit.Cover) }
-        else { CrestIcon({ kind: 'person', iconSize: 34, color: Palette.secondary(this.dark) }) }
-        Text(this.session.displayName || this.t('账户设置')).fontSize(16).fontWeight(FontWeight.Medium).fontColor(Palette.text(this.dark)).layoutWeight(1)
-        CrestIcon({ kind: 'gear', iconSize: 20, color: Palette.text(this.dark) }).width(44)
-      }.padding({ left: 4, right: 4, top: 30, bottom: 8 }).width('100%').backgroundColor(Palette.sidebar(this.dark))
-        .onClick(() => { this.sidebar = false; this.openPanel('settings'); })
+      Stack({ alignContent: Alignment.Bottom }) {
+        Column() { this.history() }.width('100%').height('100%')
+        Column().width('100%').height(96).backdropBlur(18)
+          .linearGradient({
+            direction: GradientDirection.Bottom,
+            colors: this.dark
+              ? [['#00171717', 0.0], ['#99171717', 0.55], ['#F5171717', 1.0]]
+              : [['#00F9F9F9', 0.0], ['#99F9F9F9', 0.55], ['#F5F9F9F9', 1.0]]
+          }).hitTestBehavior(HitTestMode.None)
+        Row({ space: 12 }) {
+          if (this.session.avatar) { Image(this.session.avatar).width(34).height(34).borderRadius(17).objectFit(ImageFit.Cover) }
+          else { CrestIcon({ kind: 'person', iconSize: 34, color: Palette.secondary(this.dark) }) }
+          Text(this.session.displayName || this.t('账户设置')).fontSize(16).fontWeight(FontWeight.Medium).fontColor(Palette.text(this.dark)).layoutWeight(1)
+          CrestIcon({ kind: 'gear', iconSize: 20, color: Palette.text(this.dark) }).width(44)
+        }.padding({ left: 4, right: 4, top: 30, bottom: 8 }).width('100%')
+          .onClick(() => { this.sidebar = false; this.openPanel('settings'); })
+      }.width('100%').layoutWeight(1)
     }.width('100%').height('100%').padding(12)
       .backgroundColor(Palette.sidebar(this.dark))
       .translate({ x: this.sidebar ? this.sidebarDrag : -this.drawerWidth + this.sidebarDrag })
@@ -439,7 +456,7 @@ export struct HomePage {
   @Builder private conversationDialog() {
     Stack({ alignContent: Alignment.Center }) {
       Column().width('100%').height('100%').backgroundColor('#66000000')
-      Column({ space: 18 }) {
+      Column({ space: this.panel === 'rename' ? 16 : 18 }) {
         Column({ space: 6 }) {
           Text(this.panelTitle()).fontSize(17).fontWeight(FontWeight.Bold).fontColor(Palette.text(this.dark))
           Text(this.panel === 'rename' ? this.t('输入新的对话名称') : this.t('这个对话将不再显示在此处，此操作还会从你的活动记录中删除相关的活动记录。'))
@@ -447,7 +464,7 @@ export struct HomePage {
         }.width('100%').alignItems(HorizontalAlign.Start).padding({ left: 14, right: 14 })
         if (this.panel === 'rename') {
           TextInput({ text: this.form, placeholder: this.t('对话名称') }).onChange((value: string) => this.form = value)
-            .id('conversationName').fontSize(17).height(48).borderRadius(24).padding({ left: 16, right: 16 })
+            .id('conversationName').fontSize(17).height(44).borderRadius(22).padding({ left: 16, right: 16 })
             .backgroundColor(this.dark ? '#303030' : '#E8E8ED').fontColor(Palette.text(this.dark)).enabled(!this.busy)
             .onAppear(() => { setTimeout(() => {
               if (this.dialog && this.panel === 'rename') this.getUIContext().getFocusController().requestFocus('conversationName');
@@ -456,9 +473,9 @@ export struct HomePage {
         if (this.sheetError) { Text(this.sheetError).fontSize(13).fontColor(Palette.error(this.dark)) }
         if (this.busy) { LoadingProgress().width(24).height(24) }
         Row({ space: 8 }) {
-          Button(this.t('取消')).layoutWeight(1).height(48).fontSize(17).fontWeight(FontWeight.Medium)
+          Button(this.t('取消')).layoutWeight(1).height(this.panel === 'rename' ? 44 : 48).fontSize(17).fontWeight(FontWeight.Medium)
             .backgroundColor(this.dark ? '#303030' : '#E3E3E8').fontColor(Palette.text(this.dark)).enabled(!this.busy).onClick(() => this.dialog = false)
-          Button(this.panel === 'rename' ? this.t('保存') : this.t('确认')).layoutWeight(1).height(48).fontSize(17).fontWeight(FontWeight.Medium)
+          Button(this.panel === 'rename' ? this.t('保存') : this.t('确认')).layoutWeight(1).height(this.panel === 'rename' ? 44 : 48).fontSize(17).fontWeight(FontWeight.Medium)
             .backgroundColor(this.dark ? '#303030' : '#E3E3E8').fontColor(this.panel === 'delete' ? Palette.error(this.dark) : Palette.text(this.dark))
             .enabled(!this.busy && (this.panel === 'delete' || (!!this.form.trim() && this.form.trim() !== this.selected?.title)))
             .onClick(() => this.perform(async () => {
@@ -466,7 +483,8 @@ export struct HomePage {
               if (this.panel === 'rename') await this.chat.rename(this.selected, this.form); else await this.chat.delete(this.selected);
             }, true))
         }.width('100%')
-      }.padding({ left: 14, right: 14, top: 22, bottom: 14 }).width(320).constraintSize({ maxWidth: '90%' }).borderRadius(36)
+      }.padding({ left: 14, right: 14, top: 22, bottom: 14 }).width(this.panel === 'rename' ? 280 : 320)
+        .constraintSize({ maxWidth: '90%' }).borderRadius(this.panel === 'rename' ? 30 : 36)
         .backgroundColor(this.dark ? '#E6141414' : '#EDF7F7F9').backgroundBlurStyle(BlurStyle.Thick)
         .border({ width: .5, color: this.dark ? '#30FFFFFF' : '#80FFFFFF' })
     }.width('100%').height('100%')
@@ -485,7 +503,7 @@ export struct HomePage {
         Column({ space: 10 }) {
           this.heading()
           Search({ value: this.search, placeholder: this.t('搜索对话标题') }).onChange((value: string) => this.search = value).margin({ left: 20, right: 20 })
-          this.history(this.chat.sessions.filter((item: Conversation) => item.title.toLowerCase().includes(this.search.trim().toLowerCase())))
+          this.history(true)
         }.width('100%').height('100%')
       }
       if (this.sidebar || this.sidebarDrag > 0) {

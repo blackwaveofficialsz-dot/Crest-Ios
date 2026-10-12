@@ -189,6 +189,23 @@ for (const operation of ['rename', 'delete', 'pin']) {
     assert.equal(chat.activeId, 'same-id'); assert.equal(chat.title, 'New workspace'); assert.equal(reads, 0);
   });
 }
+test('chat: pin uses the PATCH response to reorder history without a second GET', async () => {
+  const env = setup(); await login(env);
+  const chat = new env.ChatStore(env.session);
+  const older = { session_id: 'older', title: '较早', is_pinned: false, updated_at: '2026-10-01T00:00:00Z' };
+  const newer = { session_id: 'newer', title: '较新', is_pinned: false, updated_at: '2026-10-02T00:00:00Z' };
+  chat.sessions = [newer, older];
+  env.session.api.call = async (method, endpoint, payload) => {
+    assert.equal(method, 'PATCH'); assert.ok(endpoint.endsWith('/older'));
+    return { ...older, is_pinned: JSON.parse(payload).is_pinned };
+  };
+  await chat.pin(older);
+  assert.deepEqual([...chat.sessions].map(item => item.session_id), ['older', 'newer']);
+  assert.equal(chat.sessions[0].is_pinned, true);
+  await chat.pin(chat.sessions[0]);
+  assert.deepEqual([...chat.sessions].map(item => item.session_id), ['newer', 'older']);
+  assert.equal(chat.sessions[1].is_pinned, false);
+});
 test('chat: streamed failure code and retryability survive subsequent immutable updates', async () => {
   const env = setup(); await login(env); env.session.api.call = async () => [];
   env.session.api.stream = async (_run, _token, _control, callback) => {

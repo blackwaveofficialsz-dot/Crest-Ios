@@ -1,0 +1,683 @@
+<meta charset="utf-8">
+<div id="crest-business-mobile" data-theme="dark" aria-label="Crest 经营分析手机模拟页面">
+  <div class="crest-phone">
+    <div class="crest-status" aria-hidden="true"><span>9:41</span><span class="crest-status-icons">●●● ▰</span></div>
+    <header class="crest-head">
+      <div class="crest-kicker">CREST <span class="crest-kicker-line"></span> 数据中心</div>
+      <div class="crest-title-row"><h1>经营分析</h1><span class="crest-demo-tag">演示数据</span></div>
+      <p>门店表现，一目了然</p>
+    </header>
+
+    <nav class="crest-module-tabs" aria-label="经营分析模块">
+      <button type="button" data-module="dashboard" aria-current="page">看板</button>
+      <button type="button" data-module="orders">订单</button>
+      <button type="button" data-module="products">产品</button>
+      <button type="button" data-module="labor">人效</button>
+      <button type="button" data-module="alerts">报警</button>
+    </nav>
+    <main class="crest-content">
+      <div class="crest-filter-top">
+        <label class="crest-date-field"><span>统计日期</span><input id="crest-date" type="date" value="2026-09-29" min="2026-08-01" max="2026-09-30" aria-label="统计日期"></label>
+        <div class="crest-compare-note"><span class="crest-note-dot"></span> 当日快照</div>
+      </div>
+
+      <div data-module-panel="dashboard">
+      <section class="crest-overview" aria-label="当日营收概览">
+        <div class="crest-eyebrow" id="crest-summary-label">全门店 · 当日营收</div>
+        <div class="crest-total-row"><strong id="crest-total">¥86,420</strong><span class="crest-change" id="crest-change">+12.8%</span></div>
+        <div class="crest-subline">较前一日 <span id="crest-prev">¥76,613</span></div>
+      </section>
+
+      <div class="crest-control-label">营业渠道</div>
+      <div class="crest-channel-tabs" role="group" aria-label="营业渠道">
+        <button type="button" data-channel="all" aria-pressed="true">全部</button>
+        <button type="button" data-channel="dine" aria-pressed="false"><i class="crest-swatch dine"></i>堂食</button>
+        <button type="button" data-channel="delivery" aria-pressed="false"><i class="crest-swatch delivery"></i>外卖</button>
+        <button type="button" data-channel="pickup" aria-pressed="false"><i class="crest-swatch pickup"></i>自提</button>
+      </div>
+
+      <section class="crest-panel crest-compare-panel" aria-labelledby="crest-compare-title">
+        <div class="crest-section-head"><div><div class="crest-section-index">01 / 纵向比较</div><h2 id="crest-compare-title">同日门店对比</h2></div><span id="crest-compare-date">9月29日</span></div>
+        <p class="crest-section-sub">同一日期下，各店营收与渠道构成</p>
+        <div class="crest-legend" aria-label="渠道图例"><span><i class="crest-swatch dine"></i>堂食</span><span><i class="crest-swatch delivery"></i>外卖</span><span><i class="crest-swatch pickup"></i>自提</span></div>
+        <p class="crest-compare-hint">左右滑动查看 10 家门店 · 点击柱状图查看明细</p>
+        <div id="crest-store-bars" class="crest-store-bars" role="group" aria-label="可左右滑动的门店营收对比图"></div>
+        <div id="crest-store-detail" class="crest-store-detail" aria-live="polite" hidden></div>
+      </section>
+
+      <section class="crest-panel crest-trend-panel" aria-labelledby="crest-trend-title">
+        <div class="crest-section-head"><div><div class="crest-section-index">02 / 时间趋势</div><h2 id="crest-trend-title">门店周期趋势</h2></div><span class="crest-trend-chip" id="crest-selection-count">已选 4 店</span></div>
+        <p class="crest-section-sub">单选、多选或全选门店，查看合计变化</p>
+        <div class="crest-control-label crest-small-label">门店范围</div>
+        <div class="crest-store-select" id="crest-store-select" role="group" aria-label="趋势门店范围"></div>
+        <div class="crest-trend-top"><div><span id="crest-trend-period-label">9月29日 · 当日营收</span><strong id="crest-trend-total">¥565,720</strong><em id="crest-trend-delta" class="crest-trend-delta">较上周期 +0.0%</em></div><div class="crest-period-select" role="group" aria-label="趋势周期"><button type="button" data-period="7" aria-pressed="false">7日</button><button type="button" data-period="30" aria-pressed="true">30日</button></div></div>
+        <div class="crest-chart-wrap"><svg id="crest-trend-chart" role="img" aria-label="所选门店营收趋势图"></svg><input id="crest-trend-scrub" class="crest-trend-scrub" type="range" min="0" max="1000" value="1000" aria-label="用方向键查看每日营收"></div>
+        <div class="crest-line-legend"><span><i class="crest-line-key current"></i>当前周期</span><span><i class="crest-line-key previous"></i>上个周期</span></div>
+        <div class="crest-chart-detail" id="crest-chart-detail" aria-live="polite"></div>
+      </section>
+
+      <section class="crest-panel crest-structure-panel" aria-labelledby="crest-structure-title">
+        <div class="crest-section-head"><div><div class="crest-section-index">03 / 渠道结构</div><h2 id="crest-structure-title">堂食与外卖构成</h2></div><span id="crest-structure-date">9月29日</span></div>
+        <p class="crest-section-sub">所选门店在统计日期的营业构成</p>
+        <div id="crest-structure-list"></div>
+      </section>
+      </div>
+
+      <div data-module-panel="orders" hidden>
+        <div id="crest-orders-overview">
+        <div class="crest-module-heading"><div class="crest-section-index">02 / 订单</div><h2>订单统计</h2><p>订单量、实收与客单价</p></div>
+        <div id="crest-orders-summary" class="crest-metric-grid"></div>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">门店排名</div><h2>10 店订单表现</h2></div><span>按订单数</span></div><p class="crest-section-sub">点击门店查看该店订单趋势与每日数据</p><div id="crest-orders-list"></div></section>
+        </div>
+        <div id="crest-order-detail" hidden>
+          <button id="crest-order-back" class="crest-order-back" type="button">‹ 返回门店排名</button>
+          <div class="crest-module-heading"><div class="crest-section-index">门店订单详情</div><h2 id="crest-order-store-name">凤八店</h2><p>查看该店订单量与每日经营数据</p></div>
+          <section id="crest-order-trend-panel" class="crest-panel crest-trend-panel" aria-labelledby="crest-order-trend-title">
+            <div class="crest-section-head"><div><div class="crest-section-index">订单明细</div><h2 id="crest-order-trend-title">订单趋势</h2></div><div class="crest-order-view-select" role="group" aria-label="订单详情展示方式"><button type="button" data-order-view="chart" aria-pressed="true">折线图</button><button type="button" data-order-view="table" aria-pressed="false">数据表</button></div></div>
+            <p class="crest-section-sub" id="crest-order-range-label">近 30 日 · 按日统计</p>
+            <div class="crest-trend-top"><div><span id="crest-order-focus-date">9月29日 · 当日订单</span><strong id="crest-order-focus-count">0 单</strong><em id="crest-order-focus-delta" class="crest-trend-delta"></em></div><div class="crest-period-select" role="group" aria-label="门店订单周期"><button type="button" data-order-period="7" aria-pressed="false">7日</button><button type="button" data-order-period="30" aria-pressed="true">30日</button></div></div>
+            <div id="crest-order-chart-view"><div class="crest-chart-wrap"><svg id="crest-order-detail-chart" role="img" aria-label="门店订单量趋势图"></svg><input id="crest-order-scrub" class="crest-trend-scrub" type="range" min="0" max="1000" value="1000" aria-label="用方向键查看每日订单量"></div><p class="crest-chart-pan-hint">左右滑动回看历史 · 轻点选日期 · 长按折线后拖动逐日查看</p><div class="crest-line-legend"><span><i class="crest-line-key current"></i>当前周期</span><span><i class="crest-line-key previous"></i>上个周期</span></div><div id="crest-order-point-meta" class="crest-order-point-meta"></div></div>
+            <div id="crest-order-table-view" hidden><p class="crest-order-table-hint">左右滑动查看全部指标</p><div class="crest-order-table-wrap"><table class="crest-order-table"><thead><tr><th scope="col">日期</th><th scope="col">订单数</th><th scope="col">净实收</th><th scope="col">客单价</th><th scope="col">退款</th></tr></thead><tbody id="crest-order-table-body"></tbody></table></div></div>
+          </section>
+        </div>
+      </div>
+
+      <div data-module-panel="products" hidden>
+        <div class="crest-module-heading"><div class="crest-section-index">03 / 产品</div><h2>产品分析</h2><p>商品销售额、销量与贡献占比</p></div>
+        <div id="crest-products-summary" class="crest-metric-grid"></div>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">销售走势</div><h2>产品销售趋势</h2></div><span>近 7 日</span></div><p class="crest-section-sub" id="crest-product-trend-name">点击下方商品切换趋势</p><div id="crest-products-chart" class="crest-mini-chart"></div><div id="crest-products-point" class="crest-chart-detail" aria-live="polite"></div></section>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">销售排行</div><h2>热销产品</h2></div><span>前 6 名</span></div><p class="crest-section-sub">商品销额不等同于财务净实收</p><div id="crest-products-list"></div><div id="crest-product-detail" class="crest-inline-detail" aria-live="polite"></div></section>
+      </div>
+
+      <div data-module-panel="labor" hidden>
+        <div class="crest-module-heading"><div class="crest-section-index">04 / 人效</div><h2>人效分析</h2><p>工时投入与每小时产出</p></div>
+        <div id="crest-labor-summary" class="crest-metric-grid"></div>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">产出效率</div><h2>小时产出趋势</h2></div><span>近 7 日</span></div><p class="crest-section-sub">实际产出对比计划目标</p><div id="crest-labor-output-chart" class="crest-mini-chart"></div><div class="crest-line-legend"><span><i class="crest-line-key current"></i>实际</span><span><i class="crest-line-key previous"></i>计划</span></div></section>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">排班效率</div><h2>实际 / 计划工时</h2></div><span>近 7 日</span></div><p class="crest-section-sub">逐日查看排班执行情况</p><div id="crest-labor-hours-chart" class="crest-mini-chart"></div><div id="crest-labor-days" class="crest-daily-list"></div></section>
+      </div>
+
+      <div data-module-panel="alerts" hidden>
+        <div class="crest-module-heading"><div class="crest-section-index">05 / 报警</div><h2>营收报警</h2><p>识别偏离基准的门店</p></div>
+        <div id="crest-alerts-summary" class="crest-metric-grid"></div>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">偏离监测</div><h2>报警偏离率</h2></div><span id="crest-alert-date">9月29日</span></div><p class="crest-section-sub">按偏离绝对值排序 · 左侧低于基准</p><div id="crest-alerts-chart"></div></section>
+        <section class="crest-panel"><div class="crest-section-head"><div><div class="crest-section-index">处理清单</div><h2>需关注门店</h2></div><span>点击展开</span></div><p class="crest-section-sub">查看实际营收、基准营收与原因提示</p><div id="crest-alerts-list"></div></section>
+      </div>
+      <div class="crest-footnote">以上为模拟数据，仅用于页面方案预览</div>
+    </main>
+    <div class="crest-home-indicator" aria-hidden="true"></div>
+  </div>
+</div>
+
+<style>
+  #crest-business-mobile{display:flex;justify-content:center;width:100%;padding:12px 0 22px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;color:#f7f7f9}
+  #crest-business-mobile,*:where(#crest-business-mobile *){box-sizing:border-box}
+  #crest-business-mobile{--c-bg:#101115;--c-surface:#1b1c21;--c-surface-2:#23242a;--c-line:#32333a;--c-text:#f7f7f9;--c-muted:#9799a4;--c-soft:#bdbec6;--c-purple:#9a70f6;--c-coral:#ff6b8b;--c-teal:#42caa9;--c-green:#65d7a2;--c-track:#303137;--c-shadow:0 18px 65px rgba(0,0,0,.3)}
+  #crest-business-mobile[data-theme="light"]{--c-bg:#f5f5f8;--c-surface:#fff;--c-surface-2:#f2f2f6;--c-line:#e5e5eb;--c-text:#1b1c23;--c-muted:#757682;--c-soft:#595b68;--c-purple:#7454d9;--c-coral:#df496b;--c-teal:#149d80;--c-green:#168c60;--c-track:#e9e9ef;--c-shadow:0 18px 60px rgba(30,30,55,.12)}
+  #crest-business-mobile .crest-phone{width:min(100%,390px);background:var(--c-bg);color:var(--c-text);border:1px solid var(--c-line);border-radius:32px;box-shadow:var(--c-shadow);overflow:hidden;font-size:14px;line-height:1.45;font-variant-numeric:tabular-nums}
+  #crest-business-mobile .crest-status{height:39px;display:flex;align-items:center;justify-content:space-between;padding:7px 27px 0;font-size:13px;font-weight:650;letter-spacing:.01em}
+  #crest-business-mobile .crest-status-icons{font-size:12px;letter-spacing:2px;opacity:.85}
+  #crest-business-mobile .crest-head{padding:17px 22px 16px}
+  #crest-business-mobile .crest-kicker{display:flex;align-items:center;gap:9px;color:var(--c-muted);font-size:10px;font-weight:700;letter-spacing:.18em}
+  #crest-business-mobile .crest-kicker-line{height:1px;width:15px;background:var(--c-muted);opacity:.6}
+  #crest-business-mobile .crest-title-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:5px}
+  #crest-business-mobile h1{font-size:27px;font-weight:680;line-height:1.2;letter-spacing:-.03em;margin:0}
+  #crest-business-mobile .crest-demo-tag{border:1px solid var(--c-line);border-radius:30px;color:var(--c-muted);padding:4px 9px;font-size:11px;white-space:nowrap}
+  #crest-business-mobile .crest-head p{margin:5px 0 0;color:var(--c-muted);font-size:13px}
+  #crest-business-mobile .crest-module-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 16px 15px}
+  #crest-business-mobile .crest-module-tabs button{height:44px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--c-muted);font-size:13px;font-weight:650}
+  #crest-business-mobile .crest-module-tabs button[aria-current="page"]{background:var(--c-surface-2);border-color:var(--c-line);color:var(--c-text)}
+  #crest-business-mobile .crest-content{padding:0 16px 20px}
+  #crest-business-mobile .crest-filter-top{display:flex;align-items:end;justify-content:space-between;margin:3px 4px 14px;gap:12px}
+  #crest-business-mobile .crest-date-field{display:grid;gap:4px;font-size:11px;color:var(--c-muted)}
+  #crest-business-mobile .crest-date-field input{appearance:none;-webkit-appearance:none;border:0;background:none;color:var(--c-text);font:600 14px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;padding:0;min-height:44px;width:139px;color-scheme:dark;cursor:pointer}
+  #crest-business-mobile[data-theme="light"] .crest-date-field input{color-scheme:light}
+  #crest-business-mobile .crest-date-field input::-webkit-calendar-picker-indicator{opacity:.7;cursor:pointer}
+  #crest-business-mobile .crest-compare-note{display:flex;align-items:center;gap:6px;color:var(--c-muted);font-size:11px;padding-bottom:8px;white-space:nowrap}
+  #crest-business-mobile .crest-note-dot{width:5px;height:5px;background:var(--c-green);border-radius:50%}
+  #crest-business-mobile .crest-overview{padding:11px 14px 10px;border:1px solid var(--c-line);border-radius:16px;background:linear-gradient(112deg,var(--c-surface),var(--c-surface-2));margin-bottom:13px}
+  #crest-business-mobile .crest-eyebrow{font-size:12px;color:var(--c-soft)}
+  #crest-business-mobile .crest-total-row{display:flex;align-items:center;gap:10px;margin-top:3px;min-width:0}
+  #crest-business-mobile .crest-total-row strong{font-size:29px;letter-spacing:-.04em;font-weight:700;line-height:1.2;white-space:nowrap}
+  #crest-business-mobile .crest-change{font-size:12px;color:var(--c-green);border-radius:15px;background:rgba(70,204,151,.13);padding:3px 7px;font-weight:700;white-space:nowrap}
+  #crest-business-mobile .crest-change.negative{color:var(--c-coral);background:rgba(255,107,139,.12)}
+  #crest-business-mobile .crest-subline{color:var(--c-muted);font-size:12px;margin-top:2px}
+  #crest-business-mobile .crest-control-label{font-size:12px;color:var(--c-soft);font-weight:600;margin:0 4px 9px}
+  #crest-business-mobile .crest-channel-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px}
+  #crest-business-mobile button{font-family:inherit;touch-action:manipulation;cursor:pointer}
+  #crest-business-mobile button:focus-visible,#crest-business-mobile input:focus-visible{outline:2px solid var(--c-purple);outline-offset:2px}
+  #crest-business-mobile .crest-channel-tabs button{height:44px;display:flex;justify-content:center;align-items:center;gap:5px;border:1px solid var(--c-line);border-radius:11px;background:var(--c-surface);color:var(--c-soft);font-size:12px;font-weight:600;white-space:nowrap;padding:0 4px;transition:background .18s ease,border-color .18s ease,color .18s ease}
+  #crest-business-mobile .crest-channel-tabs button[aria-pressed="true"]{background:var(--c-text);color:var(--c-bg);border-color:var(--c-text)}
+  #crest-business-mobile .crest-swatch{display:inline-block;width:7px;height:7px;border-radius:2px;flex:0 0 auto}
+  #crest-business-mobile .crest-swatch.dine{background:var(--c-purple)}
+  #crest-business-mobile .crest-swatch.delivery{background:var(--c-coral)}
+  #crest-business-mobile .crest-swatch.pickup{background:var(--c-teal)}
+  #crest-business-mobile .crest-panel{background:var(--c-surface);border:1px solid var(--c-line);border-radius:21px;padding:17px 15px 18px;margin-bottom:12px}
+  #crest-business-mobile .crest-section-head{display:flex;justify-content:space-between;align-items:end;gap:10px}
+  #crest-business-mobile .crest-section-index{color:var(--c-purple);font-size:10px;font-weight:700;letter-spacing:.12em;margin-bottom:5px}
+  #crest-business-mobile h2{font-size:17px;font-weight:680;letter-spacing:-.02em;margin:0;line-height:1.3}
+  #crest-business-mobile .crest-section-head>span{color:var(--c-muted);font-size:11px;white-space:nowrap;margin-bottom:2px}
+  #crest-business-mobile .crest-section-sub{font-size:11px;color:var(--c-muted);margin:6px 0 15px}
+  #crest-business-mobile .crest-legend{display:flex;gap:15px;align-items:center;margin-bottom:16px;color:var(--c-soft);font-size:11px}
+  #crest-business-mobile .crest-legend span{display:flex;align-items:center;gap:5px}
+  #crest-business-mobile .crest-compare-hint{color:var(--c-muted);font-size:11px;margin:-5px 0 12px}
+  #crest-business-mobile .crest-store-bars{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--c-muted) transparent}
+  #crest-business-mobile .crest-store-plot{position:relative;height:222px}
+  #crest-business-mobile .crest-store-plot svg{display:block;width:100%;height:222px}
+  #crest-business-mobile .crest-column-hit{position:absolute;top:0;height:222px;border:0;background:transparent;padding:0;touch-action:pan-x}
+  #crest-business-mobile .crest-store-detail{border-top:1px solid var(--c-line);margin-top:14px;padding-top:14px}
+  #crest-business-mobile .crest-detail-head{display:flex;justify-content:space-between;align-items:end;gap:8px}
+  #crest-business-mobile .crest-detail-head div{display:grid;gap:2px}
+  #crest-business-mobile .crest-detail-head span,#crest-business-mobile .crest-detail-previous{color:var(--c-muted);font-size:11px}
+  #crest-business-mobile .crest-detail-head strong{font-size:15px}
+  #crest-business-mobile .crest-detail-head em{font-size:11px;color:var(--c-green);font-style:normal}
+  #crest-business-mobile .crest-detail-head em.negative{color:var(--c-coral)}
+  #crest-business-mobile .crest-detail-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:13px;font-size:12px;color:var(--c-soft)}
+  #crest-business-mobile .crest-detail-total strong{font-size:22px;color:var(--c-text)}
+  #crest-business-mobile .crest-detail-previous{text-align:right;margin:0 0 12px}
+  #crest-business-mobile .crest-detail-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--c-line);font-size:12px}
+  #crest-business-mobile .crest-detail-row span:first-child{display:flex;align-items:center;gap:7px;color:var(--c-soft)}
+  #crest-business-mobile .crest-detail-row strong{font-weight:650}
+  #crest-business-mobile .crest-detail-row em{color:var(--c-muted);font-style:normal;margin-left:8px}
+  #crest-business-mobile .crest-trend-panel{--trend-accent:var(--c-green)}
+  #crest-business-mobile .crest-trend-panel .crest-section-sub{margin-bottom:15px}
+  #crest-business-mobile .crest-trend-chip{background:var(--c-surface-2);border-radius:12px;padding:4px 7px;color:var(--c-soft)!important}
+  #crest-business-mobile .crest-small-label{font-size:11px;margin-bottom:8px}
+  #crest-business-mobile .crest-store-select{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+  #crest-business-mobile .crest-store-select button{border:1px solid var(--c-line);height:44px;border-radius:9px;padding:0 10px;color:var(--c-soft);background:var(--c-surface-2);font-size:11px;font-weight:600;white-space:nowrap;transition:background .18s ease,color .18s ease,border-color .18s ease}
+  #crest-business-mobile .crest-store-select button[aria-pressed="true"]{border-color:var(--c-purple);color:var(--c-purple);background:rgba(154,112,246,.12)}
+  #crest-business-mobile .crest-store-select button[data-store="all"][aria-pressed="true"]{color:var(--c-bg);background:var(--c-text);border-color:var(--c-text)}
+  #crest-business-mobile .crest-trend-top{display:flex;align-items:end;justify-content:space-between;gap:12px}
+  #crest-business-mobile .crest-trend-top>div:first-child{display:grid;gap:1px}
+  #crest-business-mobile .crest-trend-top span{font-size:11px;color:var(--c-muted)}
+  #crest-business-mobile .crest-trend-top strong{font-size:23px;line-height:1.3;letter-spacing:-.02em}
+  #crest-business-mobile .crest-trend-delta{font-size:11px;font-style:normal;color:var(--trend-accent)}
+  #crest-business-mobile .crest-period-select{display:flex;border:1px solid var(--c-line);border-radius:10px;padding:2px;background:var(--c-surface-2)}
+  #crest-business-mobile .crest-period-select button{border:0;background:transparent;border-radius:7px;height:44px;padding:0 10px;color:var(--c-muted);font-size:11px;font-weight:650;white-space:nowrap}
+  #crest-business-mobile .crest-period-select button[aria-pressed="true"]{background:var(--c-text);color:var(--c-bg)}
+  #crest-business-mobile .crest-chart-wrap{position:relative;margin:12px -3px 1px;touch-action:pan-y;cursor:grab;user-select:none;-webkit-touch-callout:none}
+  #crest-business-mobile .crest-chart-wrap.is-dragging{cursor:grabbing}
+  #crest-business-mobile .crest-chart-wrap.is-scrubbing{cursor:crosshair}
+  #crest-business-mobile .crest-chart-wrap.is-scrubbing #crest-trend-halo,#crest-business-mobile .crest-chart-wrap.is-scrubbing #crest-order-halo{fill-opacity:.42}
+  #crest-business-mobile .crest-chart-wrap svg{display:block;width:100%;height:180px;overflow:visible}
+  #crest-business-mobile .crest-trend-scrub{position:absolute;left:26px;right:-8px;top:12px;width:calc(100% - 18px);height:139px;margin:0;appearance:none;-webkit-appearance:none;background:transparent;pointer-events:none}
+  #crest-business-mobile .crest-chart-pan-hint{margin:4px 0 10px 35px;color:var(--c-muted);font-size:10px}
+  #crest-business-mobile .crest-trend-scrub::-webkit-slider-runnable-track{height:139px;background:transparent}
+  #crest-business-mobile .crest-trend-scrub::-moz-range-track{height:139px;background:transparent}
+  #crest-business-mobile .crest-trend-scrub::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:32px;height:139px;background:transparent;border:0}
+  #crest-business-mobile .crest-trend-scrub::-moz-range-thumb{width:32px;height:139px;background:transparent;border:0}
+  #crest-business-mobile .crest-trend-scrub:focus-visible{outline:none}
+  #crest-business-mobile .crest-chart-wrap:has(.crest-trend-scrub:focus-visible) #crest-trend-halo,#crest-business-mobile .crest-chart-wrap:has(.crest-trend-scrub:focus-visible) #crest-order-halo{fill-opacity:.4}
+  #crest-business-mobile .crest-line-legend{display:flex;gap:16px;color:var(--c-muted);font-size:11px;margin:0 0 11px 35px}
+  #crest-business-mobile .crest-line-legend span{display:flex;align-items:center;gap:6px}
+  #crest-business-mobile .crest-line-key{display:inline-block;width:14px;height:0;border-top:2px solid var(--c-purple)}
+  #crest-business-mobile .crest-trend-panel .crest-line-key.current{border-top-color:var(--trend-accent)}
+  #crest-business-mobile .crest-line-key.previous{border-top:2px dashed var(--c-muted);opacity:.8}
+  #crest-business-mobile .crest-chart-detail{border-top:1px solid var(--c-line);padding-top:10px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:11px;color:var(--c-muted)}
+  #crest-business-mobile .crest-chart-detail strong{color:var(--c-text);font-size:12px}
+  #crest-business-mobile .crest-structure-panel .crest-section-sub{margin-bottom:17px}
+  #crest-business-mobile .crest-structure-list{display:grid;gap:15px}
+  #crest-business-mobile .crest-structure-row{display:grid;gap:6px}
+  #crest-business-mobile .crest-structure-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+  #crest-business-mobile .crest-structure-caption>span:first-child{display:flex;align-items:center;gap:7px;color:var(--c-soft)}
+  #crest-business-mobile .crest-structure-caption strong{color:var(--c-text);font-size:12px}
+  #crest-business-mobile .crest-structure-caption em{color:var(--c-muted);font-style:normal;margin-left:6px}
+  #crest-business-mobile .crest-structure-track{height:6px;border-radius:6px;background:var(--c-track);overflow:hidden}
+  #crest-business-mobile .crest-structure-track b{display:block;height:100%;border-radius:6px}
+  #crest-business-mobile .crest-structure-track b.dine{background:var(--c-purple)}
+  #crest-business-mobile .crest-structure-track b.delivery{background:var(--c-coral)}
+  #crest-business-mobile .crest-structure-track b.pickup{background:var(--c-teal)}
+  #crest-business-mobile .crest-module-heading{padding:2px 4px 10px}
+  #crest-business-mobile .crest-module-heading h2{font-size:21px}
+  #crest-business-mobile .crest-module-heading p{margin:2px 0 0;color:var(--c-muted);font-size:11px}
+  #crest-business-mobile .crest-metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:12px}
+  #crest-business-mobile .crest-metric{min-height:67px;padding:8px 11px;background:var(--c-surface);border:1px solid var(--c-line);border-radius:13px}
+  #crest-business-mobile .crest-metric span{display:block;color:var(--c-muted);font-size:11px}
+  #crest-business-mobile .crest-metric strong{display:block;margin-top:2px;color:var(--c-text);font-size:19px;letter-spacing:-.03em;white-space:nowrap}
+  #crest-business-mobile .crest-metric small{display:block;margin-top:1px;color:var(--c-muted);font-size:10px}
+  #crest-business-mobile .crest-mini-chart{min-height:182px}
+  #crest-business-mobile .crest-mini-chart svg{display:block;width:100%;height:182px}
+  #crest-business-mobile .crest-mini-chart button{width:100%;border:0;background:transparent;padding:0;text-align:initial}
+  #crest-business-mobile .crest-rank-item{border-top:1px solid var(--c-line)}
+  #crest-business-mobile .crest-rank-item:first-child{border-top:0}
+  #crest-business-mobile .crest-rank-item summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:62px;cursor:pointer}
+  #crest-business-mobile .crest-rank-item summary::-webkit-details-marker{display:none}
+  #crest-business-mobile .crest-rank-number{width:26px;height:26px;display:grid;place-items:center;flex:none;border-radius:7px;background:var(--c-surface-2);color:var(--c-muted);font-size:11px;font-weight:700}
+  #crest-business-mobile .crest-rank-item:nth-child(-n+3) .crest-rank-number{color:var(--c-bg);background:var(--c-purple)}
+  #crest-business-mobile .crest-rank-main{flex:1;min-width:0}
+  #crest-business-mobile .crest-rank-top{display:flex;justify-content:space-between;gap:6px;font-size:12px;font-weight:650}
+  #crest-business-mobile .crest-rank-top strong{white-space:nowrap}
+  #crest-business-mobile .crest-rank-sub{display:flex;justify-content:space-between;gap:6px;color:var(--c-muted);font-size:10px;margin-top:3px}
+  #crest-business-mobile .crest-rank-track{height:3px;background:var(--c-track);border-radius:3px;margin-top:6px;overflow:hidden}
+  #crest-business-mobile .crest-rank-track b{display:block;height:100%;background:var(--c-purple);border-radius:3px}
+  #crest-business-mobile .crest-rank-chevron{color:var(--c-muted);font-size:16px;transition:transform .2s}
+  #crest-business-mobile .crest-rank-item[open] .crest-rank-chevron{transform:rotate(90deg)}
+  #crest-business-mobile .crest-order-row{display:flex;align-items:center;gap:10px;width:100%;min-height:70px;border-right:0;border-bottom:0;border-left:0;background:transparent;color:var(--c-text);text-align:left;padding:7px 0}
+  #crest-business-mobile .crest-order-row:active{background:var(--c-surface-2)}
+  #crest-business-mobile .crest-order-back{display:block;min-height:44px;border:0;background:transparent;color:var(--c-soft);font-size:12px;padding:0 4px;margin:0 0 4px;text-align:left}
+  #crest-business-mobile .crest-order-view-select{display:flex;flex:none;border:1px solid var(--c-line);border-radius:10px;padding:2px;background:var(--c-surface-2)}
+  #crest-business-mobile .crest-order-view-select button{min-height:44px;padding:0 9px;border:0;border-radius:7px;background:transparent;color:var(--c-muted);font-size:11px;font-weight:650;white-space:nowrap}
+  #crest-business-mobile .crest-order-view-select button[aria-pressed="true"]{background:var(--c-text);color:var(--c-bg)}
+  #crest-business-mobile .crest-order-point-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;border-top:1px solid var(--c-line);padding-top:11px;color:var(--c-muted);font-size:11px}
+  #crest-business-mobile .crest-order-point-meta strong{display:block;color:var(--c-text);font-size:12px}
+  #crest-business-mobile .crest-order-table-hint{margin:15px 0 6px;color:var(--c-muted);font-size:10px}
+  #crest-business-mobile .crest-order-table-wrap{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+  #crest-business-mobile .crest-order-table{min-width:440px;width:100%;border-collapse:collapse;text-align:right;font-size:11px;font-variant-numeric:tabular-nums}
+  #crest-business-mobile .crest-order-table th,#crest-business-mobile .crest-order-table td{padding:10px 8px;border-bottom:1px solid var(--c-line);white-space:nowrap}
+  #crest-business-mobile .crest-order-table th{color:var(--c-muted);font-weight:600}
+  #crest-business-mobile .crest-order-table td{color:var(--c-soft)}
+  #crest-business-mobile .crest-order-table th:first-child,#crest-business-mobile .crest-order-table td:first-child{text-align:left;padding-left:0}
+  #crest-business-mobile .crest-order-table tr.is-selected td{color:var(--c-text);background:var(--c-surface-2)}
+  #crest-business-mobile .crest-inline-detail{padding:10px 0 13px;border-top:1px solid var(--c-line);color:var(--c-soft);font-size:11px}
+  #crest-business-mobile .crest-inline-detail:empty{display:none}
+  #crest-business-mobile .crest-inline-detail .crest-detail-row{padding:6px 0}
+  #crest-business-mobile .crest-product-row{display:flex;align-items:center;gap:10px;width:100%;min-height:61px;border:0;border-top:1px solid var(--c-line);background:transparent;color:var(--c-text);text-align:left;padding:7px 0}
+  #crest-business-mobile .crest-product-row[aria-pressed="true"] .crest-rank-number{color:var(--c-bg);background:var(--c-purple)}
+  #crest-business-mobile .crest-product-row .crest-rank-main{display:block}
+  #crest-business-mobile .crest-daily-list{margin-top:12px}
+  #crest-business-mobile .crest-daily-list details{border-top:1px solid var(--c-line)}
+  #crest-business-mobile .crest-daily-list summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;list-style:none;cursor:pointer}
+  #crest-business-mobile .crest-daily-list summary::-webkit-details-marker{display:none}
+  #crest-business-mobile .crest-daily-list summary span{color:var(--c-muted)}
+  #crest-business-mobile .crest-alert-row{display:grid;grid-template-columns:64px 1fr 48px;align-items:center;gap:5px;margin:8px 0;font-size:10px;color:var(--c-soft)}
+  #crest-business-mobile .crest-alert-track{height:13px;position:relative;background:var(--c-track);border-radius:3px;overflow:hidden}
+  #crest-business-mobile .crest-alert-track::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--c-soft);opacity:.7}
+  #crest-business-mobile .crest-alert-bar{position:absolute;top:1px;bottom:1px;border-radius:2px;background:var(--c-green)}
+  #crest-business-mobile .crest-alert-bar.negative{background:var(--c-coral)}
+  #crest-business-mobile .crest-alert-value{text-align:right;font-weight:700}
+  #crest-business-mobile .crest-alert-value.negative{color:var(--c-coral)}
+  #crest-business-mobile .crest-alert-value.positive{color:var(--c-green)}
+  #crest-business-mobile .crest-alert-severity{font-size:10px;color:var(--c-coral);padding:2px 6px;background:rgba(255,107,139,.12);border-radius:4px}
+  #crest-business-mobile .crest-alert-severity.positive{color:var(--c-green);background:rgba(70,204,151,.12)}
+  #crest-business-mobile #crest-alerts-list .crest-rank-number.negative{color:var(--c-coral);background:rgba(255,107,139,.12)}
+  #crest-business-mobile #crest-alerts-list .crest-rank-number.positive{color:var(--c-green);background:rgba(70,204,151,.12)}
+  #crest-business-mobile .crest-footnote{text-align:center;font-size:10px;color:var(--c-muted);padding:6px 0 7px}
+  #crest-business-mobile .crest-home-indicator{height:5px;width:106px;background:var(--c-text);opacity:.8;border-radius:10px;margin:4px auto 9px}
+  @media(max-width:350px){#crest-business-mobile .crest-content{padding:0 11px 17px}#crest-business-mobile .crest-head{padding-left:17px;padding-right:17px}#crest-business-mobile .crest-panel{padding-left:12px;padding-right:12px}#crest-business-mobile .crest-total-row strong{font-size:29px}#crest-business-mobile .crest-store-select button{padding:0 8px}}
+  @media(prefers-reduced-motion:reduce){#crest-business-mobile *,#crest-business-mobile *::before,#crest-business-mobile *::after{transition:none!important;animation:none!important}}
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('crest-business-mobile');
+  if (!root) return;
+  const stores = [
+    {id:'feng',name:'凤八店',dine:16040,delivery:9480,pickup:3120},
+    {id:'wanxiang',name:'万象城店',dine:13020,delivery:8770,pickup:2890},
+    {id:'zhongshan',name:'中山路店',dine:9820,delivery:6330,pickup:2490},
+    {id:'binjiang',name:'滨江店',dine:7300,delivery:5060,pickup:2100},
+    {id:'hubin',name:'湖滨店',dine:11580,delivery:7220,pickup:1860},
+    {id:'guomao',name:'国贸店',dine:10440,delivery:5980,pickup:1760},
+    {id:'chengnan',name:'城南店',dine:8730,delivery:6840,pickup:1920},
+    {id:'gaoxin',name:'高新店',dine:12870,delivery:8250,pickup:2330},
+    {id:'dongzhan',name:'东站店',dine:7960,delivery:7480,pickup:2510},
+    {id:'beihuan',name:'北环店',dine:9410,delivery:5570,pickup:1690}
+  ];
+  const channelNames = {all:'全渠道',dine:'堂食',delivery:'外卖',pickup:'自提'};
+  const keys = ['dine','delivery','pickup'];
+  const modules = ['dashboard','orders','products','labor','alerts'];
+  const products = [
+    {name:'招牌拿铁',share:.205,price:32},{name:'燕麦抹茶',share:.166,price:36},
+    {name:'黑糖冰咖',share:.134,price:29},{name:'巴斯克蛋糕',share:.108,price:38},
+    {name:'西柚气泡',share:.084,price:31},{name:'早餐三明治',share:.073,price:42}
+  ];
+  const refs = {
+    date:root.querySelector('#crest-date'),total:root.querySelector('#crest-total'),
+    change:root.querySelector('#crest-change'),prev:root.querySelector('#crest-prev'),
+    summaryLabel:root.querySelector('#crest-summary-label'),bars:root.querySelector('#crest-store-bars'),storeDetail:root.querySelector('#crest-store-detail'),
+    compareDate:root.querySelector('#crest-compare-date'),structureDate:root.querySelector('#crest-structure-date'),
+    storeSelect:root.querySelector('#crest-store-select'),selectionCount:root.querySelector('#crest-selection-count'),
+    trendTotal:root.querySelector('#crest-trend-total'),trendPeriodLabel:root.querySelector('#crest-trend-period-label'),trendDelta:root.querySelector('#crest-trend-delta'),
+    chart:root.querySelector('#crest-trend-chart'),chartScrub:root.querySelector('#crest-trend-scrub'),chartDetail:root.querySelector('#crest-chart-detail'),
+    structure:root.querySelector('#crest-structure-list'),
+    orderOverview:root.querySelector('#crest-orders-overview'),orderSummary:root.querySelector('#crest-orders-summary'),orderList:root.querySelector('#crest-orders-list'),
+    orderDetail:root.querySelector('#crest-order-detail'),orderBack:root.querySelector('#crest-order-back'),orderStoreName:root.querySelector('#crest-order-store-name'),orderRangeLabel:root.querySelector('#crest-order-range-label'),
+    orderFocusDate:root.querySelector('#crest-order-focus-date'),orderFocusCount:root.querySelector('#crest-order-focus-count'),orderFocusDelta:root.querySelector('#crest-order-focus-delta'),
+    orderDetailChart:root.querySelector('#crest-order-detail-chart'),orderScrub:root.querySelector('#crest-order-scrub'),orderPointMeta:root.querySelector('#crest-order-point-meta'),orderChartView:root.querySelector('#crest-order-chart-view'),orderTableView:root.querySelector('#crest-order-table-view'),orderTableBody:root.querySelector('#crest-order-table-body'),
+    productSummary:root.querySelector('#crest-products-summary'),productChart:root.querySelector('#crest-products-chart'),productPoint:root.querySelector('#crest-products-point'),productList:root.querySelector('#crest-products-list'),productDetail:root.querySelector('#crest-product-detail'),
+    laborSummary:root.querySelector('#crest-labor-summary'),laborOutput:root.querySelector('#crest-labor-output-chart'),laborHours:root.querySelector('#crest-labor-hours-chart'),laborDays:root.querySelector('#crest-labor-days'),
+    alertSummary:root.querySelector('#crest-alerts-summary'),alertChart:root.querySelector('#crest-alerts-chart'),alertList:root.querySelector('#crest-alerts-list')
+  };
+  const model = {date:'2026-09-29',channel:'all',period:30,trendOffset:0,selected:stores.map(s=>s.id),compareStore:null,point:29,cursor:1,module:'dashboard',orderStore:null,orderView:'chart',orderPeriod:30,orderOffset:0,orderCursor:1,productPoint:6,productIndex:0};
+  const design = {theme:'dark'};
+  const money = n => '¥' + Math.round(n).toLocaleString('zh-CN');
+  const shortMoney = n => n >= 10000 ? (n/10000).toFixed(n%10000===0?0:1)+'万' : n >= 1000 ? (n/1000).toFixed(n%1000===0?0:1)+'千' : String(Math.round(n));
+  const day = s => { const [y,m,d] = s.split('-').map(Number); return Math.round(Date.UTC(y,m-1,d)/86400000); };
+  const dateFromDay = n => { const d=new Date(n*86400000); return d.toISOString().slice(0,10); };
+  const dateLabel = s => {const [,m,d]=s.split('-').map(Number);return `${m}月${d}日`};
+  const shortDate = s => {const [,m,d]=s.split('-').map(Number);return `${m}/${d}`};
+  const count = n => Math.round(n).toLocaleString('zh-CN');
+  const baseDay = day('2026-09-29');
+  function storeChannels(store,date){
+    const offset=day(date)-baseDay;
+    if(offset===0) return {dine:store.dine,delivery:store.delivery,pickup:store.pickup};
+    const i=stores.findIndex(s=>s.id===store.id);
+    const wave=1+.09*Math.sin(offset*.72+i*.8)+.055*Math.cos(offset*.35-i*.9);
+    const weekend=[0,6].includes(new Date(day(date)*86400000).getUTCDay())?1.12:1;
+    return {dine:Math.round(store.dine*wave*weekend),delivery:Math.round(store.delivery*(wave*.88+.12)*weekend),pickup:Math.round(store.pickup*(wave*1.12-.12)*weekend)};
+  }
+  function value(store,date,channel){const parts=storeChannels(store,date);return channel==='all'?keys.reduce((a,k)=>a+parts[k],0):parts[channel]}
+  function sum(date,ids,channel){return stores.filter(s=>ids.includes(s.id)).reduce((a,s)=>a+value(s,date,channel),0)}
+  function updateSummary(){
+    const ids=stores.map(s=>s.id),current=sum(model.date,ids,model.channel),previous=sum(dateFromDay(day(model.date)-1),ids,model.channel);
+    const delta=previous?((current/previous)-1)*100:0;
+    refs.summaryLabel.textContent=`全门店 · ${channelNames[model.channel]}当日营收`;
+    refs.total.textContent=money(current);
+    refs.prev.textContent=money(previous);
+    refs.change.textContent=`${delta>=0?'+':''}${delta.toFixed(1)}%`;
+    refs.change.classList.toggle('negative',delta<0);
+    refs.compareDate.textContent=dateLabel(model.date);
+    refs.structureDate.textContent=dateLabel(model.date);
+  }
+  function updateChannels(){root.querySelectorAll('[data-channel]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.channel===model.channel)))}
+  function updateBars(){
+    const rows=stores.map(s=>({store:s,parts:storeChannels(s,model.date),total:value(s,model.date,model.channel)}));
+    const scrollLeft=refs.bars.scrollLeft,width=Math.max(Math.round(refs.bars.getBoundingClientRect().width||320),32+stores.length*74+4),height=222;
+    const left=32,right=4,top=28,bottom=34,plotHeight=height-top-bottom,plotWidth=width-left-right,cellWidth=plotWidth/rows.length;
+    const max=Math.max(...rows.map(r=>r.total),1),step=max>20000?10000:max>10000?5000:2500,ceiling=Math.ceil(max/step)*step;
+    const grid=Array.from({length:ceiling/step+1},(_,i)=>{
+      const amount=i*step,y=top+plotHeight-amount/ceiling*plotHeight;
+      return `<line x1="${left}" x2="${width-right}" y1="${y}" y2="${y}" stroke="var(--c-line)" stroke-dasharray="${i?'3 4':'none'}"/><text x="${left-6}" y="${y+4}" text-anchor="end" fill="var(--c-muted)" font-size="11">${shortMoney(amount)}</text>`;
+    }).join('');
+    const selectedBand=rows.map((r,i)=>model.compareStore===r.store.id?`<rect x="${left+i*cellWidth+3}" y="${top-10}" width="${cellWidth-6}" height="${plotHeight+39}" rx="8" fill="var(--c-surface-2)"/>`:'').join('');
+    const columns=rows.map((r,i)=>{
+      const center=left+(i+.5)*cellWidth,barWidth=26;
+      let base=top+plotHeight;
+      const bars=(model.channel==='all'?keys:[model.channel]).map(k=>{
+        const barHeight=r.parts[k]/ceiling*plotHeight;
+        base-=barHeight;
+        return `<rect x="${center-barWidth/2}" y="${base}" width="${barWidth}" height="${barHeight}" fill="var(--c-${{dine:'purple',delivery:'coral',pickup:'teal'}[k]})"/>`;
+      }).join('');
+      return `${bars}<text x="${center}" y="${Math.max(16,base-7)}" text-anchor="middle" fill="var(--c-text)" font-size="11" font-weight="650">${money(r.total)}</text><text x="${center}" y="${height-9}" text-anchor="middle" fill="var(--c-soft)" font-size="11">${r.store.name}</text>`;
+    }).join('');
+    const buttons=rows.map((r,i)=>`<button class="crest-column-hit cursor-interaction" type="button" data-compare-store="${r.store.id}" aria-label="${r.store.name}，${channelNames[model.channel]}营收${money(r.total)}，查看明细" aria-pressed="${model.compareStore===r.store.id}" aria-controls="crest-store-detail" style="left:${left+i*cellWidth}px;width:${cellWidth}px"></button>`).join('');
+    refs.bars.innerHTML=`<div class="crest-store-plot" style="width:${width}px"><svg viewBox="0 0 ${width} ${height}" aria-hidden="true">${selectedBand}${grid}${columns}</svg>${buttons}</div>`;
+    refs.bars.scrollLeft=scrollLeft;
+    refs.bars.setAttribute('aria-label',`${dateLabel(model.date)}，10家门店${channelNames[model.channel]}营收，左右滑动查看`);
+  }
+  function updateStoreDetail(){
+    const store=stores.find(s=>s.id===model.compareStore);
+    refs.storeDetail.hidden=!store;
+    if(!store)return;
+    const parts=storeChannels(store,model.date),total=keys.reduce((n,k)=>n+parts[k],0);
+    const previous=value(store,dateFromDay(day(model.date)-1),'all'),delta=previous?(total/previous-1)*100:0;
+    refs.storeDetail.innerHTML=`<div class="crest-detail-head"><div><span>${dateLabel(model.date)} · 门店明细</span><strong>${store.name}</strong></div><em class="${delta<0?'negative':''}">较前日 ${delta>=0?'+':''}${delta.toFixed(1)}%</em></div><div class="crest-detail-total"><span>全渠道营收</span><strong>${money(total)}</strong></div><p class="crest-detail-previous">前一日 ${money(previous)}</p>`+keys.map(k=>`<div class="crest-detail-row"><span><i class="crest-swatch ${k}"></i>${channelNames[k]}</span><span><strong>${money(parts[k])}</strong><em>${(parts[k]/total*100).toFixed(0)}%</em></span></div>`).join('');
+  }
+  function updateStores(){
+    const all=model.selected.length===stores.length;
+    refs.storeSelect.innerHTML=`<button type="button" data-store="all" aria-pressed="${all}">全选</button>`+stores.map(s=>`<button type="button" data-store="${s.id}" aria-pressed="${model.selected.includes(s.id)}">${s.name}</button>`).join('');
+    refs.selectionCount.textContent=`已选 ${model.selected.length} 店`;
+  }
+  function trendData(period,offset){return Array.from({length:period},(_,i)=>{const d=dateFromDay(day(model.date)-(period-1-i)-offset);return {date:d,total:sum(d,model.selected,model.channel)}})}
+  function chartGeometry(){
+    const current=trendData(model.period,model.trendOffset),previous=trendData(model.period,model.trendOffset+model.period);
+    const width=Math.max(250,Math.round(refs.chart.getBoundingClientRect().width||320)),height=180;
+    const left=42,right=8,top=12,bottom=29,innerW=width-left-right,innerH=height-top-bottom;
+    const maxValue=Math.max(...current.map(v=>v.total),...previous.map(v=>v.total));
+    const nice=Math.pow(10,Math.floor(Math.log10(Math.max(maxValue,1))));
+    const step=maxValue/nice>5?2*nice:nice;
+    const ceiling=Math.ceil(maxValue/step)*step*1.08;
+    const x=i=>left+i*innerW/(model.period-1),y=v=>top+innerH-(v/ceiling)*innerH;
+    return {current,previous,width,height,left,right,top,bottom,innerW,innerH,ceiling,x,y};
+  }
+  function smoothTrendPath(series,x,y){
+    return series.map((item,i)=>{
+      if(!i)return `M${x(0).toFixed(1)} ${y(item.total).toFixed(1)}`;
+      const a=series[Math.max(0,i-2)].total,b=series[i-1].total,c=item.total,d=series[Math.min(series.length-1,i+1)].total;
+      const gap=x(i)-x(i-1);
+      return `C${(x(i-1)+gap/3).toFixed(1)} ${(y(b)+(y(c)-y(a))/6).toFixed(1)} ${(x(i)-gap/3).toFixed(1)} ${(y(c)-(y(d)-y(b))/6).toFixed(1)} ${x(i).toFixed(1)} ${y(c).toFixed(1)}`;
+    }).join(' ');
+  }
+  let trendGeometry=null;
+  function updateTrendFocus(){
+    const g=trendGeometry;
+    if(!g)return;
+    model.cursor=Math.max(0,Math.min(1,model.cursor));
+    const px=g.left+g.innerW*model.cursor,fullLength=g.path.getTotalLength();
+    let low=0,high=fullLength;
+    for(let i=0;i<18;i++){const middle=(low+high)/2;if(g.path.getPointAtLength(middle).x<px)low=middle;else high=middle}
+    const py=g.path.getPointAtLength((low+high)/2).y;
+    model.point=Math.round(model.cursor*(model.period-1));
+    const selected=g.current[model.point],prior=g.previous[model.point],delta=prior.total?(selected.total/prior.total-1)*100:0;
+    refs.chart.closest('.crest-trend-panel').style.setProperty('--trend-accent',delta<0?'var(--c-coral)':'var(--c-green)');
+    g.clip.setAttribute('width',Math.max(0,px-g.left).toFixed(1));
+    g.guide.setAttribute('x1',px.toFixed(1));g.guide.setAttribute('x2',px.toFixed(1));
+    g.halo.setAttribute('cx',px.toFixed(1));g.halo.setAttribute('cy',py.toFixed(1));
+    g.dot.setAttribute('cx',px.toFixed(1));g.dot.setAttribute('cy',py.toFixed(1));
+    refs.trendPeriodLabel.textContent=`${dateLabel(selected.date)} · 当日营收`;
+    refs.trendTotal.textContent=money(selected.total);
+    refs.trendDelta.textContent=`较上周期 ${delta>=0?'+':''}${delta.toFixed(1)}%`;
+    refs.chartScrub.setAttribute('aria-valuetext',`${dateLabel(selected.date)}，营收${money(selected.total)}，较上周期${delta>=0?'增加':'减少'}${Math.abs(delta).toFixed(1)}%`);
+  }
+  function updateTrend(){
+    const g=chartGeometry(),{current,previous,width,height,left,top,innerW,innerH,ceiling,x,y}=g;
+    const total=current.reduce((a,v)=>a+v.total,0);
+    root.querySelectorAll('[data-period]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.period)===model.period)));
+    const currentLine=smoothTrendPath(current,x,y),previousLine=smoothTrendPath(previous,x,y);
+    const area=`${currentLine} L${x(model.period-1).toFixed(1)} ${(top+innerH).toFixed(1)} L${left} ${(top+innerH).toFixed(1)} Z`;
+    const tickIndices=[...new Set([0,Math.floor((model.period-1)/3),Math.round((model.period-1)*2/3),model.period-1])];
+    const grids=[0,.33,.66,1].map(t=>{const v=ceiling*t,yy=y(v);return `<line x1="${left}" y1="${yy}" x2="${width-8}" y2="${yy}" stroke="var(--c-line)" stroke-width="1"/><text x="${left-7}" y="${yy+4}" text-anchor="end" fill="var(--c-muted)" font-size="10">${shortMoney(v)}</text>`}).join('');
+    const ticks=tickIndices.map((idx,n)=>`<text x="${x(idx)}" y="${height-4}" text-anchor="${n===0?'start':n===tickIndices.length-1?'end':'middle'}" fill="var(--c-muted)" font-size="10">${shortDate(current[idx].date)}</text>`).join('');
+    refs.chart.setAttribute('viewBox',`0 0 ${width} ${height}`);
+    refs.chart.setAttribute('aria-label',`所选${model.selected.length}家门店${dateLabel(current[0].date)}至${dateLabel(current.at(-1).date)}${channelNames[model.channel]}营收趋势，累计${money(total)}`);
+    refs.chart.innerHTML=`<title>门店周期营收趋势</title><desc>实线为当前周期，虚线为上个周期。左右滑动回看历史，轻点选日期，长按折线后拖动逐日查看。</desc><defs><linearGradient id="crest-trend-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--trend-accent)" stop-opacity=".25"/><stop offset="100%" stop-color="var(--trend-accent)" stop-opacity="0"/></linearGradient><clipPath id="crest-trend-active-clip"><rect id="crest-trend-active-range" x="${left}" y="${top-5}" width="${innerW}" height="${innerH+10}"/></clipPath></defs>${grids}<path d="${previousLine}" fill="none" stroke="var(--c-muted)" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="4 4" stroke-linecap="round"/><path d="${currentLine}" fill="none" stroke="var(--c-soft)" stroke-opacity=".38" stroke-width="2" stroke-linecap="round"/><g clip-path="url(#crest-trend-active-clip)"><path d="${area}" fill="url(#crest-trend-fill)"/><path d="${currentLine}" fill="none" stroke="var(--trend-accent)" stroke-width="2.8" stroke-linecap="round"/></g><line id="crest-trend-guide" x1="${left}" y1="${top}" x2="${left}" y2="${top+innerH}" stroke="var(--trend-accent)" stroke-opacity=".48" stroke-width="1"/><circle id="crest-trend-halo" cx="${left}" cy="${top}" r="8" fill="var(--trend-accent)" fill-opacity=".18"/><circle id="crest-trend-dot" cx="${left}" cy="${top}" r="4.5" fill="var(--c-text)" stroke="var(--trend-accent)" stroke-width="2.3"/>${ticks}<path id="crest-trend-measure" d="${currentLine}" fill="none" stroke="none"/>`;
+    trendGeometry={...g,path:refs.chart.querySelector('#crest-trend-measure'),clip:refs.chart.querySelector('#crest-trend-active-range'),guide:refs.chart.querySelector('#crest-trend-guide'),halo:refs.chart.querySelector('#crest-trend-halo'),dot:refs.chart.querySelector('#crest-trend-dot')};
+    refs.chartScrub.value=Math.round(model.cursor*1000);
+    refs.chartDetail.innerHTML=`<span>左右滑动回看历史 · 轻点选日期 · 长按折线后拖动逐日查看</span><span>${shortDate(current[0].date)}—${shortDate(current.at(-1).date)} 累计 <strong>${money(total)}</strong></span>`;
+    updateTrendFocus();
+  }
+  function updateStructure(){
+    const all=sum(model.date,model.selected,'all')||1;
+    refs.structure.innerHTML=`<div class="crest-structure-list">`+keys.map(k=>{
+      const amount=sum(model.date,model.selected,k),percent=amount/all*100;
+      return `<div class="crest-structure-row"><div class="crest-structure-caption"><span><i class="crest-swatch ${k}"></i>${channelNames[k]}</span><span><strong>${money(amount)}</strong><em>${percent.toFixed(0)}%</em></span></div><div class="crest-structure-track"><b class="${k}" style="width:${percent.toFixed(1)}%"></b></div></div>`;
+    }).join('')+`</div>`;
+  }
+  function metricCards(items){return items.map(([label,value,hint])=>`<div class="crest-metric"><span>${label}</span><strong>${value}</strong><small>${hint}</small></div>`).join('')}
+  function dateSeries(){return Array.from({length:7},(_,i)=>dateFromDay(day(model.date)-6+i))}
+  function lineChart(values,dates,second,selected){
+    const width=320,height=182,left=32,right=9,top=16,bottom=28,plotH=height-top-bottom,plotW=width-left-right;
+    const minimum=second?Math.min(...values,...second)*.92:0,maximum=Math.max(...values,...(second||[]),1)*(second?1.08:1.12),x=i=>left+i*plotW/(values.length-1),y=v=>top+plotH-(v-minimum)/(maximum-minimum)*plotH;
+    const line=series=>series.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+    const grid=[0,.5,1].map(f=>{const v=minimum+(maximum-minimum)*f;return `<line x1="${left}" y1="${y(v)}" x2="${width-right}" y2="${y(v)}" stroke="var(--c-line)"/><text x="${left-5}" y="${y(v)+3}" text-anchor="end" fill="var(--c-muted)" font-size="9">${shortMoney(v)}</text>`}).join('');
+    const ticks=[0,3,6].map(i=>`<text x="${x(i)}" y="${height-5}" text-anchor="${i===0?'start':i===6?'end':'middle'}" fill="var(--c-muted)" font-size="10">${shortDate(dates[i])}</text>`).join('');
+    const points=values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===selected?4.8:3.2}" fill="var(--c-purple)" stroke="var(--c-surface)" stroke-width="2"/><circle data-point="${i}" cx="${x(i)}" cy="${y(v)}" r="14" fill="transparent"/>`).join('');
+    return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${shortDate(dates[0])}至${shortDate(dates[6])}趋势图">${grid}${second?`<path d="${line(second)}" fill="none" stroke="var(--c-muted)" stroke-width="1.6" stroke-dasharray="4 4" stroke-linejoin="round"/>`:''}<path d="${line(values)}" fill="none" stroke="var(--c-purple)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="${x(selected)}" y1="${top}" x2="${x(selected)}" y2="${top+plotH}" stroke="var(--c-purple)" stroke-opacity=".4"/>${points}${ticks}</svg>`;
+  }
+  function updateModules(){
+    root.querySelectorAll('[data-module]').forEach(button=>{if(button.dataset.module===model.module)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current')});
+    root.querySelectorAll('[data-module-panel]').forEach(panel=>panel.hidden=panel.dataset.modulePanel!==model.module);
+  }
+  function ordersFor(store,date){return Math.round(value(store,date,'all')/61+(stores.indexOf(store)%3)*4)}
+  function updateOrders(){
+    const current=stores.reduce((n,s)=>n+ordersFor(s,model.date),0),net=sum(model.date,stores.map(s=>s.id),'all'),refund=Math.round(net*.009);
+    refs.orderSummary.innerHTML=metricCards([['订单数',count(current)+' 单','全门店合计'],['净实收',money(net),'全渠道'],['客单价',money(net/current),'按订单数计算'],['退款金额',money(refund),'模拟退款 0.9%']]);
+    const ranked=stores.map(s=>({store:s,orders:ordersFor(s,model.date)})).sort((a,b)=>b.orders-a.orders),max=ranked[0].orders;
+    refs.orderList.innerHTML=ranked.map(({store:s,orders},i)=>{const total=value(s,model.date,'all');return `<button class="crest-rank-item crest-order-row" type="button" data-order-store="${s.id}" aria-label="${s.name}，${count(orders)}单，打开订单趋势与数据表"><span class="crest-rank-number">${i+1}</span><span class="crest-rank-main"><span class="crest-rank-top"><span>${s.name}</span><strong>${count(orders)} 单</strong></span><span class="crest-rank-track"><b style="width:${Math.round(orders/max*100)}%"></b></span><span class="crest-rank-sub"><span>净实收 ${money(total)}</span><span>客单 ${money(total/orders)}</span></span></span><span class="crest-rank-chevron" aria-hidden="true">›</span></button>`}).join('');
+    refs.orderOverview.hidden=!!model.orderStore;
+    refs.orderDetail.hidden=!model.orderStore;
+    if(model.orderStore)updateOrderDetail();
+  }
+  let orderTrendGeometry=null,orderCurrent=[],orderPrevious=[];
+  function updateOrderFocus(){
+    if(!orderCurrent.length)return;
+    model.orderCursor=Math.max(0,Math.min(1,model.orderCursor));
+    const index=Math.round(model.orderCursor*(model.orderPeriod-1));
+    const selected=orderCurrent[index],prior=orderPrevious[index],store=stores.find(s=>s.id===model.orderStore);
+    const delta=prior.total?(selected.total/prior.total-1)*100:0;
+    refs.orderDetail.querySelector('.crest-trend-panel').style.setProperty('--trend-accent',delta<0?'var(--c-coral)':'var(--c-green)');
+    refs.orderFocusDate.textContent=`${dateLabel(selected.date)} · 当日订单`;
+    refs.orderFocusCount.textContent=`${count(selected.total)} 单`;
+    refs.orderFocusDelta.textContent=`较上周期 ${delta>=0?'+':''}${delta.toFixed(1)}%`;
+    const net=value(store,selected.date,'all');
+    refs.orderPointMeta.innerHTML=`<span>净实收<strong>${money(net)}</strong></span><span>客单价<strong>${money(net/selected.total)}</strong></span><span>退款金额<strong>${money(net*.009)}</strong></span>`;
+    refs.orderScrub.setAttribute('aria-valuetext',`${dateLabel(selected.date)}，${count(selected.total)}单，较上周期${delta>=0?'增加':'减少'}${Math.abs(delta).toFixed(1)}%`);
+    refs.orderTableBody.querySelectorAll('tr').forEach((row,i)=>row.classList.toggle('is-selected',i===model.orderPeriod-1-index));
+    if(!orderTrendGeometry)return;
+    const g=orderTrendGeometry,px=g.left+g.innerW*model.orderCursor,fullLength=g.path.getTotalLength();
+    let low=0,high=fullLength;
+    for(let i=0;i<18;i++){const mid=(low+high)/2;if(g.path.getPointAtLength(mid).x<px)low=mid;else high=mid}
+    const py=g.path.getPointAtLength((low+high)/2).y;
+    g.clip.setAttribute('width',Math.max(0,px-g.left).toFixed(1));
+    g.guide.setAttribute('x1',px.toFixed(1));g.guide.setAttribute('x2',px.toFixed(1));
+    g.halo.setAttribute('cx',px.toFixed(1));g.halo.setAttribute('cy',py.toFixed(1));
+    g.dot.setAttribute('cx',px.toFixed(1));g.dot.setAttribute('cy',py.toFixed(1));
+  }
+  function updateOrderDetail(){
+    const store=stores.find(s=>s.id===model.orderStore);
+    if(!store)return;
+    refs.orderStoreName.textContent=store.name;
+    const orderEnd=dateFromDay(day(model.date)-model.orderOffset),orderStart=dateFromDay(day(orderEnd)-model.orderPeriod+1);
+    refs.orderRangeLabel.textContent=`${shortDate(orderStart)}—${shortDate(orderEnd)} · 按日统计`;
+    root.querySelectorAll('[data-order-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.orderView===model.orderView)));
+    root.querySelectorAll('[data-order-period]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.orderPeriod)===model.orderPeriod)));
+    refs.orderChartView.hidden=model.orderView!=='chart';
+    refs.orderTableView.hidden=model.orderView!=='table';
+    orderCurrent=Array.from({length:model.orderPeriod},(_,i)=>{const date=dateFromDay(day(model.date)-model.orderOffset-model.orderPeriod+1+i);return {date,total:ordersFor(store,date)}});
+    orderPrevious=orderCurrent.map(item=>{const date=dateFromDay(day(item.date)-model.orderPeriod);return {date,total:ordersFor(store,date)}});
+    refs.orderTableBody.innerHTML=orderCurrent.slice().reverse().map(({date,total})=>{const net=value(store,date,'all');return `<tr><td>${shortDate(date)}</td><td>${count(total)}</td><td>${money(net)}</td><td>${money(net/total)}</td><td>${money(net*.009)}</td></tr>`}).join('');
+    orderTrendGeometry=null;
+    if(model.orderView==='chart'){
+      const width=Math.max(250,Math.round(refs.orderDetailChart.getBoundingClientRect().width||320)),height=180,left=42,right=8,top=12,bottom=29,innerW=width-left-right,innerH=height-top-bottom;
+      const max=Math.max(...orderCurrent.map(v=>v.total),...orderPrevious.map(v=>v.total)),step=max>500?200:100,ceiling=Math.ceil(max/step)*step*1.08;
+      const x=i=>left+i*innerW/(model.orderPeriod-1),y=v=>top+innerH-v/ceiling*innerH;
+      const currentLine=smoothTrendPath(orderCurrent,x,y),previousLine=smoothTrendPath(orderPrevious,x,y);
+      const area=`${currentLine} L${x(model.orderPeriod-1).toFixed(1)} ${(top+innerH).toFixed(1)} L${left} ${(top+innerH).toFixed(1)} Z`;
+      const tickIndices=[...new Set([0,Math.floor((model.orderPeriod-1)/3),Math.round((model.orderPeriod-1)*2/3),model.orderPeriod-1])];
+      const grids=[0,.33,.66,1].map(t=>{const v=ceiling*t,yy=y(v);return `<line x1="${left}" y1="${yy}" x2="${width-right}" y2="${yy}" stroke="var(--c-line)" stroke-width="1"/><text x="${left-7}" y="${yy+4}" text-anchor="end" fill="var(--c-muted)" font-size="10">${shortMoney(v)}</text>`}).join('');
+      const ticks=tickIndices.map((idx,n)=>`<text x="${x(idx)}" y="${height-4}" text-anchor="${n===0?'start':n===tickIndices.length-1?'end':'middle'}" fill="var(--c-muted)" font-size="10">${shortDate(orderCurrent[idx].date)}</text>`).join('');
+      refs.orderDetailChart.setAttribute('viewBox',`0 0 ${width} ${height}`);
+      refs.orderDetailChart.setAttribute('aria-label',`${store.name}${dateLabel(orderStart)}至${dateLabel(orderEnd)}订单量趋势，累计${count(orderCurrent.reduce((n,v)=>n+v.total,0))}单`);
+      refs.orderDetailChart.innerHTML=`<title>${store.name}订单趋势</title><desc>实线为当前周期，虚线为上个周期。左右滑动回看历史，轻点选日期，长按折线后拖动逐日查看。</desc><defs><linearGradient id="crest-order-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--trend-accent)" stop-opacity=".25"/><stop offset="100%" stop-color="var(--trend-accent)" stop-opacity="0"/></linearGradient><clipPath id="crest-order-active-clip"><rect id="crest-order-active-range" x="${left}" y="${top-5}" width="${innerW}" height="${innerH+10}"/></clipPath></defs>${grids}<path d="${previousLine}" fill="none" stroke="var(--c-muted)" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="4 4" stroke-linecap="round"/><path d="${currentLine}" fill="none" stroke="var(--c-soft)" stroke-opacity=".38" stroke-width="2" stroke-linecap="round"/><g clip-path="url(#crest-order-active-clip)"><path d="${area}" fill="url(#crest-order-fill)"/><path d="${currentLine}" fill="none" stroke="var(--trend-accent)" stroke-width="2.8" stroke-linecap="round"/></g><line id="crest-order-guide" x1="${left}" y1="${top}" x2="${left}" y2="${top+innerH}" stroke="var(--trend-accent)" stroke-opacity=".48" stroke-width="1"/><circle id="crest-order-halo" cx="${left}" cy="${top}" r="8" fill="var(--trend-accent)" fill-opacity=".18"/><circle id="crest-order-dot" cx="${left}" cy="${top}" r="4.5" fill="var(--c-text)" stroke="var(--trend-accent)" stroke-width="2.3"/>${ticks}<path id="crest-order-measure" d="${currentLine}" fill="none" stroke="none"/>`;
+      orderTrendGeometry={left,innerW,path:refs.orderDetailChart.querySelector('#crest-order-measure'),clip:refs.orderDetailChart.querySelector('#crest-order-active-range'),guide:refs.orderDetailChart.querySelector('#crest-order-guide'),halo:refs.orderDetailChart.querySelector('#crest-order-halo'),dot:refs.orderDetailChart.querySelector('#crest-order-dot')};
+    }
+    refs.orderScrub.value=Math.round(model.orderCursor*1000);
+    updateOrderFocus();
+  }
+  function updateProducts(){
+    const ids=stores.map(s=>s.id),net=sum(model.date,ids,'all'),items=products.map(p=>({...p,sales:Math.round(net*p.share),quantity:Math.round(net*p.share/p.price)}));
+    const total=items.reduce((n,p)=>n+p.sales,0),quantity=items.reduce((n,p)=>n+p.quantity,0);
+    refs.productSummary.innerHTML=metricCards([['榜单销售额',money(total),'前 6 产品合计'],['产品数',`${products.length} 款`,'本次模拟榜单'],['总销量',count(quantity),'前 6 产品合计'],['件均售价',money(total/quantity),'榜单销额 / 销量']]);
+    model.productIndex=Math.min(model.productIndex,products.length-1);
+    const selected=products[model.productIndex],dates=dateSeries(),series=dates.map(d=>Math.round(sum(d,ids,'all')*selected.share));
+    refs.productChart.innerHTML=lineChart(series,dates,null,model.productPoint);
+    refs.productPoint.innerHTML=`<span>${dateLabel(dates[model.productPoint])} · ${selected.name}</span><strong>${money(series[model.productPoint])}</strong>`;
+    root.querySelector('#crest-product-trend-name').textContent=`${selected.name} · 近 7 日销售额`;
+    refs.productList.innerHTML=items.map((p,i)=>`<button class="crest-product-row" type="button" data-product="${i}" aria-pressed="${i===model.productIndex}"><span class="crest-rank-number">${i+1}</span><span class="crest-rank-main"><span class="crest-rank-top"><span>${p.name}</span><strong>${money(p.sales)}</strong></span><span class="crest-rank-track"><b style="width:${Math.round(p.sales/items[0].sales*100)}%"></b></span><span class="crest-rank-sub"><span>销量 ${count(p.quantity)}</span><span>销额占比 ${(p.sales/total*100).toFixed(1)}%</span></span></span><span class="crest-rank-chevron">›</span></button>`).join('');
+    const item=items[model.productIndex];refs.productDetail.innerHTML=`<strong>${item.name} · 销售明细</strong><div class="crest-detail-row"><span>销售额</span><strong>${money(item.sales)}</strong></div><div class="crest-detail-row"><span>销量 / 订单数</span><strong>${count(item.quantity)} / ${count(item.quantity*.83)}</strong></div><div class="crest-detail-row"><span>销售额占比 / 数量占比</span><strong>${(item.sales/total*100).toFixed(1)}% / ${(item.quantity/quantity*100).toFixed(1)}%</strong></div>`;
+  }
+  function updateLabor(){
+    const dates=dateSeries(),ids=stores.map(s=>s.id),revenues=dates.map(d=>sum(d,ids,'all'));
+    const actualHours=revenues.map((v,i)=>Math.round(v/310*(1+.025*Math.sin(i*1.8)))),planHours=revenues.map((v,i)=>Math.round(v/315));
+    const output=revenues.map((v,i)=>Math.round(v/actualHours[i])),target=dates.map((_,i)=>315+Math.round(5*Math.sin(i*.7)));
+    const actual=actualHours[6],planned=planHours[6];
+    refs.laborSummary.innerHTML=metricCards([['实际工时',`${count(actual)} h`,'当日全门店'],['计划工时',`${count(planned)} h`,`达成 ${(actual/planned*100).toFixed(1)}%`],['参与人数','92 人','模拟排班人数'],['小时产出',money(output[6]),'净实收 / 实际工时']]);
+    refs.laborOutput.innerHTML=lineChart(output,dates,target,6);
+    refs.laborHours.innerHTML=lineChart(actualHours,dates,planHours,6);
+    refs.laborDays.innerHTML=dates.map((d,i)=>`<details><summary><strong>${dateLabel(d)}</strong><span>实际 ${count(actualHours[i])}h / 计划 ${count(planHours[i])}h　›</span></summary><div class="crest-inline-detail"><div class="crest-detail-row"><span>净实收</span><strong>${money(revenues[i])}</strong></div><div class="crest-detail-row"><span>小时产出 / 目标</span><strong>${money(output[i])} / ${money(target[i])}</strong></div></div></details>`).join('');
+  }
+  function updateAlerts(){
+    const presets=[{i:3,delta:-.27,reason:'午市堂食低于同周期基准'},{i:1,delta:.22,reason:'晚间客流高于基准'},{i:8,delta:-.18,reason:'外卖订单量持续回落'},{i:0,delta:.15,reason:'堂食客单价提升'},{i:6,delta:-.12,reason:'自提订单较基准减少'}];
+    const alerts=presets.map(p=>{const store=stores[p.i],actual=value(store,model.date,'all');return {...p,store,actual,baseline:Math.round(actual/(1+p.delta))}}).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+    const up=alerts.filter(a=>a.delta>0).length,down=alerts.length-up;
+    refs.alertSummary.innerHTML=metricCards([['报警数',`${alerts.length} 条`,'需要关注'],['高于基准',`${up} 家`,'营收上扬'],['低于基准',`${down} 家`,'营收回落'],['最大偏离',`${Math.round(alerts[0].delta*100)}%`,alerts[0].store.name]]);
+    root.querySelector('#crest-alert-date').textContent=dateLabel(model.date);
+    refs.alertChart.innerHTML=alerts.map(a=>{const pct=a.delta*100,length=Math.min(Math.abs(pct)/30*48,48),left=pct<0?50-length:50;return `<div class="crest-alert-row"><span>${a.store.name}</span><span class="crest-alert-track"><i class="crest-alert-bar ${pct<0?'negative':''}" style="left:${left}%;width:${length}%"></i></span><span class="crest-alert-value ${pct<0?'negative':'positive'}">${pct>0?'+':''}${pct.toFixed(0)}%</span></div>`}).join('');
+    refs.alertList.innerHTML=alerts.map(a=>`<details class="crest-rank-item"><summary><span class="crest-rank-number ${a.delta>0?'positive':'negative'}">${a.delta>0?'↗':'↘'}</span><span class="crest-rank-main"><span class="crest-rank-top"><span>${a.store.name}</span><strong class="crest-alert-value ${a.delta<0?'negative':'positive'}">${a.delta>0?'+':''}${(a.delta*100).toFixed(0)}%</strong></span><span class="crest-rank-sub"><span>实际 ${money(a.actual)}</span><span class="crest-alert-severity ${a.delta>0?'positive':''}">${Math.abs(a.delta)>=.2?'显著':'关注'}</span></span></span><span class="crest-rank-chevron">›</span></summary><div class="crest-inline-detail"><div class="crest-detail-row"><span>实际营收</span><strong>${money(a.actual)}</strong></div><div class="crest-detail-row"><span>基准营收</span><strong>${money(a.baseline)}</strong></div><div class="crest-detail-row"><span>偏离率</span><strong>${a.delta>0?'+':''}${(a.delta*100).toFixed(0)}%</strong></div><div class="crest-detail-row"><span>可能原因</span><strong>${a.reason}</strong></div></div></details>`).join('');
+  }
+  function render(){refs.date.value=model.date;updateModules();updateChannels();updateSummary();updateBars();updateStoreDetail();updateStores();updateTrend();updateStructure();updateOrders();updateProducts();updateLabor();updateAlerts()}
+  function persist(){if(window.openai?.setWidgetState) window.openai.setWidgetState({modelContent:{date:model.date,channel:model.channel,period:model.period,trendOffset:model.trendOffset,selected:model.selected,compareStore:model.compareStore,module:model.module,orderStore:model.orderStore,orderView:model.orderView,orderPeriod:model.orderPeriod,orderOffset:model.orderOffset,productIndex:model.productIndex},privateContent:{theme:design.theme}}).catch(()=>{})}
+  function applySaved(snapshot){
+    const m=snapshot?.modelContent||{},p=snapshot?.privateContent||{};
+    if(/^2026-(08|09)-\d{2}$/.test(m.date)&&m.date>='2026-08-01'&&m.date<='2026-09-30')model.date=m.date;
+    if(['all',...keys].includes(m.channel))model.channel=m.channel;
+    if(Number.isInteger(m.trendOffset)&&[7,30].includes(m.period))model.period=m.period;
+    if(Number.isInteger(m.trendOffset))model.trendOffset=Math.max(0,Math.min(180-model.period,m.trendOffset));
+    if(Array.isArray(m.selected)){const valid=[...new Set(m.selected)].filter(id=>stores.some(s=>s.id===id));if(valid.length)model.selected=valid}
+    if(m.compareStore===null||stores.some(s=>s.id===m.compareStore))model.compareStore=m.compareStore;
+    if(modules.includes(m.module))model.module=m.module;
+    if(m.orderStore===null||stores.some(s=>s.id===m.orderStore))model.orderStore=m.orderStore;
+    if(['chart','table'].includes(m.orderView))model.orderView=m.orderView;
+    if(Number.isInteger(m.orderOffset)&&[7,30].includes(m.orderPeriod))model.orderPeriod=m.orderPeriod;
+    if(Number.isInteger(m.orderOffset))model.orderOffset=Math.max(0,Math.min(180-model.orderPeriod,m.orderOffset));
+    if(Number.isInteger(m.productIndex)&&m.productIndex>=0&&m.productIndex<products.length)model.productIndex=m.productIndex;
+    if(['dark','light'].includes(p.theme))design.theme=p.theme;
+    root.dataset.theme=design.theme;
+    model.point=model.period-1;model.cursor=1;model.orderCursor=1;
+    render();
+  }
+  root.querySelector('.crest-channel-tabs').addEventListener('click',e=>{const button=e.target.closest('[data-channel]');if(!button)return;model.channel=button.dataset.channel;render();persist()});
+  root.querySelector('.crest-module-tabs').addEventListener('click',e=>{const button=e.target.closest('[data-module]');if(!button)return;model.module=button.dataset.module;updateModules();if(model.module==='orders')updateOrders();persist()});
+  refs.orderList.addEventListener('click',e=>{const button=e.target.closest('[data-order-store]');if(!button)return;model.orderStore=button.dataset.orderStore;model.orderView='chart';model.orderPeriod=30;model.orderOffset=0;model.orderCursor=1;updateOrders();persist();refs.orderBack.focus()});
+  refs.orderBack.addEventListener('click',()=>{const id=model.orderStore;model.orderStore=null;updateOrders();persist();refs.orderList.querySelector(`[data-order-store="${id}"]`)?.focus()});
+  refs.orderDetail.querySelector('.crest-order-view-select').addEventListener('click',e=>{const button=e.target.closest('[data-order-view]');if(!button)return;model.orderView=button.dataset.orderView;updateOrderDetail();persist()});
+  refs.orderDetail.querySelector('.crest-period-select').addEventListener('click',e=>{const button=e.target.closest('[data-order-period]');if(!button)return;model.orderPeriod=Number(button.dataset.orderPeriod);model.orderOffset=0;model.orderCursor=1;updateOrderDetail();persist()});
+  refs.orderScrub.addEventListener('input',()=>{model.orderCursor=Number(refs.orderScrub.value)/1000;updateOrderFocus()});
+  refs.productChart.addEventListener('click',e=>{const point=e.target.closest('[data-point]');if(!point)return;model.productPoint=Number(point.dataset.point);updateProducts()});
+  refs.productList.addEventListener('click',e=>{const button=e.target.closest('[data-product]');if(!button)return;model.productIndex=Number(button.dataset.product);updateProducts();persist()});
+  refs.bars.addEventListener('click',e=>{const button=e.target.closest('[data-compare-store]');if(!button)return;model.compareStore=model.compareStore===button.dataset.compareStore?null:button.dataset.compareStore;updateBars();updateStoreDetail();persist()});
+  refs.storeSelect.addEventListener('click',e=>{const button=e.target.closest('[data-store]');if(!button)return;const id=button.dataset.store;if(id==='all')model.selected=stores.map(s=>s.id);else if(model.selected.length===stores.length)model.selected=[id];else if(model.selected.includes(id)){if(model.selected.length>1)model.selected=model.selected.filter(x=>x!==id)}else model.selected=[...model.selected,id];render();persist()});
+  root.querySelector('.crest-period-select').addEventListener('click',e=>{const button=e.target.closest('[data-period]');if(!button)return;model.period=Number(button.dataset.period);model.trendOffset=0;model.point=model.period-1;model.cursor=1;render();persist()});
+  refs.date.addEventListener('change',()=>{if(refs.date.value>='2026-08-01'&&refs.date.value<='2026-09-30'){model.date=refs.date.value;model.trendOffset=0;model.orderOffset=0;render();persist()}else refs.date.value=model.date});
+  refs.chartScrub.addEventListener('input',()=>{model.cursor=Number(refs.chartScrub.value)/1000;updateTrendFocus()});
+  function bindChartDrag(svg,offsetKey,periodKey,cursorKey,scrub,redraw,focus){
+    const wrap=svg.parentElement;
+    let gesture=null;
+    function selectAt(clientX){
+      const rect=svg.getBoundingClientRect();
+      model[cursorKey]=Math.max(0,Math.min(1,(clientX-rect.left-42)/(rect.width-50)));
+      scrub.value=Math.round(model[cursorKey]*1000);focus();
+    }
+    function nearLine(e){
+      const g=svg===refs.chart?trendGeometry:orderTrendGeometry;
+      if(!g?.path)return false;
+      const rect=svg.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+      if(x<g.left-22||x>g.left+g.innerW+22||y<g.top-22||y>g.top+g.innerH+22)return false;
+      let low=0,high=g.path.getTotalLength();
+      for(let i=0;i<18;i++){const mid=(low+high)/2;if(g.path.getPointAtLength(mid).x<x)low=mid;else high=mid}
+      return Math.abs(y-g.path.getPointAtLength((low+high)/2).y)<=28;
+    }
+    function clearGesture(){
+      if(gesture?.timer)clearTimeout(gesture.timer);
+      wrap.classList.remove('is-dragging','is-scrubbing');gesture=null;
+    }
+    wrap.addEventListener('pointerdown',e=>{
+      if(gesture||(e.pointerType==='mouse'&&e.button!==0))return;
+      gesture={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,offset:model[offsetKey],mode:'press'};
+      wrap.setPointerCapture(e.pointerId);
+      if(nearLine(e))gesture.timer=setTimeout(()=>{
+        if(!gesture||gesture.id!==e.pointerId||gesture.mode!=='press')return;
+        gesture.mode='scrub';wrap.classList.add('is-scrubbing');selectAt(gesture.lastX);
+      },320);
+    });
+    wrap.addEventListener('pointermove',e=>{
+      if(!gesture||e.pointerId!==gesture.id)return;
+      gesture.lastX=e.clientX;
+      if(gesture.mode==='scrub'){selectAt(e.clientX);return}
+      const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
+      if(gesture.mode==='press'){
+        if(Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx)){gesture.mode='cancelled';clearTimeout(gesture.timer);return}
+        if(Math.abs(dx)<8)return;
+        gesture.mode='pan';clearTimeout(gesture.timer);wrap.classList.add('is-dragging');
+      }
+      if(gesture.mode!=='pan')return;
+      const pixelsPerDay=Math.max(1,(svg.getBoundingClientRect().width-50)/(model[periodKey]-1));
+      const next=Math.max(0,Math.min(180-model[periodKey],gesture.offset+Math.round(dx/pixelsPerDay)));
+      if(next!==model[offsetKey]){model[offsetKey]=next;redraw()}
+    });
+    wrap.addEventListener('pointerup',e=>{
+      if(!gesture||e.pointerId!==gesture.id)return;
+      if(gesture.mode==='press'||gesture.mode==='scrub')selectAt(e.clientX);
+      if(gesture.mode==='pan')persist();
+      clearGesture();
+    });
+    wrap.addEventListener('pointercancel',clearGesture);
+    wrap.addEventListener('contextmenu',e=>{if(gesture?.mode==='scrub')e.preventDefault()});
+  }
+  bindChartDrag(refs.chart,'trendOffset','period','cursor',refs.chartScrub,updateTrend,updateTrendFocus);
+  bindChartDrag(refs.orderDetailChart,'orderOffset','orderPeriod','orderCursor',refs.orderScrub,updateOrderDetail,updateOrderFocus);
+  if(window.ResizeObserver){const observer=new ResizeObserver(()=>{updateBars();updateTrend();if(model.module==='orders'&&model.orderStore&&model.orderView==='chart')updateOrderDetail()});observer.observe(refs.chart.parentElement);observer.observe(refs.bars);observer.observe(refs.orderDetailChart.parentElement)}
+  window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState)applySaved(e.detail.globals.widgetState)});
+  applySaved(window.openai?.widgetState);
+  if(globalThis.Tweak){const tweak=new Tweak({container:root.querySelector('.crest-phone'),onChange:()=>{root.dataset.theme=design.theme;persist()}});tweak.addSelect(design,'theme',{label:'页面配色',options:[{label:'深色',value:'dark'},{label:'浅色',value:'light'}]})}
+})();
+</script>

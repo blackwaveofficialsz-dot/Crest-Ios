@@ -1,0 +1,2582 @@
+<html lang="en" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Crest Dashboard Options</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 16px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans:
+    -apple-system-body, ui-sans-serif, -apple-system, system-ui, "Segoe UI",
+    Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 8px);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  -webkit-font-smoothing: antialiased;
+  font-size: var(--font-size-base);
+  line-height: calc(var(--font-size-base) * 1.625);
+  font-weight: var(--font-weight-normal);
+}
+
+.cursor-interaction {
+  cursor: var(--cursor-interaction, pointer);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: var(--cursor-interaction, pointer);
+  text-decoration: none;
+  text-underline-offset: 2px;
+  font-weight: inherit;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+.table {
+  font-family: var(--font-sans);
+}
+
+h1 {
+  font-size: calc(var(--font-size-base) * 1.5);
+  line-height: 1.3333333333;
+}
+
+h2 {
+  font-size: calc(var(--font-size-base) * 1.25);
+  line-height: 1.4;
+}
+h3 {
+  font-size: calc(var(--font-size-base) * 1.125);
+  line-height: 1.5555555556;
+}
+h4 {
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+h5,
+h6 {
+  font-size: var(--font-size-base);
+  line-height: calc(var(--font-size-base) * 1.625);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+b,
+strong,
+th {
+  font-weight: 600;
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+pre,
+pre code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: calc(var(--font-size-base) * 0.875);
+  line-height: calc(var(--font-size-base) * 1.625);
+  font-family: var(--font-sans);
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+.table :is(th, td):not(:last-child) {
+  padding-inline-end: calc(var(--font-size-base) * 1.5);
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead :is(th, td) {
+  border-bottom-color: var(--border-strong, var(--input));
+  padding-block: calc(var(--font-size-base) / 2);
+  line-height: var(--font-size-base);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+.table tbody :is(th, td) {
+  padding-block: calc(var(--font-size-base) * 0.625);
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 8px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+.widget {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  box-shadow: 0 0 0 0.5px var(--border-strong, var(--border));
+  color: var(--foreground);
+  background: var(--background);
+}
+
+#widget > :not(.card, .widget, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  border: 1px solid var(--border);
+  corner-shape: var(--corner-shape);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--font-sans);
+  padding: 5px 12px;
+  border-color: color-mix(
+    in oklab,
+    light-dark(var(--primary-foreground), var(--foreground)) 5%,
+    transparent
+  );
+  border-radius: var(--radius-2xl);
+  color: light-dark(var(--primary-foreground), var(--foreground));
+  background: light-dark(var(--foreground), var(--popover));
+  box-shadow: 0 8px 18px rgb(15 23 42 / 20%);
+  letter-spacing: -0.15px;
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  color: color-mix(in srgb, var(--foreground) 40%, var(--muted-foreground));
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  font-family: var(--font-sans);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+}
+
+small,
+.text-small {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+/* Match inline alignment without overriding a containing flex or grid layout. */
+.btn,
+.nav-link,
+.form-control,
+.form-select,
+.form-range,
+.form-check {
+  vertical-align: middle;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  corner-shape: var(--corner-shape);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: inherit;
+  font-family: var(--font-sans);
+  height: fit-content;
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  padding-inline: var(--control-spacing, 12px);
+  border-color: transparent;
+  border-radius: var(--radius-full);
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+}
+
+.btn {
+  border-color: var(--border);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: var(--cursor-interaction, pointer);
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: light-dark(
+    color-mix(in srgb, var(--foreground) 5.5%, transparent),
+    color-mix(in srgb, var(--foreground) 8%, transparent)
+  );
+}
+
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.btn-primary {
+  border-color: var(--border);
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: border-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: border-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--muted-foreground);
+  background: light-dark(
+    color-mix(in srgb, var(--foreground) 5.5%, transparent),
+    color-mix(in srgb, var(--foreground) 8%, transparent)
+  );
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+/* Shared preview chrome; product styles stay inside each variant. */
+.viz-dotted-background {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 14%, transparent) 0.8px,
+    transparent 0.8px
+  );
+  background-position: center;
+  background-size: 16px 16px;
+}
+
+.viz-carousel {
+  position: relative;
+  min-width: 0;
+}
+
+.viz-carousel:has(> .viz-carousel-controls) {
+  min-height: calc(60px + var(--viz-carousel-picker-height, 0px));
+  padding-bottom: 60px;
+}
+
+.viz-carousel > [data-variant][hidden] {
+  display: none !important;
+}
+
+.viz-carousel > [data-variant] {
+  isolation: isolate;
+}
+
+.viz-carousel-controls {
+  --viz-carousel-hover: light-dark(
+    color-mix(in srgb, var(--foreground) 5.4%, transparent),
+    color-mix(in srgb, var(--foreground) 7.8%, transparent)
+  );
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  /* Leave room for the host's design-controls launcher at the trailing edge. */
+  max-width: calc(100% - 96px);
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans);
+  /* Match the settings dropdown chrome independently of the content font size. */
+  font-size: 13px;
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+/* Keep authored mockup button styles out of the shared carousel chrome. */
+.viz-carousel-controls button,
+.viz-carousel-picker > summary {
+  display: flex !important;
+  height: auto !important;
+  min-height: 30px;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  padding: 0 6px !important;
+  -webkit-app-region: no-drag;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: inherit !important;
+  background: transparent !important;
+  font: inherit !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.viz-carousel-controls > button,
+.viz-carousel-picker > summary {
+  position: relative;
+  isolation: isolate;
+}
+
+.viz-carousel-controls > button {
+  --icon-size: 16px;
+  width: 30px !important;
+  padding: 0 !important;
+}
+
+.viz-carousel-picker > summary {
+  padding-inline: 12px !important;
+}
+
+.viz-carousel-controls .viz-carousel-caret {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin: 0;
+  color: inherit;
+  transform: rotate(180deg);
+}
+
+.viz-carousel-controls > button > svg,
+.viz-carousel-controls .viz-carousel-caret,
+.viz-carousel-count {
+  opacity: 0.5;
+}
+
+.viz-carousel-controls > button::before,
+.viz-carousel-picker > summary::before {
+  position: absolute;
+  z-index: -1;
+  inset: 3px;
+  border-radius: 12px;
+  content: "";
+  pointer-events: none;
+}
+
+.viz-carousel-controls > button:hover::before,
+.viz-carousel-picker > summary:hover::before {
+  background: var(--viz-carousel-hover);
+}
+
+.viz-carousel-controls > button,
+.viz-carousel-controls [data-lucide],
+.viz-carousel-controls .lucide {
+  flex-shrink: 0;
+}
+
+.viz-carousel-picker {
+  min-width: 0;
+}
+
+.viz-carousel-picker > summary {
+  min-width: 0;
+  list-style: none;
+}
+
+.viz-carousel-picker > summary::-webkit-details-marker {
+  display: none;
+}
+
+.viz-carousel-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.viz-carousel-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-carousel-options {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 4px);
+  left: 0;
+  display: flex;
+  max-height: 240px;
+  flex-direction: column;
+  gap: 2px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  box-shadow: 0 4px 12px light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 25%));
+}
+
+.viz-carousel-options > button {
+  border-radius: max(0px, calc(var(--radius-lg) - 5px)) !important;
+  width: 100% !important;
+  min-height: 28px;
+  justify-content: flex-start !important;
+  padding: 4px 8px !important;
+  font-size: var(--font-size-small) !important;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.viz-carousel-options > [aria-current="true"],
+.viz-carousel-options > button:hover {
+  background: var(--viz-carousel-hover) !important;
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  padding-inline: calc(4px + var(--control-spacing, 12px) / 2);
+  border-color: var(--input);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--popover) 96%, transparent);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.4285714286;
+}
+.form-control:is(
+  [type="file"],
+  [type="date"],
+  [type="datetime-local"],
+  [type="month"],
+  [type="week"],
+  [type="color"]
+) {
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  line-height: 18px;
+}
+.form-control:is(
+  [type="date"],
+  [type="datetime-local"],
+  [type="month"],
+  [type="week"]
+) {
+  padding-inline: var(--control-spacing, 12px);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+  padding: 0;
+}
+
+.form-control[type="file"]::file-selector-button {
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+  min-height: calc(10px + 2 * var(--control-spacing, 12px));
+  padding-inline: var(--control-spacing, 12px);
+  margin-inline-end: var(--control-spacing, 12px);
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  resize: vertical;
+  min-height: 96px;
+  padding: 8px 10px;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: none;
+}
+.form-control:disabled {
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  opacity: 1;
+}
+.form-control[aria-invalid="true"] {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--red) 20%, transparent);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: fit-content;
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  margin: 0;
+  /* The secondary icon role is 14px at compact density and 16px at web density. */
+  --icon-size: calc(10px + var(--control-spacing, 12px) / 2);
+  /* Settings dropdowns retain a 12px inset and a 4px text-to-chevron gap. */
+  padding: 0 calc(16px + var(--icon-size)) 0 12px;
+  outline: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent calc(50% - 0.6px),
+      var(--muted-foreground) calc(50% - 0.6px) calc(50% + 0.6px),
+      transparent calc(50% + 0.6px)
+    ),
+    linear-gradient(
+      135deg,
+      transparent calc(50% - 0.6px),
+      var(--muted-foreground) calc(50% - 0.6px) calc(50% + 0.6px),
+      transparent calc(50% + 0.6px)
+    );
+  background-position:
+    calc(100% - 12px - var(--icon-size) / 2) 50%,
+    calc(100% - 12px - var(--icon-size) * 0.18) 50%;
+  background-repeat: no-repeat;
+  background-size: calc(var(--icon-size) * 0.32) calc(var(--icon-size) * 0.32);
+  cursor: var(--cursor-interaction, default);
+  font-size: calc(var(--font-size-base) * 14 / 16);
+  font-size: round(nearest, calc(var(--font-size-base) * 14 / 16), 1px);
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+}
+
+.form-select:not(:disabled):hover {
+  background-color: light-dark(
+    color-mix(in srgb, var(--foreground) 5.5%, transparent),
+    color-mix(in srgb, var(--foreground) 8%, transparent)
+  );
+}
+
+.form-select:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+.form-select:disabled {
+  opacity: 0.4;
+}
+
+.form-check {
+  display: flex;
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  corner-shape: round;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  width: calc(10px + var(--control-spacing, 12px) / 2);
+  height: calc(10px + var(--control-spacing, 12px) / 2);
+  border-color: var(--border-strong, var(--input));
+  border-radius: calc(var(--radius-sm) / 2);
+  background-color: transparent;
+  color: var(--foreground);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:is(:checked, :indeterminate) {
+  border-color: var(--border-strong, var(--input));
+  background-color: color-mix(in srgb, var(--popover) 96%, transparent);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+  background-color: var(--foreground);
+}
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:indeterminate::before {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 65%;
+  height: 6.65%;
+  margin: auto;
+  border-radius: var(--radius-full);
+  background: var(--foreground);
+  mask: none;
+  content: "";
+}
+
+.form-check-input[type="radio"] {
+  border-radius: var(--radius-full);
+  width: 16px;
+  height: 16px;
+  border: 0;
+  box-shadow: inset 0 0 0 1px var(--input);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 0;
+  background: radial-gradient(
+    circle,
+    var(--primary-foreground) 0 3px,
+    var(--foreground) 3px
+  );
+  box-shadow: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:focus-visible {
+  border-color: var(--ring);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+.form-check:not(.form-switch) .form-check-input[type="radio"]:disabled,
+.form-check:not(.form-switch)
+  .form-check-input[type="radio"]:disabled
+  + .form-check-label {
+  opacity: 0.5;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+  border-color: #fff;
+  background: #fff;
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--blue);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+  outline: none;
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  accent-color: var(--primary);
+  height: calc(12px + 2 * var(--control-spacing, 12px));
+  min-height: calc(12px + 2 * var(--control-spacing, 12px));
+  outline: none;
+  border-radius: var(--radius-full);
+  color: var(--foreground);
+  background: transparent;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  background: var(--form-range-track, var(--border));
+  height: 2px;
+  border-radius: var(--radius-full);
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  margin-top: -9px;
+  border-color: transparent;
+  background: currentColor;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Outline the native track and thumb, preserving the larger input hit area. */
+.form-range:focus-visible::-webkit-slider-runnable-track {
+  outline: 2px auto Highlight;
+  outline-color: -webkit-focus-ring-color;
+}
+
+.form-range::-moz-range-track {
+  background: var(--form-range-track, var(--border));
+  height: 2px;
+  border-radius: var(--radius-full);
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  border-color: transparent;
+  background: currentColor;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid Highlight;
+  outline-offset: 2px;
+}
+
+.form-range:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--blue);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.viz-carousel-controls :is(button, summary):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Web recipes are the default, including on renderers without inline style queries. */
+@supports (border-radius: if(style(--corner-shape: round): 1px; else: 2px)) {
+  /* Match the host's proportional text-sm scale at every text preference. */
+  .tooltip,
+  .viz-badge,
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    font-size: if(
+      style(--corner-shape: round): round(
+          nearest,
+          calc(var(--font-size-base) * 14 / 16),
+          1px
+        );
+        else: round(nearest, calc(var(--font-size-base) * 13 / 14), 1px)
+    );
+  }
+
+  .btn,
+  .nav-link,
+  .form-select {
+    border-radius: if(
+      style(--corner-shape: round): var(--radius-full); else: var(--radius-lg)
+    );
+  }
+
+  .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+    border-radius: if(
+      style(--corner-shape: round): calc(var(--radius-sm) / 2);
+        else: calc(var(--radius-lg) * 0.4)
+    );
+  }
+
+  .tooltip {
+    font-weight: if(
+      style(--corner-shape: round): 600; else: var(--font-weight-normal)
+    );
+  }
+}
+
+@media (pointer: coarse) {
+  .viz-carousel:has(> .viz-carousel-controls) {
+    min-height: calc(76px + var(--viz-carousel-picker-height, 0px));
+    padding-bottom: 76px;
+  }
+
+  .btn,
+  .nav-link,
+  .viz-carousel-controls button,
+  .viz-carousel-picker > summary,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, calc(var(--font-size-base) * 14 / 16));
+    font-size: max(
+      16px,
+      round(nearest, calc(var(--font-size-base) * 14 / 16), 1px)
+    );
+  }
+  .form-control:is(
+    [type="file"],
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="week"],
+    [type="time"],
+    [type="color"]
+  ) {
+    height: 44px;
+    min-height: 44px;
+    font-size: max(16px, calc(var(--font-size-base) * 14 / 16));
+    font-size: max(
+      16px,
+      round(nearest, calc(var(--font-size-base) * 14 / 16), 1px)
+    );
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+<style>html,body{margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important;} #crest-dashboard-preview .crest-stage{padding:12px!important;min-height:0!important;width:1200px!important;} #crest-dashboard-preview .crest-phone{height:auto!important;max-height:none!important;zoom:3;flex-shrink:0;box-shadow:none!important;} #crest-dashboard-preview .crest-main{flex:none!important;height:auto!important;max-height:none!important;overflow-y:visible!important;} #crest-dashboard-preview .crest-status,#crest-dashboard-preview .crest-header,#crest-dashboard-preview .crest-nav{flex-shrink:0!important;}</style></head>
+<body>
+<script type="application/json" id="codex-visualization-widget-state">__CODEX_VISUALIZATION_WIDGET_STATE__</script>
+<script>(() => {
+  const root = document.documentElement;
+  const mediaQuery = globalThis.matchMedia("(prefers-color-scheme: dark)");
+  const apply = Reflect.apply;
+  const isArray = Array.isArray;
+  const hasOwn = Object.hasOwn;
+  const parentWindow = globalThis.parent;
+  const stringify = JSON.stringify;
+  const parse = JSON.parse;
+  const encode = TextEncoder.prototype.encode.bind(new TextEncoder());
+  const initialStateElement = document.getElementById(
+    "codex-visualization-widget-state",
+  );
+  const initialGlobals = parse(initialStateElement?.textContent ?? "{}");
+  initialStateElement?.remove();
+  /** @type {Record<string, unknown> | null} */
+  let state = initialGlobals.widgetState ?? null;
+  const statePersistence = initialGlobals.statePersistence ?? "none";
+  let nextStateRequestId = 0;
+  /** @type {Map<number, { resolve: () => void; reject: (error: Error) => void; timeout: ReturnType<typeof globalThis.setTimeout>; serializedState: string }>} */
+  const pendingStateWrites = new Map();
+  const persistenceError = () =>
+    Object.assign(
+      new Error("The host could not persist the widget state update"),
+      {
+        code: -32000,
+        data: { code: "widget_state_persistence_failed", retryable: false },
+      },
+    );
+  /**
+   * @param {object} prototype
+   * @param {string} property
+   */
+  const getPrototypeGetter = (prototype, property) => {
+    // oxlint-disable-next-line typescript/unbound-method -- invoked through captured Reflect.apply
+    const getter = Object.getOwnPropertyDescriptor(prototype, property)?.get;
+    if (getter == null) {
+      throw new Error(`Missing ${property} getter`);
+    }
+    return getter;
+  };
+  const getMessageData = getPrototypeGetter(MessageEvent.prototype, "data");
+  const getMessagePorts = getPrototypeGetter(MessageEvent.prototype, "ports");
+  const getMessageSource = getPrototypeGetter(MessageEvent.prototype, "source");
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const addHostMessageListener = MessagePort.prototype.addEventListener;
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const postHostMessage = MessagePort.prototype.postMessage;
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const startHostPort = MessagePort.prototype.start;
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const stopMessagePropagation = Event.prototype.stopImmediatePropagation;
+  /** @type {MessagePort | null} */
+  let hostPort = null;
+  const postToHost = (type, payload) => {
+    if (hostPort != null) {
+      apply(postHostMessage, hostPort, [{ type, ...payload }]);
+    }
+  };
+  const openExternal = ({ href }) => {
+    if (globalThis.navigator.userActivation?.isActive === true) {
+      postToHost("open-external", { href });
+    }
+  };
+  const sendFollowUpMessage = ({ context, prompt, title }) => {
+    if (globalThis.navigator.userActivation?.isActive === true) {
+      postToHost("follow-up", { context, prompt, title });
+    }
+    return Promise.resolve();
+  };
+  /**
+   * @param {Record<string, unknown> | ((previous: Record<string, unknown> | null) => Record<string, unknown>)} next
+   * @returns {Promise<void>}
+   */
+  const setWidgetState = async (next) => {
+    const nextState = typeof next === "function" ? next(state) : next;
+    if (
+      nextState == null ||
+      typeof nextState !== "object" ||
+      isArray(nextState)
+    ) {
+      throw new TypeError("Widget state must be a JSON object");
+    }
+    const inputState = stringify(
+      nextState,
+      (_key, /** @type {unknown} */ value) => {
+        if (
+          typeof value === "undefined" ||
+          typeof value === "function" ||
+          typeof value === "symbol" ||
+          (typeof value === "number" && !Number.isFinite(value))
+        ) {
+          throw new TypeError("Widget state must be a JSON object");
+        }
+        return value;
+      },
+    );
+    const parsedState = parse(inputState);
+    if (
+      parsedState == null ||
+      typeof parsedState !== "object" ||
+      isArray(parsedState)
+    ) {
+      throw new TypeError("Widget state must be a JSON object");
+    }
+    const storedState = {
+      modelContent: null,
+      privateContent: null,
+      ...parsedState,
+    };
+    const serializedState = stringify(storedState);
+    if (encode(serializedState).length > 16 * 1024) {
+      throw new TypeError(
+        "Widget state must be a JSON object of at most 16 KiB",
+      );
+    }
+    if (
+      hasOwn(storedState, "imageIds") &&
+      (!isArray(storedState.imageIds) ||
+        storedState.imageIds.some(
+          (/** @type {unknown} */ id) => typeof id !== "string",
+        ))
+    ) {
+      throw new TypeError("Widget state imageIds must be an array of strings");
+    }
+    if (storedState.imageIds?.length > 0) {
+      throw Object.assign(
+        new TypeError("Visualization state does not support image attachments"),
+        { code: -32602, data: { code: "images_unsupported" } },
+      );
+    }
+    state = storedState;
+    globalThis.openai.widgetState = state;
+    globalThis.dispatchEvent(
+      new CustomEvent("openai:set_globals", {
+        detail: { globals: { widgetState: state } },
+      }),
+    );
+    if (statePersistence === "none") {
+      throw persistenceError();
+    }
+    const id = ++nextStateRequestId;
+    return new Promise((resolve, reject) => {
+      const timeout = globalThis.setTimeout(() => {
+        pendingStateWrites.delete(id);
+        reject(persistenceError());
+      }, 30_000);
+      pendingStateWrites.set(id, { resolve, reject, timeout, serializedState });
+      postToHost("widget-state-write", { id, state: serializedState });
+    });
+  };
+  const syncTheme = () => {
+    const theme = mediaQuery.matches ? "dark" : "light";
+    root.dataset.theme = theme;
+    globalThis.openai = {
+      ...globalThis.openai,
+      openExternal,
+      sendFollowUpMessage,
+      setWidgetState,
+      theme,
+      visualizationStyleVariables: {},
+      visualizationTheme: theme,
+      widgetState: state,
+      statePersistence,
+      stateModelContext: "none",
+    };
+    globalThis.dispatchEvent(
+      new CustomEvent("openai:set_globals", {
+        detail: { globals: globalThis.openai },
+      }),
+    );
+  };
+  const sendHeight = () => {
+    postToHost("height", {
+      height: Math.ceil(
+        Math.max(
+          document.body.scrollHeight,
+          document.body.getBoundingClientRect().height,
+        ),
+      ),
+    });
+  };
+
+  globalThis.addEventListener(
+    "message",
+    (event) => {
+      const data = apply(getMessageData, event, []);
+      const ports = apply(getMessagePorts, event, []);
+      const source = apply(getMessageSource, event, []);
+      if (
+        hostPort != null ||
+        source !== parentWindow ||
+        typeof data !== "object" ||
+        data?.type !== "codex-visualization-initialize" ||
+        !isArray(ports) ||
+        ports.length !== 1
+      ) {
+        return;
+      }
+      apply(stopMessagePropagation, event, []);
+      const nextHostPort = ports[0];
+      try {
+        apply(addHostMessageListener, nextHostPort, [
+          "message",
+          (event) => {
+            const data = apply(getMessageData, event, []);
+            if (typeof data === "object" && data?.type === "measure") {
+              sendHeight();
+            } else if (
+              typeof data === "object" &&
+              data?.type === "widget-state-result"
+            ) {
+              /** @type {unknown} */
+              const id = data.id;
+              if (typeof id !== "number") {
+                return;
+              }
+              const pending = pendingStateWrites.get(id);
+              if (pending != null) {
+                pendingStateWrites.delete(id);
+                globalThis.clearTimeout(pending.timeout);
+                if (data.ok === true) {
+                  pending.resolve();
+                } else {
+                  pending.reject(persistenceError());
+                }
+              }
+            }
+          },
+        ]);
+        apply(startHostPort, nextHostPort, []);
+      } catch {
+        return;
+      }
+      hostPort = nextHostPort;
+      for (const [id, { serializedState }] of pendingStateWrites) {
+        postToHost("widget-state-write", { id, state: serializedState });
+      }
+      sendHeight();
+    },
+    { capture: true },
+  );
+  document.currentScript?.remove();
+  mediaQuery.addEventListener("change", syncTheme);
+  globalThis.addEventListener("click", (event) => {
+    if (event.defaultPrevented) {
+      return;
+    }
+    let element = null;
+    if (event.target instanceof globalThis.Element) {
+      element = event.target;
+    } else if (event.target instanceof globalThis.Node) {
+      element = event.target.parentElement;
+    }
+    const link = element?.closest("a[href]");
+    const href = link?.getAttribute("href");
+    if (href == null) {
+      return;
+    }
+    if (href.startsWith("#")) {
+      let id;
+      try {
+        id = decodeURIComponent(href.slice(1));
+      } catch {
+        return;
+      }
+      const target = id.length === 0 ? root : document.getElementById(id);
+      if (
+        target == null ||
+        globalThis.navigator.userActivation?.isActive !== true
+      ) {
+        return;
+      }
+      event.preventDefault();
+      postToHost("scroll-to", {
+        top: target.getBoundingClientRect().top + globalThis.scrollY,
+      });
+      return;
+    }
+    event.preventDefault();
+    openExternal({ href });
+  });
+  new ResizeObserver(sendHeight).observe(document.body);
+  syncTheme();
+})();
+</script>
+<div id="crest-dashboard-preview">
+  <div class="viz-carousel viz-dotted-background" aria-label="Crest 经营看板的三种方案" data-previous-label="上一个方案" data-next-label="下一个方案">
+    <section data-variant="变化来源" aria-label="变化来源手机预览"><div class="crest-stage"><div class="crest-phone" data-design="sources" aria-label="变化来源外观"></div></div></section>
+  </div>
+</div>
+<style>
+#crest-dashboard-preview .crest-stage{display:flex;justify-content:center;align-items:flex-start;padding:26px 8px 20px;min-height:852px;box-sizing:border-box}
+#crest-dashboard-preview .crest-phone{--c-bg:light-dark(#f3f4f6,#101214);--c-surface:light-dark(#ffffff,#1b1e22);--c-raised:light-dark(#e9ecf0,#292d33);--c-text:light-dark(#1b2027,#f2f4f7);--c-muted:light-dark(#606b79,#a0a9b6);--c-line:light-dark(#e4e8ec,#32373e);--c-accent:light-dark(#486ddb,#98afff);--c-positive:light-dark(#167550,#64d4a1);--c-negative:light-dark(#b93d40,#ff9390);--c-dine:light-dark(#805dce,#ad92ef);--c-take:light-dark(#d97565,#eb9482);--c-pick:light-dark(#279087,#69bcb4);--c-overlay:light-dark(#18212e80,#00000099);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;color:var(--c-text);background:var(--c-bg);width:390px;max-width:100%;height:806px;border:1px solid var(--c-line);border-radius:30px;box-shadow:0 20px 50px light-dark(#24334514,#00000045);overflow:hidden;display:flex;flex-direction:column;position:relative;font-size:14px;line-height:1.45;font-weight:400;font-variant-numeric:tabular-nums;isolation:isolate}
+#crest-dashboard-preview .crest-phone *{box-sizing:border-box}
+#crest-dashboard-preview .crest-phone button,#crest-dashboard-preview .crest-phone input{font:inherit;color:inherit}
+#crest-dashboard-preview .crest-phone button{border:0;background:none;padding:0;text-align:left;-webkit-tap-highlight-color:transparent}
+#crest-dashboard-preview .crest-phone button:focus-visible{outline:2px solid var(--c-accent);outline-offset:2px}
+#crest-dashboard-preview .crest-phone button:active{opacity:.75}
+#crest-dashboard-preview .crest-phone h2,#crest-dashboard-preview .crest-phone h3,#crest-dashboard-preview .crest-phone p{margin:0}
+#crest-dashboard-preview .crest-status{display:flex;justify-content:space-between;align-items:center;padding:10px 24px 3px;font-size:12px;font-weight:600;height:32px}
+#crest-dashboard-preview .crest-status-icons{display:flex;gap:5px;align-items:center}
+#crest-dashboard-preview .crest-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 10px;min-height:56px}
+#crest-dashboard-preview .crest-brand{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600;letter-spacing:-.4px}
+#crest-dashboard-preview .crest-logo{background:var(--c-text);color:var(--c-bg);width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:18px;font-weight:600}
+#crest-dashboard-preview .crest-tag{font-size:11px;color:var(--c-muted);background:var(--c-raised);border-radius:5px;padding:3px 6px}
+#crest-dashboard-preview .crest-main{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:0 16px 20px}
+#crest-dashboard-preview .crest-main::-webkit-scrollbar{display:none}
+#crest-dashboard-preview .crest-title{font-size:25px!important;font-weight:600!important;letter-spacing:-.8px;margin:3px 0 12px!important}
+#crest-dashboard-preview .crest-filter-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+#crest-dashboard-preview .crest-filter{display:flex;align-items:center;gap:5px;min-height:44px;max-width:58%;font-size:13px!important;font-weight:500!important}
+#crest-dashboard-preview .crest-filter span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#crest-dashboard-preview .crest-segment{display:flex;align-items:center;background:var(--c-raised);border-radius:9px;padding:3px;flex-shrink:0}
+#crest-dashboard-preview .crest-segment button{min-height:44px;padding:0 12px;border-radius:6px;font-size:12px;text-align:center;color:var(--c-muted);white-space:nowrap}
+#crest-dashboard-preview .crest-segment button[aria-pressed="true"]{background:var(--c-surface);color:var(--c-text);box-shadow:0 1px 3px light-dark(#1821310d,#00000020)}
+#crest-dashboard-preview .crest-period{font-size:11px;color:var(--c-muted);margin-bottom:12px;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap}
+#crest-dashboard-preview .crest-card{background:var(--c-surface);padding:16px;border-radius:17px;margin-bottom:12px;overflow:hidden}
+#crest-dashboard-preview .crest-label{color:var(--c-muted);font-size:12px}
+#crest-dashboard-preview .crest-money{font-size:39px;letter-spacing:-1.8px;font-weight:600;line-height:1.2;margin:4px 0 6px;white-space:nowrap}
+#crest-dashboard-preview .crest-currency{font-size:24px;font-weight:400;margin-right:4px;color:var(--c-muted);letter-spacing:0}
+#crest-dashboard-preview .crest-delta{display:flex;align-items:center;gap:7px;font-size:12px;flex-wrap:wrap}
+#crest-dashboard-preview .crest-negative{color:var(--c-negative)!important}
+#crest-dashboard-preview .crest-positive{color:var(--c-positive)!important}
+#crest-dashboard-preview .crest-secondary{display:grid;grid-template-columns:1fr 1fr;gap:14px;border-top:1px solid var(--c-line);padding-top:12px;margin-top:14px}
+#crest-dashboard-preview .crest-secondary>div+div{border-left:1px solid var(--c-line);padding-left:16px}
+#crest-dashboard-preview .crest-secondary-value{font-size:21px;font-weight:600;margin:2px 0 3px;letter-spacing:-.5px}
+#crest-dashboard-preview .crest-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+#crest-dashboard-preview .crest-section-head h3{font-size:15px;font-weight:600;letter-spacing:-.2px}
+#crest-dashboard-preview .crest-icon-button{display:grid;place-items:center;min-width:44px;min-height:44px}
+#crest-dashboard-preview .crest-note{font-size:11px;color:var(--c-muted)}
+#crest-dashboard-preview .crest-legend{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--c-muted);margin:7px 0 10px;flex-wrap:wrap}
+#crest-dashboard-preview .crest-legend span{display:inline-flex;align-items:center;gap:5px}
+#crest-dashboard-preview .crest-line-key{height:2px;width:14px;background:var(--c-accent)}
+#crest-dashboard-preview .crest-line-key.previous{height:0;border-top:2px dashed var(--c-muted);background:none;opacity:.6}
+#crest-dashboard-preview .crest-trend-scroll{overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+#crest-dashboard-preview .crest-chart{display:block;max-width:none;flex-shrink:0;overflow:visible;touch-action:pan-x pan-y}
+#crest-dashboard-preview .crest-chart text{font-family:inherit;font-size:11px;fill:var(--c-muted)}
+#crest-dashboard-preview .crest-chart .crest-current-line{stroke:var(--c-accent);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#crest-dashboard-preview .crest-chart .crest-previous-line{stroke:var(--c-muted);stroke-width:1.5;stroke-dasharray:4 5;opacity:.5;fill:none}
+#crest-dashboard-preview .crest-chart-readout{display:flex;align-items:center;justify-content:space-between;background:var(--c-bg);padding:7px 10px;border-radius:8px;font-size:11px;min-height:35px;gap:6px;margin-top:4px}
+#crest-dashboard-preview .crest-chart-readout strong{font-size:13px;font-weight:600;color:var(--c-text)}
+#crest-dashboard-preview .crest-date-buttons{display:flex;gap:2px}
+#crest-dashboard-preview .crest-date-buttons button{width:44px;height:44px;display:grid;place-items:center}
+#crest-dashboard-preview .crest-store-scroll{overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;margin:10px -3px 0}
+#crest-dashboard-preview .crest-bar-axis{position:relative;width:688px;height:176px}
+#crest-dashboard-preview .crest-baseline{position:absolute;left:0;right:0;border-top:1px solid var(--c-line)}
+#crest-dashboard-preview .crest-baseline::before{content:"0";position:absolute;left:0;top:-17px;font-size:11px;color:var(--c-muted)}
+#crest-dashboard-preview .crest-bars{display:flex;width:680px;padding:0 4px;height:176px}
+#crest-dashboard-preview .crest-bar-button{flex:0 0 67px;position:relative;height:176px;text-align:center!important;border-radius:7px!important}
+#crest-dashboard-preview .crest-bar-button[aria-pressed="true"]{background:var(--c-bg)}
+#crest-dashboard-preview .crest-bar{position:absolute;left:25px;width:17px;min-height:2px;background:var(--c-accent);border-radius:3px 3px 0 0;transition:height .2s,bottom .2s}
+#crest-dashboard-preview .crest-bar.stacked{display:flex;flex-direction:column-reverse;overflow:hidden;background:none;min-height:0}
+#crest-dashboard-preview .crest-bar-segment{display:block;width:100%;flex-shrink:0}
+#crest-dashboard-preview .crest-bar.neg{background:var(--c-negative);border-radius:0 0 3px 3px}
+#crest-dashboard-preview .crest-bar.pos{background:var(--c-positive)}
+#crest-dashboard-preview .crest-bar-value{position:absolute;left:1px;right:1px;font-size:11px;color:var(--c-text)}
+#crest-dashboard-preview .crest-bar-name{position:absolute;left:1px;right:1px;bottom:7px;font-size:11px;color:var(--c-muted);white-space:nowrap}
+#crest-dashboard-preview .crest-selection{display:flex;justify-content:space-between;align-items:center;background:var(--c-bg);padding:9px 11px;border-radius:9px;width:100%;min-height:55px;margin-top:12px}
+#crest-dashboard-preview .crest-selection strong{font-weight:600;font-size:13px}
+#crest-dashboard-preview .crest-stack{height:10px;border-radius:4px;display:flex;overflow:hidden;gap:2px;margin:14px 0 8px}
+#crest-dashboard-preview .crest-stack>span{height:100%;min-width:0}
+#crest-dashboard-preview .crest-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+#crest-dashboard-preview .crest-channel-row{display:grid;grid-template-columns:1fr auto 18px;align-items:center;gap:10px;width:100%;min-height:61px;border-bottom:1px solid var(--c-line)!important}
+#crest-dashboard-preview .crest-channel-row:last-child{border-bottom:0!important}
+#crest-dashboard-preview .crest-channel-name{display:flex;align-items:center;gap:8px;font-size:13px}
+#crest-dashboard-preview .crest-channel-value{text-align:right;font-size:14px;font-weight:500}
+#crest-dashboard-preview .crest-attention{display:flex;align-items:flex-start;gap:10px;padding:12px 0;min-height:65px;width:100%;border-bottom:1px solid var(--c-line)!important}
+#crest-dashboard-preview .crest-attention:last-child{border-bottom:0!important}
+#crest-dashboard-preview .crest-attention-index{display:grid;place-items:center;width:23px;height:23px;border-radius:6px;flex-shrink:0;background:var(--c-raised);font-size:11px;color:var(--c-muted);margin-top:1px}
+#crest-dashboard-preview .crest-attention-body{flex:1;min-width:0;font-size:13px}
+#crest-dashboard-preview .crest-attention-body .crest-note{margin-top:4px}
+#crest-dashboard-preview .crest-nav{display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--c-line);background:var(--c-surface);padding:7px 5px 17px;min-height:69px;flex-shrink:0}
+#crest-dashboard-preview .crest-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--c-muted);min-width:48px}
+#crest-dashboard-preview .crest-nav-item.active{color:var(--c-accent)}
+#crest-dashboard-preview .crest-nav::after{content:"";position:absolute;bottom:6px;width:106px;height:4px;background:var(--c-text);border-radius:4px;opacity:.7}
+#crest-dashboard-preview .crest-compact-hero .crest-money{font-size:34px}
+#crest-dashboard-preview .crest-store-modes{margin:12px 0 8px;width:100%;justify-content:space-between}
+#crest-dashboard-preview .crest-store-modes button{flex:1;padding:0 7px}
+#crest-dashboard-preview .crest-mini-title{display:flex;justify-content:space-between;align-items:center;margin:7px 0 3px;font-size:12px}
+#crest-dashboard-preview .crest-mini-title strong{font-size:14px;font-weight:600}
+#crest-dashboard-preview .crest-mini+.crest-mini{border-top:1px solid var(--c-line);padding-top:9px;margin-top:7px}
+#crest-dashboard-preview .crest-contribution{padding-top:10px;border-top:1px solid var(--c-line);font-size:12px;display:flex;justify-content:space-between;gap:8px}
+#crest-dashboard-preview .crest-footnote{font-size:11px;text-align:center;color:var(--c-muted);padding:6px 0 4px}
+#crest-dashboard-preview .crest-overlay{position:absolute;inset:0;background:var(--c-overlay);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+#crest-dashboard-preview .crest-sheet{background:var(--c-surface);border-radius:22px 22px 0 0;width:100%;max-height:91%;overflow-y:auto;padding:10px 20px 26px;box-shadow:0 -10px 35px #00000010}
+#crest-dashboard-preview .crest-handle{width:34px;height:4px;background:var(--c-line);border-radius:4px;margin:0 auto 8px}
+#crest-dashboard-preview .crest-sheet h3{font-size:18px;font-weight:600}
+#crest-dashboard-preview .crest-sheet label{display:flex;align-items:center;justify-content:space-between;min-height:44px;border-bottom:1px solid var(--c-line);font-size:13px}
+#crest-dashboard-preview .crest-sheet input{accent-color:var(--c-accent);width:18px;height:18px}
+#crest-dashboard-preview .crest-apply{display:block;background:var(--c-text)!important;color:var(--c-bg)!important;width:100%;border-radius:12px!important;min-height:46px;text-align:center!important;margin-top:14px;font-weight:500!important}
+#crest-dashboard-preview .crest-sheet-metrics{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--c-line)}
+#crest-dashboard-preview .crest-sheet-metrics strong{font-size:21px;font-weight:600}
+#crest-dashboard-preview .crest-detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--c-line);font-size:13px;gap:10px}
+#crest-dashboard-preview .crest-phone svg[data-lucide]{width:17px;height:17px;stroke-width:1.65;flex-shrink:0}
+#crest-dashboard-preview .crest-nav svg[data-lucide]{width:20px;height:20px}
+#crest-dashboard-preview .crest-status svg[data-lucide]{width:14px;height:14px}
+@media(max-width:420px){#crest-dashboard-preview .crest-stage{padding:18px 0 16px;min-height:840px}#crest-dashboard-preview .crest-phone{border-radius:24px}#crest-dashboard-preview .crest-main{padding-left:12px;padding-right:12px}#crest-dashboard-preview .crest-card{padding:13px}#crest-dashboard-preview .crest-money{font-size:35px}#crest-dashboard-preview .crest-period{font-size:11px}#crest-dashboard-preview .crest-filter{max-width:53%}}
+@media(prefers-reduced-motion:reduce){#crest-dashboard-preview .crest-bar{transition:none}}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('crest-dashboard-preview');
+const phones=[...root.querySelectorAll('.crest-phone')];
+const names={overview:'经营总览',stores:'门店关注',sources:'变化来源'};
+const channelNames=['堂食','外卖','自提'];
+const channelColors=['var(--c-dine)','var(--c-take)','var(--c-pick)'];
+const raw=[
+['江湾店',24000,30000,840,1000,13200,2400,19000],['世纪广场店',28000,31000,960,1030,14800,2800,17000],
+['滨江店',22000,23000,800,770,12000,2200,14000],['南山店',19800,20000,720,680,10600,1800,11500],
+['大学城店',18600,17000,690,590,7100,2500,8000],['湖畔店',15800,16000,590,530,8900,1200,9500],
+['万象城店',15000,15500,550,510,6800,1500,8200],['北城店',13200,14000,480,470,6400,1200,7200],
+['东街店',10400,11100,330,340,3800,1100,5200],['文汇店',1200,2400,40,80,400,100,1200]
+];
+const model={days:7,ids:raw.map((_,i)=>i)};
+const ui=Object.fromEntries(phones.map(p=>[p.dataset.design,{selected:0,metric:p.dataset.design==='stores'?'delta':'net',day:-1,appearance:'system',comparison:true}]));
+const fmt=(n,dec=0)=>Number(n).toLocaleString('zh-CN',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const money=n=>'¥'+fmt(n);
+const sign=n=>n>0?'+':n<0?'−':'';
+const signedMoney=n=>sign(n)+'¥'+fmt(Math.abs(n));
+const rate=(a,b)=>b===0?'不可比':Math.abs(a-b)<.0001?'持平':sign(a-b)+fmt(Math.abs((a-b)/b*100),1)+'%';
+const changeClass=n=>n<0?'crest-negative':n>0?'crest-positive':'';
+const icon=n=>'<i data-lucide="'+n+'" aria-hidden="true"></i>';
+const sum=(rows,key)=>rows.reduce((a,r)=>a+r[key],0);
+const rangeLabel=()=>model.days===7?'10.01—10.07':'09.08—10.07';
+const previousLabel=()=>model.days===7?'09.24—09.30':'08.09—09.07';
+const storeLabel=()=>model.ids.length===10?'全部 10 店':model.ids.length===1?raw[model.ids[0]][0]:'已选 '+model.ids.length+' 家门店';
+function rows(){const c=model.days===7?1:4.05,p=model.days===7?1:3.95;return model.ids.map(id=>{const r=raw[id];return{id,name:r[0],net:Math.round(r[1]*c),prev:Math.round(r[2]*p),orders:Math.round(r[3]*(model.days===7?1:4.2)),prevOrders:Math.round(r[4]*(model.days===7?1:4.1)),channels:[r[5]*c,(r[1]-r[5]-r[6])*c,r[6]*c],prevChannels:[r[7]*p,(r[2]*.9-r[7])*p,r[2]*.1*p]}})}
+function total(rs=rows()){return{net:sum(rs,'net'),prev:sum(rs,'prev'),orders:sum(rs,'orders'),prevOrders:sum(rs,'prevOrders'),channels:channelNames.map((_,i)=>rs.reduce((a,r)=>a+r.channels[i],0)),prevChannels:channelNames.map((_,i)=>rs.reduce((a,r)=>a+r.prevChannels[i],0))}}
+function allocate(amount,weights){const scale=weights.reduce((a,b)=>a+b,0),values=weights.map(x=>Math.floor(amount*x/scale));let left=amount-values.reduce((a,b)=>a+b,0);const idx=weights.map((w,i)=>({i,f:amount*w/scale-values[i]})).sort((a,b)=>b.f-a.f);for(let j=0;j<left;j++)values[idx[j%idx.length].i]++;return values}
+function series(t){const n=model.days;const weights=(type)=>Array.from({length:n},(_,i)=>n===7?({net:[.88,1.06,1.15,.99,1.12,.92,.88],prev:[1.01,.93,1.03,.95,1.08,1.07,.93],orders:[.92,1.08,1.14,.98,1.10,.94,.84],prevOrders:[1.02,.96,1.04,.97,1.04,1.05,.92]}[type][i]):1+.14*Math.sin(i*1.6+(type==='net'?1:0))+.07*Math.cos(i*.7+(type==='prev'?1:0)));
+const net=allocate(t.net,weights('net')),prev=allocate(t.prev,weights('prev')),orders=allocate(t.orders,weights('orders')),prevOrders=allocate(t.prevOrders,weights('prevOrders'));
+return{net,prev,orders,prevOrders,avg:net.map((v,i)=>v/orders[i]),prevAvg:prev.map((v,i)=>v/prevOrders[i])}}
+function dayLabel(index,previous=false){const end=Date.UTC(2026,9,7)-(previous?model.days*86400000:0);const d=new Date(end-(model.days-1-index)*86400000);return(d.getUTCMonth()+1)+'.'+String(d.getUTCDate()).padStart(2,'0')}
+function save(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{preview:'Crest 三套经营看板',periodDays:model.days,stores:model.ids.map(i=>raw[i][0])},privateContent:{days:model.days,ids:model.ids,ui}}).catch(()=>{})}
+function restore(s){const v=s?.privateContent;if(!v)return;if([7,30].includes(v.days))model.days=v.days;if(Array.isArray(v.ids)){const valid=[...new Set(v.ids)].filter(i=>Number.isInteger(i)&&i>=0&&i<10);if(valid.length)model.ids=valid}for(const key of Object.keys(ui)){const next=v.ui?.[key];if(!next)continue;if(['net','delta','rate'].includes(next.metric))ui[key].metric=next.metric;if(Number.isInteger(next.selected)&&next.selected>=0&&next.selected<10)ui[key].selected=next.selected;if(Number.isInteger(next.day))ui[key].day=Math.max(-1,Math.min(model.days-1,next.day));if(['system','light','dark'].includes(next.appearance))ui[key].appearance=next.appearance;if(typeof next.comparison==='boolean')ui[key].comparison=next.comparison}}
+restore(window.openai?.widgetState);
+function hero(t,compact=false){const avg=t.net/t.orders,oldAvg=t.prev/t.prevOrders;return '<section class="crest-card '+(compact?'crest-compact-hero':'')+'"><div class="crest-label">'+(compact?'全部所选门店 · 净实收':'净实收')+'</div><div class="crest-money"><span class="crest-currency">¥</span>'+fmt(t.net)+'</div><div class="crest-delta"><span class="'+changeClass(t.net-t.prev)+'">'+rate(t.net,t.prev)+'</span><span class="crest-label">较上期</span><span class="crest-label">'+signedMoney(t.net-t.prev)+'</span></div>'+(compact?'':'<div class="crest-secondary"><div><div class="crest-label">订单数</div><div class="crest-secondary-value">'+fmt(t.orders)+' <span class="crest-label">单</span></div><div class="crest-note '+changeClass(t.orders-t.prevOrders)+'">较上期 '+rate(t.orders,t.prevOrders)+'</div></div><div><div class="crest-label">平均每单实收</div><div class="crest-secondary-value">¥'+fmt(avg,2)+'</div><div class="crest-note '+changeClass(avg-oldAvg)+'">较上期 '+rate(avg,oldAvg)+'</div></div></div>')+'</section>'}
+function legend(show=true){return'<div class="crest-legend"><span><i class="crest-line-key"></i>本期</span>'+(show?'<span><i class="crest-line-key previous"></i>上期对应第 N 天</span>':'')+'</div>'}
+function trendCard(kind,t){const st=ui[kind],idx=st.day<0?model.days-1:Math.min(st.day,model.days-1),s=series(t);if(kind==='sources')return'<section class="crest-card"><div class="crest-section-head"><h3>订单与每单实收</h3><span class="crest-note">按日</span></div>'+legend(st.comparison)+'<div class="crest-mini"><div class="crest-mini-title"><span>订单数 · 单</span><strong>'+fmt(s.orders[idx])+'</strong></div><div class="crest-trend-scroll"><svg class="crest-chart" data-series="orders" role="img" aria-label="每日订单数与上期对比"></svg></div></div><div class="crest-mini"><div class="crest-mini-title"><span>平均每单实收 · 元/单</span><strong>¥'+fmt(s.avg[idx],2)+'</strong></div><div class="crest-trend-scroll"><svg class="crest-chart" data-series="avg" role="img" aria-label="每日平均每单实收与上期对比"></svg></div></div><div class="crest-chart-readout" aria-live="polite"><span>'+dayLabel(idx)+' · 净实收 <strong>'+money(s.net[idx])+'</strong></span>'+dateButtons()+'</div></section>';
+return'<section class="crest-card"><div class="crest-section-head"><h3>净实收趋势</h3><span class="crest-note">元 / 日</span></div>'+legend(st.comparison)+'<div class="crest-trend-scroll"><svg class="crest-chart" data-series="net" role="img" aria-label="每日净实收与上期对比"></svg></div><div class="crest-chart-readout" aria-live="polite"><span>'+dayLabel(idx)+' <strong>'+money(s.net[idx])+'</strong><br><span class="crest-note">上期 '+dayLabel(idx,true)+' · '+money(s.prev[idx])+'</span></span>'+dateButtons()+'</div></section>'}
+function dateButtons(){return'<span class="crest-date-buttons"><button type="button" data-action="day-prev" aria-label="查看前一天">'+icon('chevron-left')+'</button><button type="button" data-action="day-next" aria-label="查看后一天">'+icon('chevron-right')+'</button></span>'}
+function metricValue(r,m){return m==='net'?r.net:m==='delta'?r.net-r.prev:(r.net/r.prev-1)*100}
+function storeCard(kind){
+const st=ui[kind],rs=rows();if(rs.length===1)return '';
+const mode=kind==='overview'?'net':st.metric;
+const sorted=[...rs].sort((a,b)=>mode==='net'?b.net-a.net:metricValue(a,mode)-metricValue(b,mode));
+if(!rs.some(r=>r.id===st.selected))st.selected=sorted[0].id;
+const selected=rs.find(r=>r.id===st.selected),vals=sorted.map(r=>metricValue(r,mode));
+const hi=mode==='net'?Math.max(...vals)*1.25:Math.max(1,...vals)*1.15,lo=mode==='net'?0:Math.min(-1,...vals)*1.2;
+const y=v=>13+(hi-v)/(hi-lo)*118,baseline=y(0);
+const bars=sorted.map(r=>{
+const v=metricValue(r,mode),end=y(v),h=Math.abs(end-baseline);
+const label=mode==='rate'?sign(v)+fmt(Math.abs(v),0)+'%':mode==='delta'?sign(v)+fmt(Math.abs(v)):fmt(v/10000,2)+'万';
+const segments=mode==='net'?r.channels.map((amount,i)=>'<span class="crest-bar-segment" style="height:'+(r.net?amount/r.net*100:0)+'%;background:'+channelColors[i]+'"></span>').join(''):'';
+const accessible=mode==='net'?'净实收 '+money(v)+'；'+r.channels.map((amount,i)=>channelNames[i]+' '+money(amount)+'，'+fmt(amount/r.net*100,1)+'%').join('；'):(mode==='rate'?label:signedMoney(v));
+return'<button type="button" class="crest-bar-button" data-store="'+r.id+'" aria-pressed="'+(r.id===st.selected)+'" aria-label="'+r.name+'，'+accessible+'"><span class="crest-bar '+(mode==='net'?'stacked':v<0?'neg':'pos')+'" aria-hidden="true" style="top:'+Math.min(end,baseline)+'px;height:'+h+'px">'+segments+'</span><span class="crest-bar-value" style="top:'+(v>=0?end-18:end+4)+'px">'+label+'</span><span class="crest-bar-name">'+r.name.replace('店','')+'</span></button>';
+}).join('');
+const channels=mode==='net'?'<div class="crest-legend" aria-label="渠道图例">'+channelNames.map((n,i)=>'<span><i class="crest-dot" style="background:'+channelColors[i]+'"></i>'+n+'</span>').join('')+'</div>':'';
+return'<section class="crest-card"><div class="crest-section-head"><h3>'+(kind==='overview'?'门店净实收':'先关注哪些门店')+'</h3><span class="crest-note">'+rs.length+' 家 · 可横滑</span></div>'+(kind==='stores'?'<div class="crest-segment crest-store-modes">'+[['delta','增减金额'],['rate','变化率'],['net','净实收']].map(([m,n])=>'<button type="button" data-metric="'+m+'" aria-pressed="'+(mode===m)+'">'+n+'</button>').join('')+'</div>':'')+'<div class="crest-note">'+(mode==='net'?'单位：元 · 按总净实收从高到低':mode==='delta'?'单位：元 · 按较上期减少金额排序':'单位：% · 按较上期变化率排序')+'</div>'+channels+'<div class="crest-store-scroll"><div class="crest-bar-axis"><div class="crest-baseline" style="top:'+baseline+'px"></div><div class="crest-bars">'+bars+'</div></div></div><button type="button" class="crest-selection" data-detail-store="'+selected.id+'"><span><strong>'+selected.name+'</strong><br><span class="crest-note">'+money(selected.net)+' · 上期 '+money(selected.prev)+'</span></span><span class="'+changeClass(selected.net-selected.prev)+'">'+rate(selected.net,selected.prev)+'</span>'+icon('chevron-right')+'</button></section>';
+}
+function stack(t,previous=false){const a=previous?t.prevChannels:t.channels,n=previous?t.prev:t.net;return'<div class="crest-stack" role="img" aria-label="'+(previous?'上期':'本期')+a.map((v,i)=>channelNames[i]+fmt(v/n*100,1)+'%').join('，')+'">'+a.map((v,i)=>'<span style="width:'+(v/n*100)+'%;background:'+channelColors[i]+'"></span>').join('')+'</div>'}
+function channelRows(t){return channelNames.map((n,i)=>'<button type="button" class="crest-channel-row" data-channel="'+i+'"><span class="crest-channel-name"><i class="crest-dot" style="background:'+channelColors[i]+'"></i>'+n+'</span><span class="crest-channel-value">'+money(t.channels[i])+'<br><span class="crest-note">'+fmt(t.channels[i]/t.net*100,1)+'% · <span class="'+changeClass(t.channels[i]-t.prevChannels[i])+'">'+rate(t.channels[i],t.prevChannels[i])+'</span></span></span>'+icon('chevron-right')+'</button>').join('')}
+function channelCard(t){return'<section class="crest-card"><div class="crest-section-head"><h3>渠道构成</h3><span class="crest-note">按净实收</span></div>'+stack(t)+channelRows(t)+'</section>'}
+function attention(){const rs=rows().filter(r=>r.net<r.prev).sort((a,b)=>(a.net-a.prev)-(b.net-b.prev)).slice(0,3);return'<section class="crest-card"><div class="crest-section-head"><h3>重点关注</h3><span class="crest-note">按减少金额</span></div>'+rs.map((r,i)=>'<button type="button" class="crest-attention" data-detail-store="'+r.id+'"><span class="crest-attention-index">'+(i+1)+'</span><span class="crest-attention-body">'+r.name+' <span class="crest-negative">'+signedMoney(r.net-r.prev)+'</span><div class="crest-note">较上期 '+rate(r.net,r.prev)+' · 上期 '+money(r.prev)+'</div></span>'+icon('chevron-right')+'</button>').join('')+(rs.length?'':'<div class="crest-note">所选门店净实收均未下降</div>')+'</section>'}
+function comparisonCard(t){return'<section class="crest-card"><div class="crest-section-head"><h3>哪个渠道在变化</h3><span class="crest-note">净实收 · 元</span></div><div class="crest-legend"><span>实色：本期</span><span>浅色：上期</span></div><svg class="crest-chart" data-channel-chart="true" role="img" aria-label="三个渠道本期与上期净实收对比"></svg>'+channelRows(t)+'<div class="crest-contribution"><span>净实收合计变化</span><strong class="'+changeClass(t.net-t.prev)+'">'+signedMoney(t.net-t.prev)+'</strong></div></section>'}
+function structureCard(t){return'<section class="crest-card"><div class="crest-section-head"><h3>渠道占比</h3><span class="crest-note">按净实收</span></div><div class="crest-note">本期</div>'+stack(t)+'<div class="crest-note" style="margin-top:13px">上期</div>'+stack(t,true)+'<div class="crest-legend">'+channelNames.map((n,i)=>'<span><i class="crest-dot" style="background:'+channelColors[i]+'"></i>'+n+' '+sign(t.channels[i]/t.net-t.prevChannels[i]/t.prev)+fmt(Math.abs((t.channels[i]/t.net-t.prevChannels[i]/t.prev)*100),1)+' pp</span>').join('')+'</div><div class="crest-note">pp 表示百分点；占比变化不等于金额变化</div></section>'}
+function render(p,reset=false){const k=p.dataset.design,st=ui[k],t=total(),scroll=p.querySelector('.crest-main')?.scrollTop||0,oldDays=p.dataset.renderDays,chartScrolls=[...p.querySelectorAll('.crest-trend-scroll')].map(x=>x.scrollLeft);p.dataset.renderDays=String(model.days);p.style.colorScheme=st.appearance==='system'?'light dark':st.appearance;let content=k==='overview'?hero(t)+trendCard(k,t)+storeCard(k)+channelCard(t)+attention():k==='stores'?hero(t,true)+storeCard(k)+attention()+(rows().length===1?trendCard(k,t):''):hero(t)+trendCard(k,t)+comparisonCard(t)+structureCard(t);
+p.innerHTML='<div class="crest-status"><span>9:41</span><span class="crest-status-icons">'+icon('signal')+icon('wifi')+icon('battery-full')+'</span></div><header class="crest-header"><div class="crest-brand"><span class="crest-logo">C</span>Crest</div><span class="crest-tag">模拟数据</span></header><main class="crest-main"><h2 class="crest-title">'+names[k]+'</h2><div class="crest-filter-row"><button type="button" class="crest-filter" data-action="filters">'+icon('store')+'<span>'+storeLabel()+'</span>'+icon('chevron-down')+'</button><div class="crest-segment" aria-label="统计周期"><button type="button" data-days="7" aria-pressed="'+(model.days===7)+'">近 7 天</button><button type="button" data-days="30" aria-pressed="'+(model.days===30)+'">近 30 天</button></div></div><div class="crest-period"><span>'+rangeLabel()+' 对比 '+previousLabel()+'</span><span>10.08 08:30 更新</span></div>'+content+'<div class="crest-footnote">模拟数据 · 所选门店数据完整 · 已核对汇总</div></main><nav class="crest-nav" aria-label="经营分析模块">'+[['layout-dashboard','看板'],['receipt-text','订单'],['package','产品'],['users','人效'],['bell','报警']].map(([ico,n],i)=>'<div class="crest-nav-item '+(i===0?'active':'')+'" '+(i===0?'aria-current="page"':'aria-label="'+n+'，本预览未开放"')+'>'+icon(ico)+'<span>'+n+'</span></div>').join('')+'</nav>';
+p.querySelector('.crest-main').scrollTop=reset?0:scroll;draw(p);p.querySelectorAll('.crest-trend-scroll').forEach((x,i)=>{x.scrollLeft=oldDays===String(model.days)?(chartScrolls[i]||0):x.scrollWidth-x.clientWidth});initIcons();p.querySelectorAll('button').forEach(b=>b.classList.add('cursor-interaction'))}
+function initIcons(){if(globalThis.lucide)lucide.createIcons({attrs:{width:16,height:16}})}
+function renderAll(reset=false){phones.forEach(p=>render(p,reset))}
+function smoothTrend(values,x,y){
+  // Daily samples are equally spaced; monotone tangents avoid invented peaks.
+  const points=values.map((v,i)=>[x(i),y(v)]);
+  if(!points.length)return '';
+  const slopes=points.slice(1).map((p,i)=>(p[1]-points[i][1])/(p[0]-points[i][0]));
+  const tangents=points.map((_,i)=>{
+    if(i===0)return slopes[0]||0;
+    if(i===points.length-1)return slopes[i-1]||0;
+    const a=slopes[i-1],b=slopes[i];
+    return a*b>0?2*a*b/(a+b):0;
+  });
+  const xy=(a,b)=>a.toFixed(3)+','+b.toFixed(3);
+  return 'M'+xy(...points[0])+points.slice(1).map((p,i)=>{
+    const prev=points[i],third=(p[0]-prev[0])/3;
+    return ' C'+xy(prev[0]+third,prev[1]+tangents[i]*third)+' '+xy(p[0]-third,p[1]-tangents[i+1]*third)+' '+xy(...p);
+  }).join('');
+}
+function draw(p){if(!p.clientWidth)return;const k=p.dataset.design,st=ui[k],s=series(total());p.querySelectorAll('svg[data-series]').forEach(svg=>{const type=svg.dataset.series,old=type==='net'?'prev':type==='orders'?'prevOrders':'prevAvg',a=s[type],b=s[old],parent=svg.parentElement,visibleWidth=parent.clientWidth||326,w=Math.max(visibleWidth,model.days===30?610:visibleWidth),h=type==='net'?158:108,left=38,right=w-12,top=10,bottom=h-26;const max=Math.max(...a,...b)*1.15,min=0,idx=st.day<0?model.days-1:Math.min(st.day,model.days-1);const x=i=>left+i/(model.days-1)*(right-left),y=v=>bottom-(v-min)/(max-min)*(bottom-top),path=arr=>smoothTrend(arr,x,y);const ticks=[0,max/2,max].map(v=>'<line x1="'+left+'" y1="'+y(v)+'" x2="'+right+'" y2="'+y(v)+'" stroke="var(--c-line)" stroke-width=".7"/><text x="'+(left-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+(type==='net'?v>=1000?fmt(v/10000,1)+'万':fmt(v):fmt(v,0))+'</text>').join('');const xs=[0,Math.round((model.days-1)/3),Math.round((model.days-1)*2/3),model.days-1].map(i=>'<text x="'+x(i)+'" y="'+(h-6)+'" text-anchor="'+(i===0?'start':i===model.days-1?'end':'middle')+'">'+dayLabel(i)+'</text>').join('');svg.setAttribute('viewBox','0 0 '+w+' '+h);svg.style.width=w+'px';svg.style.height=h+'px';svg.innerHTML='<title>'+names[k]+'，'+(type==='net'?'净实收':type==='orders'?'订单数':'平均每单实收')+'趋势</title>'+ticks+'<path d="'+path(a)+' L'+right+','+bottom+' L'+left+','+bottom+' Z" fill="var(--c-accent)" opacity=".06"/>'+(st.comparison?'<path d="'+path(b)+'" class="crest-previous-line"/>':'')+'<path d="'+path(a)+'" class="crest-current-line"/><line x1="'+x(idx)+'" y1="'+top+'" x2="'+x(idx)+'" y2="'+bottom+'" stroke="var(--c-muted)" stroke-width="1" opacity=".5"/><circle cx="'+x(idx)+'" cy="'+y(a[idx])+'" r="4.5" fill="var(--c-surface)" stroke="var(--c-accent)" stroke-width="2.5"/>'+xs;svg.dataset.left=left;svg.dataset.right=right;});
+const svg=p.querySelector('[data-channel-chart]');if(svg){const t=total(),w=svg.parentElement.clientWidth-parseFloat(getComputedStyle(svg.parentElement).paddingLeft)*2||326,h=178,left=42,right=w-8,top=20,bottom=144,max=Math.max(...t.channels,...t.prevChannels)*1.2;const y=v=>bottom-v/max*(bottom-top);svg.setAttribute('viewBox','0 0 '+w+' '+h);svg.style.width='100%';svg.style.height=h+'px';svg.innerHTML='<title>堂食、外卖、自提的两期净实收</title>'+[0,max/2,max].map(v=>'<line x1="'+left+'" y1="'+y(v)+'" x2="'+right+'" y2="'+y(v)+'" stroke="var(--c-line)" stroke-width=".7"/><text x="'+(left-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+fmt(v/10000,1)+'万</text>').join('')+channelNames.map((n,i)=>{const x=left+(right-left)*(i+.5)/3;return'<rect x="'+(x-22)+'" y="'+y(t.prevChannels[i])+'" width="17" height="'+(bottom-y(t.prevChannels[i]))+'" rx="3" fill="'+channelColors[i]+'" opacity=".3"/><rect x="'+(x+3)+'" y="'+y(t.channels[i])+'" width="17" height="'+(bottom-y(t.channels[i]))+'" rx="3" fill="'+channelColors[i]+'"/><text x="'+x+'" y="'+(Math.min(y(t.channels[i]),y(t.prevChannels[i]))-7)+'" text-anchor="middle" style="fill:var(--c-text)">'+signedMoney(t.channels[i]-t.prevChannels[i])+'</text><text x="'+x+'" y="170" text-anchor="middle">'+n+'</text>'}).join('')}}
+function openSheet(p,title,body){p.querySelector('.crest-overlay')?.remove();const overlay=document.createElement('div');overlay.className='crest-overlay';overlay.innerHTML='<section class="crest-sheet" role="dialog" aria-modal="true" aria-label="'+title+'"><div class="crest-handle"></div><div class="crest-section-head"><h3>'+title+'</h3><button type="button" class="crest-icon-button" data-action="close" aria-label="关闭">'+icon('x')+'</button></div>'+body+'</section>';p.appendChild(overlay);overlay.addEventListener('click',e=>{if(e.target===overlay)closeSheet(p)});initIcons();overlay.querySelectorAll('button').forEach(b=>b.classList.add('cursor-interaction'));overlay.querySelector('button').focus();}
+function closeSheet(p){p.querySelector('.crest-overlay')?.remove();p.querySelector('[data-action="filters"]')?.focus({preventScroll:true})}
+function storeDetail(p,id){const r=rows().find(x=>x.id===id);if(!r)return;openSheet(p,r.name,'<div class="crest-note">'+rangeLabel()+' · 对比 '+previousLabel()+' · 模拟数据</div><div class="crest-money"><span class="crest-currency">¥</span>'+fmt(r.net)+'</div><div class="crest-delta '+changeClass(r.net-r.prev)+'">'+signedMoney(r.net-r.prev)+' · '+rate(r.net,r.prev)+'</div><div class="crest-sheet-metrics"><div><span class="crest-label">订单数</span><br><strong>'+fmt(r.orders)+'</strong><div class="crest-note">上期 '+fmt(r.prevOrders)+' 单</div></div><div><span class="crest-label">平均每单实收</span><br><strong>¥'+fmt(r.net/r.orders,2)+'</strong><div class="crest-note">上期 ¥'+fmt(r.prev/r.prevOrders,2)+'</div></div></div>'+channelRows(r)+'<button type="button" class="crest-apply" data-focus-store="'+id+'">仅查看这家门店</button>')}
+function channelDetail(p,i){const selected=p.querySelector('[data-focus-store]')?.dataset.focusStore;const rs=selected===undefined?rows():rows().filter(r=>r.id===Number(selected));const t=total(rs);openSheet(p,channelNames[i]+'表现','<div class="crest-note">'+(rs.length===1?rs[0].name:storeLabel())+' · '+rangeLabel()+' · 模拟数据</div><div class="crest-money"><span class="crest-currency">¥</span>'+fmt(t.channels[i])+'</div><div class="crest-delta '+changeClass(t.channels[i]-t.prevChannels[i])+'">'+signedMoney(t.channels[i]-t.prevChannels[i])+' · '+rate(t.channels[i],t.prevChannels[i])+'</div><div class="crest-detail-row"><span>上期净实收</span><strong>'+money(t.prevChannels[i])+'</strong></div><div class="crest-detail-row"><span>本期占比 / 上期占比</span><strong>'+fmt(t.channels[i]/t.net*100,1)+'% / '+fmt(t.prevChannels[i]/t.prev*100,1)+'%</strong></div><div class="crest-label" style="margin-top:18px">所选门店 · 本期金额</div>'+rs.slice().sort((a,b)=>b.channels[i]-a.channels[i]).map(r=>'<button type="button" class="crest-detail-row" style="width:100%" data-detail-store="'+r.id+'"><span>'+r.name+'</span><strong>'+money(r.channels[i])+'</strong></button>').join(''))}
+root.addEventListener('click',e=>{const b=e.target.closest('button'),p=e.target.closest('.crest-phone');if(!b||!p)return;const k=p.dataset.design,st=ui[k];if(b.dataset.days){model.days=Number(b.dataset.days);Object.values(ui).forEach(s=>s.day=-1);renderAll();save()}else if(b.dataset.metric){st.metric=b.dataset.metric;render(p);save()}else if(b.dataset.store!==undefined){st.selected=Number(b.dataset.store);const scroll=p.querySelector('.crest-store-scroll')?.scrollLeft||0;render(p);p.querySelector('.crest-store-scroll').scrollLeft=scroll;if(k==='overview'||st.metric==='net')storeDetail(p,st.selected);else save()}else if(b.dataset.detailStore!==undefined){storeDetail(p,Number(b.dataset.detailStore))}else if(b.dataset.channel!==undefined){channelDetail(p,Number(b.dataset.channel))}else if(b.dataset.focusStore!==undefined){model.ids=[Number(b.dataset.focusStore)];renderAll(true);save()}else if(b.dataset.action==='filters'){openSheet(p,'选择门店','<div class="crest-note">所选范围将应用于全部指标与图表</div><label><span>全部门店</span><input type="checkbox" data-all-stores '+(model.ids.length===10?'checked':'')+'></label>'+raw.map((r,i)=>'<label><span>'+r[0]+'</span><input type="checkbox" value="'+i+'" data-store-check '+(model.ids.includes(i)?'checked':'')+'></label>').join('')+'<button type="button" class="crest-apply" data-action="apply-filters">应用筛选</button>')}else if(b.dataset.action==='apply-filters'){const ids=[...p.querySelectorAll('[data-store-check]:checked')].map(x=>Number(x.value));if(!ids.length){b.textContent='请至少选择一家门店';return}model.ids=ids;renderAll(true);save()}else if(b.dataset.action==='close'){closeSheet(p)}else if(b.dataset.action==='day-prev'||b.dataset.action==='day-next'){const idx=st.day<0?model.days-1:st.day;st.day=Math.max(0,Math.min(model.days-1,idx+(b.dataset.action==='day-next'?1:-1)));render(p);save()}});
+root.addEventListener('change',e=>{const p=e.target.closest('.crest-phone');if(!p)return;if(e.target.matches('[data-all-stores]'))p.querySelectorAll('[data-store-check]').forEach(x=>x.checked=e.target.checked);if(e.target.matches('[data-store-check]'))p.querySelector('[data-all-stores]').checked=[...p.querySelectorAll('[data-store-check]')].every(x=>x.checked)});
+root.addEventListener('scroll',e=>{if(e.target.matches?.('.crest-trend-scroll')){const scroller=e.target;scroller.closest('.crest-phone').querySelectorAll('.crest-trend-scroll').forEach(x=>{if(x!==scroller&&Math.abs(x.scrollLeft-scroller.scrollLeft)>1)x.scrollLeft=scroller.scrollLeft})}},true);
+root.addEventListener('keydown',e=>{const p=e.target.closest('.crest-phone');if(!p)return;const o=p.querySelector('.crest-overlay');if(!o)return;if(e.key==='Escape')closeSheet(p);if(e.key==='Tab'){const focus=[...o.querySelectorAll('button,input')];const first=focus[0],last=focus[focus.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+let drag=null;
+function selectAt(svg,clientX){const p=svg.closest('.crest-phone'),r=svg.getBoundingClientRect(),st=ui[p.dataset.design],left=Number(svg.dataset.left),right=Number(svg.dataset.right);st.day=Math.max(0,Math.min(model.days-1,Math.round(((clientX-r.left)-left)/(right-left)*(model.days-1))));const scrolls=[...p.querySelectorAll('.crest-trend-scroll')].map(x=>x.scrollLeft);render(p);p.querySelectorAll('.crest-trend-scroll').forEach((x,i)=>x.scrollLeft=scrolls[i]||0)}
+root.addEventListener('pointerdown',e=>{const svg=e.target.closest('svg[data-series]');if(!svg)return;drag={svg,x:e.clientX,y:e.clientY,long:false,moved:false,p:svg.closest('.crest-phone'),type:svg.dataset.series,timer:setTimeout(()=>{if(drag&&!drag.moved)drag.long=true},350)}});
+root.addEventListener('pointermove',e=>{if(!drag)return;if(Math.abs(e.clientX-drag.x)>7||Math.abs(e.clientY-drag.y)>7){if(!drag.long){drag.moved=true;clearTimeout(drag.timer)}else{selectAt(drag.p.querySelector('[data-series="'+drag.type+'"]'),e.clientX)}}});
+root.addEventListener('pointerup',e=>{if(!drag)return;clearTimeout(drag.timer);if(!drag.moved||drag.long){selectAt(drag.p.querySelector('[data-series="'+drag.type+'"]'),e.clientX);save()}drag=null});
+root.addEventListener('pointercancel',()=>{if(drag)clearTimeout(drag.timer);drag=null});
+renderAll();
+const observer=new ResizeObserver(entries=>entries.forEach(({target})=>{if(target.clientWidth)draw(target)}));phones.forEach(p=>observer.observe(p));
+window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);renderAll()}});
+if(globalThis.Tweak)phones.forEach(p=>{const state=ui[p.dataset.design];const tweak=new Tweak({container:p,onChange:()=>{render(p);save()}});tweak.addSelect(state,'appearance',{label:'外观',options:[{label:'跟随系统',value:'system'},{label:'深色',value:'dark'},{label:'浅色',value:'light'}]});tweak.addToggle(state,'comparison',{label:'上期趋势对照'});});
+})();
+</script>
+
+<script src="https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js"></script>
+<script src="https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js"></script>
+<script>
+(() => {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set(["top", "right", "bottom", "left"]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (event) => {
+    for (const target of event.composedPath()) {
+      if (target?.nodeType === Node.ELEMENT_NODE) {
+        const trigger = target.closest("[data-tooltip]");
+        if (trigger) return trigger;
+      }
+    }
+    return null;
+  };
+  const containsTarget = (trigger, target) =>
+    target?.nodeType != null && trigger.contains(target);
+  const getContent = (trigger) =>
+    trigger.getAttribute("data-tooltip")?.trim() ?? "";
+  const getPlacement = (trigger) => {
+    const placement = trigger.getAttribute("data-tooltip-placement");
+    return tooltipPlacements.has(placement) ? placement : "top";
+  };
+  const getTooltip = () => {
+    if (tooltip == null) {
+      tooltip = document.createElement("div");
+      tooltip.id = tooltipId;
+      tooltip.className = "tooltip";
+      tooltip.setAttribute("role", "tooltip");
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) => {
+    const ids = new Set(
+      (trigger.getAttribute("aria-describedby") ?? "")
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute("aria-describedby");
+    } else {
+      trigger.setAttribute("aria-describedby", [...ids].join(" "));
+    }
+  };
+  const clearOpenTimeout = () => {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) => {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) => {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              "--tooltip-available-width",
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              "--tooltip-available-height",
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: "fixed",
+    })
+      .then(({ x, y }) => {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = "visible";
+      })
+      .catch(() => {
+        if (activeTrigger === trigger && request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) => {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = "hidden";
+    floating.style.transform = "translate(0, 0)";
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () => {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) => {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() < skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() => {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+    const trigger = getTrigger(event);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) => {
+    lastPointerWasTouch =
+      event.type === "pointerdown" && event.pointerType === "touch";
+  };
+  const handleTouchClick = (event) => {
+    const isTouch = event.pointerType === "touch" || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch && activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() => {
+      if (activeTrigger === trigger && !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) => {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) => {
+    const trigger = getTrigger(event);
+    if (trigger?.matches(":focus-visible")) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) => {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handlers = {
+    pointerover: handlePointerOpen,
+    pointerdown: handlePointer,
+    pointercancel: handlePointer,
+    click: handleTouchClick,
+    pointerout: handleLeave,
+    focusin: handleFocusIn,
+    focusout: handleLeave,
+    keydown: handleKeyDown,
+    contextmenu: handleContextMenu,
+  };
+  const roots = new Map();
+  const handledEvents = new WeakSet();
+  const handleEvent = (event) => {
+    if (handledEvents.has(event)) return;
+    handledEvents.add(event);
+    handlers[event.type](event);
+  };
+  const discoverRoots = (node) => {
+    if (node.shadowRoot) listen(node.shadowRoot);
+    for (const element of node.querySelectorAll("*")) {
+      if (element.shadowRoot) listen(element.shadowRoot);
+    }
+  };
+  const listen = (root) => {
+    if (roots.has(root)) return;
+    for (const type of Object.keys(handlers)) root.addEventListener(type, handleEvent);
+    const observer = new window.MutationObserver((records) => {
+      for (const { addedNodes } of records) {
+        for (const node of addedNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE) discoverRoots(node);
+        }
+      }
+      for (const [root, cleanup] of roots) {
+        if (root.host && !root.host.isConnected) {
+          cleanup();
+          roots.delete(root);
+        }
+      }
+      if (activeTrigger && !activeTrigger.isConnected) closeTooltip(false);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    roots.set(root, () => {
+      observer.disconnect();
+      for (const type of Object.keys(handlers)) root.removeEventListener(type, handleEvent);
+    });
+    discoverRoots(root);
+  };
+  const destroy = () => {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    for (const cleanup of roots.values()) cleanup();
+    roots.clear();
+    tooltip = null;
+  };
+
+  // Events between children of one shadow root never reach the document.
+  listen(document);
+  window.addEventListener("pagehide", destroy, { once: true });
+})();
+</script>
+<script id="codex-visualization-tabs">
+(() => {
+  const selector = '.nav[role="tablist"] [role="tab"]';
+  const disabled = ':disabled,[aria-disabled="true"]';
+  const selectTab = (selected) => {
+    const panelId = selected.getAttribute("aria-controls");
+    for (const tab of selected.closest('[role="tablist"]').querySelectorAll('[role="tab"]')) {
+      const active = tab === selected;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+      const id = tab.getAttribute("aria-controls");
+      const panel = id && document.getElementById(id);
+      if (panel != null) {
+        panel.hidden = id !== panelId;
+        if (!panel.hidden && selected.id) {
+          panel.setAttribute("aria-labelledby", selected.id);
+        }
+      }
+    }
+  };
+  const interact = (event) => {
+    const tab = event.target?.closest?.(selector);
+    if (event.defaultPrevented || tab == null || tab.matches(disabled)) {
+      return;
+    }
+    if (event.type === "click") {
+      selectTab(tab);
+      return;
+    }
+    const tabs = Array.from(
+      tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'),
+    ).filter((candidate) => !candidate.matches(disabled));
+    const current = tabs.indexOf(tab);
+    let next;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = (current + 1) % tabs.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = (current + tabs.length - 1) % tabs.length;
+    } else if (event.key === "Home") {
+      next = 0;
+    } else if (event.key === "End") {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    tabs[next].focus();
+    selectTab(tabs[next]);
+  };
+
+  for (const list of document.querySelectorAll('.nav[role="tablist"]')) {
+    const selected =
+      list.querySelector('[role="tab"][aria-selected="true"]') ??
+      list.querySelector('[role="tab"].active') ??
+      list.querySelector('[role="tab"]');
+    if (selected != null) {
+      selectTab(selected);
+    }
+  }
+  document.addEventListener("click", interact);
+  document.addEventListener("keydown", interact);
+  window.addEventListener("pagehide", () => {
+    document.removeEventListener("click", interact);
+    document.removeEventListener("keydown", interact);
+  }, { once: true });
+})();
+</script>
+<script id="codex-visualization-carousel">
+  (() => {
+    for (const root of document.querySelectorAll(".viz-carousel")) {
+      const panels = Array.from(
+        root.querySelectorAll(":scope > [data-variant]"),
+      );
+      if (panels.length === 0) {
+        continue;
+      }
+      root.setAttribute("role", "group");
+      panels.forEach((panel, index) => {
+        panel.hidden = index !== 0;
+        panel.setAttribute("role", "group");
+        if (!panel.hasAttribute("aria-label")) {
+          panel.setAttribute("aria-label", panel.dataset.variant);
+        }
+      });
+      root.dataset.activeVariant = panels[0].dataset.variant;
+      if (panels.length === 1) {
+        continue;
+      }
+
+      const controls = document.createElement("div");
+      controls.className = "viz-carousel-controls";
+      // Portable copy of the settings dropdown's legacy glyph; no 14px icon-package preset matches it.
+      // https://github.com/openai/openai/blob/master/codex/codex-apps/webview/src/icons/chevron.svg
+      controls.innerHTML = `
+      <button type="button" class="viz-carousel-previous cursor-interaction"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+      <details class="viz-carousel-picker">
+        <summary class="cursor-interaction">
+          <span class="viz-carousel-count tabular-nums"></span>
+          <span class="viz-carousel-name"></span>
+          <svg class="viz-carousel-caret" width="14" height="14" viewBox="0 0 20 21" fill="none" aria-hidden="true" focusable="false">
+            <path d="M15.2793 7.71101C15.539 7.45131 15.961 7.45131 16.2207 7.71101C16.4804 7.97071 16.4804 8.39272 16.2207 8.65242L10.4707 14.4024C10.211 14.6621 9.78902 14.6621 9.52932 14.4024L3.77932 8.65242L3.69436 8.54792C3.52385 8.28979 3.55205 7.93828 3.77932 7.71101C4.00659 7.48374 4.3581 7.45554 4.61623 7.62605L4.72073 7.71101L10 12.9903L15.2793 7.71101Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" />
+          </svg>
+        </summary>
+        <div class="viz-carousel-options"></div>
+      </details>
+      <button type="button" class="viz-carousel-next cursor-interaction"><i data-lucide="chevron-right" aria-hidden="true"></i></button>`;
+      const previous = controls.querySelector(".viz-carousel-previous");
+      const next = controls.querySelector(".viz-carousel-next");
+      const picker = controls.querySelector(".viz-carousel-picker");
+      const summary = picker.querySelector("summary");
+      const count = controls.querySelector(".viz-carousel-count");
+      const name = controls.querySelector(".viz-carousel-name");
+      const options = controls.querySelector(".viz-carousel-options");
+      const status = document.createElement("span");
+      status.className = "sr-only";
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      status.setAttribute("aria-atomic", "true");
+      previous.setAttribute(
+        "aria-label",
+        root.dataset.previousLabel ?? "Previous variant",
+      );
+      next.setAttribute("aria-label", root.dataset.nextLabel ?? "Next variant");
+
+      let active = 0;
+      let mousePointerId = null;
+      let summaryPointerHandled = false;
+      summary.addEventListener("pointerdown", (event) => {
+        summaryPointerHandled =
+          event.pointerType === "mouse" && event.button === 0 && !event.ctrlKey;
+        if (!summaryPointerHandled) {
+          return;
+        }
+        event.preventDefault();
+        summary.focus({ preventScroll: true });
+        picker.open = !picker.open;
+        mousePointerId = picker.open ? event.pointerId : null;
+      });
+      summary.addEventListener("click", (event) => {
+        if (summaryPointerHandled && event.detail > 0) {
+          event.preventDefault();
+        }
+      });
+      const choices = panels.map((panel, index) => {
+        const choice = document.createElement("button");
+        choice.type = "button";
+        choice.className = "cursor-interaction";
+        choice.textContent = panel.dataset.variant;
+        choice.addEventListener("click", () => {
+          select(index);
+          summary.focus();
+        });
+        choice.addEventListener("pointerup", (event) => {
+          if (
+            picker.open &&
+            event.pointerType === "mouse" &&
+            event.button === 0 &&
+            event.pointerId === mousePointerId
+          ) {
+            choice.click();
+          }
+        });
+        options.appendChild(choice);
+        return choice;
+      });
+      const select = (index) => {
+        const changed = active !== index;
+        active = index;
+        panels.forEach((panel, position) => {
+          panel.hidden = position !== active;
+          choices[position].setAttribute(
+            "aria-current",
+            String(position === active),
+          );
+        });
+        root.dataset.activeVariant = panels[active].dataset.variant;
+        count.textContent = `${active + 1} / ${panels.length}`;
+        name.textContent = panels[active].dataset.variant;
+        picker.open = false;
+        mousePointerId = null;
+        if (changed) {
+          status.textContent = `${count.textContent}: ${name.textContent}`;
+        }
+      };
+      previous.addEventListener("click", () =>
+        select((active + panels.length - 1) % panels.length),
+      );
+      next.addEventListener("click", () =>
+        select((active + 1) % panels.length),
+      );
+      picker.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && picker.open) {
+          event.preventDefault();
+          picker.open = false;
+          mousePointerId = null;
+          summary.focus();
+          return;
+        }
+        if (event.altKey || event.ctrlKey || event.metaKey) {
+          return;
+        }
+        const index = choices.indexOf(document.activeElement);
+        let nextIndex;
+        if (event.key === "ArrowDown") {
+          nextIndex = index < 0 ? active : (index + 1) % choices.length;
+        } else if (event.key === "ArrowUp") {
+          nextIndex = index < 0 ? active : (index + choices.length - 1) % choices.length;
+        } else if (picker.open && event.key === "Home") {
+          nextIndex = 0;
+        } else if (picker.open && event.key === "End") {
+          nextIndex = choices.length - 1;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        picker.open = true;
+        choices[nextIndex].focus();
+      });
+      picker.addEventListener("focusout", (event) => {
+        if (!picker.contains(event.relatedTarget)) {
+          picker.open = false;
+          mousePointerId = null;
+        }
+      });
+      const dismiss = (event) => {
+        if (!summary.contains(event.target)) {
+          mousePointerId = null;
+        }
+        if (!picker.contains(event.target)) {
+          picker.open = false;
+        }
+      };
+      const endPointerSelection = () => {
+        mousePointerId = null;
+      };
+      const sizePicker = () => {
+        root.style.setProperty(
+          "--viz-carousel-picker-height",
+          `${picker.open ? options.offsetHeight : 0}px`,
+        );
+      };
+      picker.addEventListener("toggle", sizePicker);
+      window.addEventListener("resize", sizePicker);
+      document.addEventListener("pointerdown", dismiss);
+      document.addEventListener("pointerup", endPointerSelection);
+      document.addEventListener("pointercancel", endPointerSelection);
+      window.addEventListener("blur", endPointerSelection);
+      window.addEventListener(
+        "pagehide",
+        () => {
+          document.removeEventListener("pointerdown", dismiss);
+          document.removeEventListener("pointerup", endPointerSelection);
+          document.removeEventListener("pointercancel", endPointerSelection);
+          window.removeEventListener("blur", endPointerSelection);
+          window.removeEventListener("resize", sizePicker);
+        },
+        { once: true },
+      );
+      root.append(controls, status);
+      select(0);
+    }
+  })();
+</script>
+<script id="codex-visualization-lucide" async src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js"></script>
+<script>
+(() => {
+  const initialize = () => {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById("codex-visualization-lucide")
+    ?.addEventListener("load", initialize, { once: true });
+})();
+</script>
+
+</body>
+</html>

@@ -141,3 +141,11 @@ test('chat heading: reads observed title directly instead of a frozen Builder va
   assert.match(source, /Text\(this\.destination === 'chat' \? this\.chat\.title/);
   assert.equal((source.match(/this\.heading\(\)/g) || []).length, 3);
 });
+test('history list: reads observed sessions directly so pin and rename redraw immediately', () => {
+  const source = read('pages/HomePage.ets');
+  assert.match(source, /@Builder private history\(searchOnly: boolean = false\)/);
+  assert.match(source, /ForEach\(searchOnly \? this\.chat\.sessions\.filter/);
+  assert.match(source, /: this\.chat\.sessions, \(item: Conversation\)/);
+  assert.match(source, /JSON\.stringify\(\[item\.session_id, item\.is_pinned, item\.title\]\)/);
+  assert.doesNotMatch(source, /this\.history\(this\.chat\.sessions/);
+});

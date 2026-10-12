@@ -105,8 +105,12 @@ export class ChatStore {
   }
   private async edit(item: Conversation, payload: string): Promise<void> {
     const revision = this.session.revision;
-    await this.session.authenticated((token: string) => this.session.api.call<Conversation>('PATCH', '/api/v1/sessions/' + encodeURIComponent(item.session_id), payload, token));
-    if (revision === this.session.revision) await this.loadHistory();
+    const updated = await this.session.authenticated((token: string) => this.session.api.call<Conversation>('PATCH', '/api/v1/sessions/' + encodeURIComponent(item.session_id), payload, token));
+    if (revision !== this.session.revision) return;
+    this.historyEpoch++; this.historyLoading = false; this.historyError = '';
+    this.sessions = this.sessions.map((current: Conversation) => current.session_id === updated.session_id ? updated : current)
+      .sort((a: Conversation, b: Conversation) => Number(b.is_pinned) - Number(a.is_pinned) || b.updated_at.localeCompare(a.updated_at));
+    if (this.activeId === updated.session_id) this.title = updated.title;
   }
   async delete(item: Conversation): Promise<void> {
     const revision = this.session.revision;

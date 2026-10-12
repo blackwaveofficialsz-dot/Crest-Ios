@@ -1,0 +1,138 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Crest 今日实时看板模拟</title><style>:root{color-scheme:light}body{margin:0;background:#fff}</style><div id="crest-live-preview">
+  <div class="cl-demo-controls"><label>演示状态 <select aria-label="演示状态"><option value="live">正常更新</option><option value="delay">数据延迟</option><option value="partial">部分门店缺数</option><option value="error">刷新失败</option><option value="loading">首次加载</option><option value="empty">暂无数据</option></select></label><span>模拟数据 · 每 10 秒自动更新</span></div>
+  <div class="cl-stage viz-dotted-background"><article class="cl-phone" aria-label="Crest 今日实时看板模拟">
+    <header><div class="cl-status"><span id="cl-clock">14:32</span><span>移动端模拟</span></div><div class="cl-brand"><span class="cl-logo">C</span><strong>Crest</strong><span class="cl-tag">模拟数据</span></div><h1>今日实时</h1><div class="cl-sub">2026 年 10 月 9 日 · 营业日从 00:00 起</div></header>
+    <main>
+      <details class="cl-filter"><summary id="cl-scope">全部 10 家门店</summary><div id="cl-stores"></div><button class="cl-button" id="cl-select-all">全选门店</button></details>
+      <section class="cl-card" id="cl-kpis"><div class="cl-row"><span class="cl-label">今日净实收</span><span class="cl-tag" id="cl-cutoff"></span></div><div class="cl-money" id="cl-revenue"></div><div id="cl-revenue-delta" class="cl-delta"></div><div class="cl-secondary"><div><span class="cl-label">有效订单数</span><strong id="cl-orders"></strong><span id="cl-orders-delta"></span></div><div><span class="cl-label">平均每单实收</span><strong id="cl-average"></strong><span id="cl-average-delta"></span></div></div><p class="cl-note" id="cl-comparison"></p></section>
+      <section class="cl-card" id="cl-trend-card"><div class="cl-row"><h2>今日累计净实收</h2><span class="cl-label">元</span></div><p class="cl-note">今日与昨日相同时间段 · 未到时段留空</p><div class="cl-legend"><span><i class="cl-line"></i>今日</span><span><i class="cl-line cl-dashed"></i>昨日同时段</span></div><div id="cl-trend"></div><div class="cl-row cl-readout"><button class="cl-button" id="cl-prev-time" aria-label="前一个时间点">‹</button><span id="cl-trend-detail"></span><button class="cl-button" id="cl-next-time" aria-label="后一个时间点">›</button></div></section>
+      <section class="cl-card" id="cl-attention"><div class="cl-row"><h2>此刻值得关注</h2><span class="cl-label">汇总观察</span></div><div id="cl-attention-body"></div></section>
+      <section class="cl-card" id="cl-store-card"><div class="cl-row"><h2>门店净实收</h2><span class="cl-label">元</span></div><p class="cl-note" id="cl-store-period"></p><div class="cl-legend cl-channel-legend"><span><i class="cl-dot dine"></i>堂食</span><span><i class="cl-dot delivery"></i>外卖</span><span><i class="cl-dot pickup"></i>自提</span></div><div class="cl-store-scroll"><div id="cl-bars"></div></div><p class="cl-note">左右滑动查看全部门店 · 点柱查看门店汇总</p></section>
+      <section class="cl-card" id="cl-channel-card"><div class="cl-row"><h2>渠道表现</h2><span class="cl-label">金额与占比</span></div><p class="cl-note" id="cl-channel-period"></p><div class="cl-share" id="cl-share"></div><div id="cl-channels"></div></section>
+      <p class="cl-footnote">演示数据，不连接真实交易。营业日、有效订单及退款口径需在接入时核对。点击仅查看门店和渠道汇总。</p>
+    </main>
+    <nav class="cl-nav" aria-label="应用导航示意"><span aria-current="page">看板</span><span>订单</span><span>产品</span><span>人效</span><span>报警</span></nav>
+    <dialog id="cl-dialog"><div class="cl-row"><h2 id="cl-dialog-title"></h2><button class="cl-button" id="cl-close">关闭</button></div><div id="cl-dialog-body"></div></dialog>
+  </article></div>
+</div>
+<style>
+#crest-live-preview{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif}
+#crest-live-preview .cl-demo-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin:12px 0 18px;font-size:12px}
+#crest-live-preview .cl-demo-controls select{font:inherit;min-height:36px}
+#crest-live-preview .cl-stage{display:flex;justify-content:center;padding:24px 8px}
+#crest-live-preview .cl-phone{--bg:light-dark(#f3f4f6,#101214);--surface:light-dark(#fff,#1b1e22);--raised:light-dark(#e9ecf0,#292d33);--text:light-dark(#1b2027,#f2f4f7);--muted:light-dark(#606b79,#a0a9b6);--line:light-dark(#e4e8ec,#32373e);--accent:light-dark(#486ddb,#98afff);--good:light-dark(#167550,#64d4a1);--bad:light-dark(#b93d40,#ff9390);--dine:light-dark(#805dce,#ad92ef);--delivery:light-dark(#d97565,#eb9482);--pickup:light-dark(#279087,#69bcb4);--warning:light-dark(#8b641b,#f2c678);width:390px;max-width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:30px;overflow:hidden;font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums;position:relative;isolation:isolate}
+#crest-live-preview .cl-phone *{box-sizing:border-box}
+#crest-live-preview .cl-phone h1,#crest-live-preview .cl-phone h2,#crest-live-preview .cl-phone p{margin:0}
+#crest-live-preview .cl-phone h1{font-size:27px;line-height:1.3;font-weight:600;letter-spacing:-.7px;margin:13px 0 4px}
+#crest-live-preview .cl-phone h2{font-size:15px;font-weight:600}
+#crest-live-preview .cl-phone header{padding:0 18px 12px}
+#crest-live-preview .cl-status{height:32px;display:flex;align-items:center;justify-content:space-between;font-size:11px}
+#crest-live-preview .cl-brand{display:flex;gap:9px;align-items:center;padding:8px 0;font-size:17px}
+#crest-live-preview .cl-brand .cl-tag{margin-left:auto}
+#crest-live-preview .cl-logo{width:26px;height:26px;border-radius:8px;background:var(--text);color:var(--bg);display:grid;place-items:center;font-weight:600}
+#crest-live-preview .cl-sub,#crest-live-preview .cl-label{font-size:12px;color:var(--muted)}
+#crest-live-preview .cl-tag{font-size:11px;border-radius:5px;padding:3px 6px;background:var(--raised);color:var(--muted)}
+#crest-live-preview main{padding:0 16px 14px}
+#crest-live-preview .cl-filter{margin:0 0 8px}
+#crest-live-preview summary{min-height:44px;align-content:center;font-weight:500}
+#crest-live-preview #cl-stores{display:grid;grid-template-columns:1fr 1fr;padding:4px 0}
+#crest-live-preview #cl-stores label{display:flex;gap:8px;align-items:center;min-height:44px;font-size:12px}
+#crest-live-preview .cl-phone button{font:inherit;color:inherit;cursor:inherit}
+#crest-live-preview .cl-button{background:none;border:0;min-height:44px;min-width:44px;padding:0 8px;color:var(--accent)!important;text-align:center;font-size:12px!important}
+#crest-live-preview button:focus-visible,#crest-live-preview summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#crest-live-preview button:active{opacity:.7}
+#crest-live-preview .cl-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#crest-live-preview .cl-card{background:var(--surface);border-radius:17px;padding:16px;margin-bottom:12px;overflow:hidden}
+#crest-live-preview .cl-money{font-size:38px;font-weight:600;letter-spacing:-1.5px;line-height:1.2;margin:6px 0 8px;white-space:nowrap}
+#crest-live-preview .cl-delta{font-size:12px;min-height:18px}
+#crest-live-preview .positive{color:var(--good)}
+#crest-live-preview .negative{color:var(--bad)}
+#crest-live-preview .cl-secondary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid var(--line)}
+#crest-live-preview .cl-secondary>div{display:flex;flex-direction:column;gap:3px}
+#crest-live-preview .cl-secondary>div+div{border-left:1px solid var(--line);padding-left:16px}
+#crest-live-preview .cl-secondary strong{font-size:22px;font-weight:600;letter-spacing:-.5px}
+#crest-live-preview .cl-secondary span:last-child{font-size:11px}
+#crest-live-preview .cl-note{font-size:11px;color:var(--muted);margin-top:5px!important}
+#crest-live-preview #cl-comparison{margin-top:12px!important}
+#crest-live-preview .cl-legend{display:flex;gap:13px;flex-wrap:wrap;margin:12px 0;font-size:11px;color:var(--muted)}
+#crest-live-preview .cl-legend span{display:flex;align-items:center;gap:5px}
+#crest-live-preview .cl-line{width:14px;height:2px;background:var(--accent)}
+#crest-live-preview .cl-dashed{background:none;border-top:2px dashed var(--muted)}
+#crest-live-preview .cl-dot{height:7px;width:7px;border-radius:2px;display:inline-block}
+#crest-live-preview .dine{background:var(--dine)}
+#crest-live-preview .delivery{background:var(--delivery)}
+#crest-live-preview .pickup{background:var(--pickup)}
+#crest-live-preview #cl-trend svg{display:block;width:100%;touch-action:pan-y}
+#crest-live-preview #cl-trend text{fill:var(--muted);font-size:11px;font-family:inherit}
+#crest-live-preview .cl-readout{font-size:11px;background:var(--bg);border-radius:8px;margin-top:7px;min-height:48px}
+#crest-live-preview #cl-trend-detail{text-align:center}
+#crest-live-preview .cl-insight{display:block;width:100%;background:none;border:0;padding:14px 0 4px;text-align:left!important;line-height:1.55}
+#crest-live-preview .cl-insight strong{font-weight:500;font-size:13px;display:block}
+#crest-live-preview .cl-insight span{font-size:11px;color:var(--muted)}
+#crest-live-preview .cl-store-scroll{overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:5px}
+#crest-live-preview #cl-bars{display:flex;gap:8px;align-items:stretch;min-width:max-content;padding-top:4px}
+#crest-live-preview .cl-bar-button{width:65px;min-height:216px;border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px!important;white-space:nowrap}
+#crest-live-preview .cl-bar-area{height:145px;width:100%;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid var(--line)}
+#crest-live-preview .cl-bar-stack{width:19px;display:flex;flex-direction:column-reverse;border-radius:3px 3px 0 0;overflow:hidden}
+#crest-live-preview .cl-bar-stack i{display:block;width:100%}
+#crest-live-preview .cl-share{height:9px;display:flex;overflow:hidden;border-radius:4px;margin:14px 0 8px;background:var(--raised)}
+#crest-live-preview .cl-channel-row{padding:11px 0;border-bottom:1px solid var(--line);font-size:12px;display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center}
+#crest-live-preview .cl-channel-row:last-child{border:0;padding-bottom:0}
+#crest-live-preview .cl-channel-row small{font-size:11px;color:var(--muted)}
+#crest-live-preview .cl-footnote{font-size:11px;color:var(--muted);padding:0 4px 6px}
+#crest-live-preview .cl-nav{display:flex;justify-content:space-around;padding:17px 8px 23px;border-top:1px solid var(--line);background:var(--surface);font-size:12px;color:var(--muted)}
+#crest-live-preview .cl-nav [aria-current]{color:var(--accent);font-weight:600}
+#crest-live-preview dialog{width:min(354px,calc(100% - 32px));border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--text);padding:18px;font-size:13px}
+#crest-live-preview dialog::backdrop{background:#0006}
+#crest-live-preview dialog p{margin-top:12px!important}
+#crest-live-preview .cl-empty{min-height:150px;display:grid;place-content:center;text-align:center;color:var(--muted);font-size:12px;gap:8px}
+#crest-live-preview [data-mode="loading"] .cl-money{background:var(--raised);border-radius:6px;color:transparent;width:70%}
+@media(max-width:360px){#crest-live-preview .cl-stage{padding:12px 0}#crest-live-preview .cl-card{padding:13px}#crest-live-preview main{padding:0 12px 12px}#crest-live-preview .cl-money{font-size:34px}#crest-live-preview .cl-secondary strong{font-size:20px}}
+</style>
+<script>
+(() => {
+const root=document.getElementById('crest-live-preview'),q=s=>root.querySelector(s);
+const stores=[['江湾店',9200,5200,600,220,18000,240],['世纪广场店',14800,8100,900,325,22000,316],['滨江店',8100,7200,700,250,14500,240],['南山店',7600,7000,900,241,15000,245],['大学城店',4200,7900,900,235,12200,230],['湖畔店',4800,2600,500,109,8500,118],['万象城店',6200,3000,700,135,9500,137],['北城店',3900,1800,400,88,6600,99],['东街店',4200,2500,460,119,5700,95],['文汇店',4400,2600,500,108,5240,80]];
+let selected=stores.map((_,i)=>i),step=0,mode='live',point=6,snapshot;
+const fmt=n=>Math.round(n).toLocaleString('zh-CN'),money=n=>'¥'+fmt(n),total=s=>s[1]+s[2]+s[3];
+const pct=(n,p)=>p>0?((n/p-1)>=0?'+':'')+((n/p-1)*100).toFixed(1)+'%':'不可比';
+const time=()=>{const secs=14*3600+32*60+step*10;return [Math.floor(secs/3600),Math.floor(secs/60)%60,secs%60].map(n=>String(n).padStart(2,'0')).join(':')};
+function data(){const a=stores.map(s=>s.slice());for(let t=0;t<step;t++){const i=t%10,j=(t+3)%10;a[i][1]+=45;a[i][4]++;a[j][2]+=59;a[j][4]++;a[i][5]+=87;a[i][6]++;}return a;}
+function current(){const a=data();const available=selected.filter(i=>!(mode==='partial'&&i===0));const rows=available.map(i=>a[i]);const sums=[0,0,0,0,0,0];rows.forEach(r=>r.slice(1).forEach((v,i)=>sums[i]+=v));return{a,available,rows,sums,n:sums[0]+sums[1]+sums[2],o:sums[3],prev:sums[4],po:sums[5],valid:rows.length>0&&!['empty','loading'].includes(mode)};}
+function persist(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{preview:'Crest 今日实时看板',stores:selected.map(i=>stores[i][0]),mode},privateContent:{selected,mode}}).catch(()=>{});}
+function restore(v){const p=v?.privateContent;if(p&&Array.isArray(p.selected)){selected=p.selected.filter(i=>Number.isInteger(i)&&i>=0&&i<10);mode=['live','delay','partial','error','loading','empty'].includes(p.mode)?p.mode:'live';} }
+restore(window.openai?.widgetState);
+function filters(){q('#cl-stores').innerHTML=stores.map((s,i)=>`<label><input type="checkbox" value="${i}" ${selected.includes(i)?'checked':''}>${s[0]}</label>`).join('');q('.cl-demo-controls select').value=mode;}
+function delta(el,n,p){el.textContent='较昨日同时段 '+pct(n,p);el.className=n>=p?'positive':'negative';}
+function render(){snapshot=current();const s=snapshot,tm=time(),short=tm.slice(0,5);q('.cl-phone').dataset.mode=mode;q('#cl-clock').textContent=short;q('#cl-scope').textContent=selected.length===10?'全部 10 家门店':selected.length===1?stores[selected[0]][0]:`已选 ${selected.length} 家门店`;
+q('#cl-cutoff').textContent=['empty','loading'].includes(mode)?'等待数据':'截至 '+short;
+q('#cl-revenue').textContent=s.valid?money(s.n):'—';q('#cl-orders').textContent=s.valid?fmt(s.o)+' 单':'—';q('#cl-average').textContent=s.valid&&s.o?'¥'+(s.n/s.o).toFixed(2):'—';
+if(s.valid){delta(q('#cl-revenue-delta'),s.n,s.prev);q('#cl-revenue-delta').textContent+=` · ${s.n>=s.prev?'+':'−'}${money(Math.abs(s.n-s.prev))}`;delta(q('#cl-orders-delta'),s.o,s.po);delta(q('#cl-average-delta'),s.n/s.o,s.prev/s.po);}else{['#cl-revenue-delta','#cl-orders-delta','#cl-average-delta'].forEach(id=>q(id).textContent='暂无可比数据');}
+const notice=mode==='delay'?'数据延迟，保留最近结果。':mode==='error'?'暂未取得新数据，保留最近结果。':mode==='partial'&&selected.includes(0)?'江湾店缺数，已从两期比较中排除。':'';
+q('#cl-comparison').textContent=notice+(s.valid?`比较：10/09 00:00–${tm} 与 10/08 00:00–${tm}，同一 ${s.available.length} 家门店。`:mode==='loading'?'正在加载经营数据。':'当前范围暂无经营数据。');
+q('#cl-store-period').textContent=`10/09 00:00–${short} · 金额下方为较昨日同时段变化`;q('#cl-channel-period').textContent=`10/09 00:00–${short} · 当前有效范围，覆盖 100%`;
+renderTrend();renderStores();renderChannels();renderAttention();}
+function renderAttention(){const s=snapshot,el=q('#cl-attention-body');if(!s.valid){el.innerHTML='<div class="cl-empty">'+(mode==='loading'?'正在载入经营汇总':'暂无经营数据')+'<span>有完整数据后再展示关注依据</span></div>';return;}
+const down=s.rows.filter(r=>total(r)<r[5]).sort((a,b)=>(total(a)-a[5])-(total(b)-b[5]));el.innerHTML=down.slice(0,2).map(r=>`<button class="cl-insight" data-store="${stores.findIndex(x=>x[0]===r[0])}"><strong>${r[0]}减少 ${money(r[5]-total(r))} <span>›</span></strong><span>${pct(total(r),r[5])} · 昨日同时段 ${money(r[5])}；查看门店汇总</span></button>`).join('')||'<p class="cl-note">当前可比门店未出现净实收下降。</p>';if(mode==='partial'&&selected.includes(0))el.insertAdjacentHTML('afterbegin','<p class="cl-note">江湾店缺数，未参与合计、对比与排名。</p>');}
+const hours=[0,8,10,11,12,14],fractions=[0,.012,.092,.218,.726,.951],previous=[0,.016,.105,.244,.745,.958];
+function points(n,old=false){return (old?previous:fractions).map((f,i)=>[hours[i],Math.round(n*f)]).concat([[14+32/60+step/360,n]]);}
+function curve(a){return 'M'+a[0].join(',')+a.slice(1).map((p,i)=>{const prev=a[i],mid=(prev[0]+p[0])/2;return` C${mid},${prev[1]} ${mid},${p[1]} ${p[0]},${p[1]}`}).join('');}
+function renderTrend(){const s=snapshot,el=q('#cl-trend');if(!s.valid){el.innerHTML='<div class="cl-empty">'+(mode==='loading'?'正在加载趋势':'暂无趋势数据')+'</div>';q('#cl-trend-detail').textContent='—';return;}
+const w=Math.max(245,el.clientWidth),h=194,left=64,right=w-12,top=12,bottom=166,max=Math.ceil(Math.max(s.n,s.prev)/40000)*40000||40000,x=t=>left+t/24*(right-left),y=n=>bottom-n/max*(bottom-top),a=points(s.n).map(p=>[x(p[0]),y(p[1])]),b=points(s.prev,true).map(p=>[x(p[0]),y(p[1])]);
+el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="今日累计净实收与昨日同时段曲线，未到时段留空">${[0,.5,1].map(t=>`<line x1="${left}" x2="${right}" y1="${y(t*max)}" y2="${y(t*max)}" stroke="var(--line)"/><text x="${left-6}" y="${y(t*max)+4}" text-anchor="end">${fmt(t*max)}</text>`).join('')}<rect x="${a[6][0]}" y="${top}" width="${right-a[6][0]}" height="${bottom-top}" fill="var(--raised)" opacity=".38"/><text x="${right-4}" y="29" text-anchor="end">未到时段</text><path d="${curve(b)}" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-dasharray="4 4"/><path d="${curve(a)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${a[point][0]}" cy="${a[point][1]}" r="3.5" fill="var(--accent)"/>${[0,8,16,24].map(t=>`<text x="${x(t)}" y="187" text-anchor="${t===24?'end':'middle'}">${String(t).padStart(2,'0')}:00</text>`).join('')}</svg>`;
+const now=points(s.n)[point],prev=points(s.prev,true)[point];q('#cl-trend-detail').innerHTML=`${point===6?time().slice(0,5):String(hours[point]).padStart(2,'0')+':00'} · 今日 ${money(now[1])}<br>昨日同时段 ${money(prev[1])}`;
+const svg=el.firstElementChild;let downAt=0;const pick=e=>{const box=svg.getBoundingClientRect(),t=(e.clientX-box.left-left)/(right-left)*24;point=points(s.n).reduce((best,p,i,arr)=>Math.abs(p[0]-t)<Math.abs(arr[best][0]-t)?i:best,0);renderTrend();};svg.onpointerdown=e=>{downAt=Date.now();};svg.onpointerup=e=>pick(e);svg.onpointermove=e=>{if(e.buttons&&Date.now()-downAt>350)pick(e);};}
+function renderStores(){const s=snapshot;if(!s.valid){q('#cl-bars').innerHTML='<div class="cl-empty">暂无门店数据</div>';return;}const max=Math.max(...s.rows.map(total));q('#cl-bars').innerHTML=selected.map(i=>{const r=s.a[i],missing=!s.available.includes(i),v=total(r);return`<button class="cl-bar-button" data-store="${i}" aria-label="${r[0]} ${missing?'数据缺失':money(v)+'，查看汇总'}"><span>${missing?'缺数':fmt(v)}</span><span class="cl-bar-area"><span class="cl-bar-stack" style="height:${missing?0:v/max*137}px">${['dine','delivery','pickup'].map((c,j)=>`<i class="${c}" style="height:${r[j+1]/v*100}%"></i>`).join('')}</span></span><span>${r[0]}</span><span class="${v>=r[5]?'positive':'negative'}">${missing?'不可比':pct(v,r[5])}</span></button>`}).join('');}
+function renderChannels(){const s=snapshot;q('#cl-share').innerHTML=s.valid?s.sums.slice(0,3).map((v,i)=>`<span class="${['dine','delivery','pickup'][i]}" style="width:${v/s.n*100}%"></span>`).join(''):'';q('#cl-channels').innerHTML=s.valid?s.sums.slice(0,3).map((v,i)=>`<div class="cl-channel-row"><span><i class="cl-dot ${['dine','delivery','pickup'][i]}"></i> ${['堂食','外卖','自提'][i]}</span><span>${money(v)}</span><small>${(v/s.n*100).toFixed(1)}%</small></div>`).join(''):'<div class="cl-empty">暂无渠道数据</div>';if(!s.valid)q('#cl-channel-period').textContent='数据缺失时不计算占比';}
+function refresh(){if(!['live','partial'].includes(mode)||step>=520)return;step++;render();}
+q('.cl-demo-controls select').onchange=e=>{mode=e.target.value;render();persist();};
+q('#cl-stores').onchange=()=>{selected=[...q('#cl-stores').querySelectorAll('input:checked')].map(x=>+x.value);render();persist();};q('#cl-select-all').onclick=()=>{selected=stores.map((_,i)=>i);filters();render();persist();};
+q('#cl-prev-time').onclick=()=>{point=Math.max(0,point-1);renderTrend();};q('#cl-next-time').onclick=()=>{point=Math.min(6,point+1);renderTrend();};
+root.addEventListener('click',e=>{const btn=e.target.closest('[data-store]');if(!btn)return;const i=+btn.dataset.store,r=snapshot.a[i],valid=snapshot.available.includes(i);q('#cl-dialog-title').textContent=r[0]+'经营汇总';q('#cl-dialog-body').innerHTML=valid?`<p>10/09 00:00–${time().slice(0,5)} · 对比昨日同时段</p><p>净实收 ${money(total(r))} · ${pct(total(r),r[5])}</p><p>有效订单 ${fmt(r[4])} 单 · ${pct(r[4],r[6])}</p><p>平均每单实收 ¥${(total(r)/r[4]).toFixed(2)}</p><p>堂食 ${money(r[1])}<br>外卖 ${money(r[2])}<br>自提 ${money(r[3])}</p><p>仅为汇总观察，不据此直接判断经营原因。</p>`:'<p>该门店数据缺失，未计入当前合计与同期比较。恢复完整快照后再参与统计。</p>';q('#cl-dialog').showModal();});q('#cl-close').onclick=()=>q('#cl-dialog').close();
+window.addEventListener('openai:set_globals',e=>{restore(e.detail?.globals?.widgetState);filters();render();});
+filters();render();new ResizeObserver(()=>renderTrend()).observe(q('#cl-trend'));
+const timer=setInterval(()=>{if(!root.isConnected){clearInterval(timer);return;}if(!document.hidden)refresh();},36000000);
+})();
+</script>
+
+<style>#crest-live-preview .cl-demo-controls{display:none}#crest-live-preview .cl-stage{width:1230px;padding:18px;justify-content:flex-start}#crest-live-preview .cl-phone{zoom:3;flex-shrink:0;max-width:none}</style></html>

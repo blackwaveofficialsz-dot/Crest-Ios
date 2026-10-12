@@ -90,14 +90,14 @@ export struct IconButton {
     Button({ type: ButtonType.Circle }) {
       if (this.glass) {
         Stack({ alignContent: Alignment.Center }) {
-          Circle().width(36).height(36).fill(this.filled ? (this.isEnabled ? Palette.accent(this.dark) : (this.dark ? '#49494B' : '#E6E6E8')) : Palette.glass(this.dark))
+          Circle().width(36).height(36).fill(this.filled ? (this.isEnabled ? Palette.accent(this.dark) : (this.dark ? '#626266' : '#CCCCD0')) : Palette.glass(this.dark))
           CrestIcon({ kind: this.kind, iconSize: this.iconSize, color: this.filled ? Color.White : this.accent ? Palette.accent(this.dark) : Palette.text(this.dark) })
         }.width(44).height(44)
       } else {
         CrestIcon({ kind: this.kind, iconSize: this.iconSize, color: this.filled ? Color.White : this.accent ? Palette.accent(this.dark) : Palette.secondary(this.dark) })
       }
     }
-      .width(44).height(44).backgroundColor(!this.glass && this.filled ? (this.isEnabled ? Palette.accent(this.dark) : (this.dark ? '#49494B' : '#E6E6E8')) : Color.Transparent)
+      .width(44).height(44).backgroundColor(!this.glass && this.filled ? (this.isEnabled ? Palette.accent(this.dark) : (this.dark ? '#626266' : '#CCCCD0')) : Color.Transparent)
       .enabled(this.isEnabled)
       .accessibilityText(this.label).onClick(this.action)
   }
